@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Irathiens | Organización Star Citizen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060b14;
+      --bg-soft: #0b1220;
+      --primary: #ff9a1f;
+      --accent: #ffb347;
+      --text: #e6f1ff;
+      --muted: #9fb3c8;
+      --border: #2a1a0a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top, #0b1630 0%, var(--bg) 60%);
+      color: var(--text);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(6, 11, 20, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
+      max-width: 1200px;
+      margin: auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .logo-text {
+      color: var(--primary);
+    }
+
+    .logo-img {
+      height: 36px;
+      width: auto;
+    }
+
+    nav a {
+      margin-left: 1.5rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    nav a:hover { color: var(--primary); }
+
+    .hero {
+      max-width: 1200px;
+      margin: auto;
+      padding: 6rem 1.5rem 4rem;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3rem;
+    }
+
+    .hero h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 1.6rem;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #001018;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .card-grid {
+      max-width: 1200px;
+      margin: auto;
+      padding: 2rem 1.5rem 4rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--bg-soft), var(--bg));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .card h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo"><img src="logo.png" alt="Irathiens Logo" class="logo-img"> <span class="logo-text">IRATHIENS</span></div>
+    <nav>
+      <a href="#">Inicio</a>
+      <a href="#">Eventos</a>
+      <a href="#">Miembros</a>
+      <a href="#">Guías</a>
+      
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>Forjando alianzas en el verso</h1>
+    <p>
+      Irathiens es una organización de Star Citizen centrada en la cooperación,
+      la estrategia y el crecimiento conjunto. Operamos con visión a largo plazo,
+      disciplina y compromiso con nuestros aliados.
+    </p>
+    <a class="btn" href="#">Solicitar Ingreso</a>
+  </div>
+  <div class="card">
+    <h3>Estado de la Organización</h3>
+    <p>✔ Activa · ✔ Coordinada · ✔ En expansión</p>
+    <p>Región principal: España / EU</p>
+    <p>Enfoque: PvE · PvP · Logística · Eventos</p>
+  </div>
+</section>
+
+<section class="card-grid">
+  <div class="card">
+    <h3>Eventos</h3>
+    <p>Operaciones conjuntas, entrenamientos y eventos organizados regularmente.</p>
+  </div>
+  <div class="card">
+    <h3>Diplomacia</h3>
+    <p>Sistema de embajada para alianzas estratégicas y cooperación entre organizaciones.</p>
+  </div>
+  <div class="card">
+    <h3>Miembros</h3>
+    <p>Estructura clara, rangos definidos y comunicación constante vía Discord.</p>
+  </div>
+</section>
+
+<footer>
+  © 2025 Irathiens · Inspirado en interfaces sci‑fi de Star Citizen
+</footer>
+
+</body>
+</html>
