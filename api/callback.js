@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   params.append("code", code);
   params.append(
     "redirect_uri",
-    "https://irathiens.vercel.app/api/callback"
+    "irathiens.vercel.app/api/callback"
   );
 
   const tokenRes = await fetch("https://discord.com/api/oauth2/token", {
@@ -48,6 +48,7 @@ export default async function handler(req, res) {
 
   res.redirect("/main.html");
 }
+
 
 
 
