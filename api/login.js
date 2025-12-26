@@ -1,6 +1,6 @@
 export default function handler(req, res) {
   const redirectUri = encodeURIComponent(
-    "https://TU-DOMINIO.vercel.app/api/callback"
+    "https://irathiens.vercel.app/api/callback"
   );
 
   res.redirect(
@@ -10,3 +10,4 @@ export default function handler(req, res) {
     `&scope=user:read:email`
   );
 }
+
