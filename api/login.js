@@ -1,6 +1,6 @@
 export default function handler(req, res) {
   const redirect = encodeURIComponent(
-    "https://irathiens.vercel.app/api/callback"
+    "irathiens.vercel.app/api/callback"
   );
 
   res.redirect(
@@ -11,5 +11,6 @@ export default function handler(req, res) {
     `&redirect_uri=${redirect}`
   );
 }
+
 
 
