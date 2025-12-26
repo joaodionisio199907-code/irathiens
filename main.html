@@ -173,7 +173,7 @@
       <a href="#">Eventos</a>
       <a href="#">Miembros</a>
       <a href="https://discord.gg/Bu7sWDyHkc">Discord</a>
-      <button id="loginBtn">LOGIN</button>
+      <button id="loginBtn">LOGIN CON TWITCH</button>
 
     </nav>
   </div>
@@ -219,6 +219,13 @@
   document.getElementById("loginBtn").onclick = () => {
     window.location.href = "/api/login";
   };
+
+  // Comprobar sesión
+  fetch('/api/me')
+    .then(r => r.ok ? r.json() : null)
+    .then(user => {
+      if (user) console.log("Logueado:", user.display_name);
+    });
 </script>
 
 </body>
