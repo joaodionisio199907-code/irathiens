@@ -131,3 +131,14 @@ footer {
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; }
 }
+#loginBtn {
+  margin-top: 20px;
+  padding: 12px 30px;
+  font-family: 'Orbitron';
+  background: var(--primary);
+  border: none;
+  color: black;
+  cursor: pointer;
+  z-index: 10;
+}
+
