@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irathiens | Fleet & Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- TU CSS ORIGINAL --- */
+        :root {
+          --bg: #060b14;
+          --bg-soft: #0b1220;
+          --primary: #ff9a1f;
+          --accent: #ffb347;
+          --text: #e6f1ff;
+          --muted: #9fb3c8;
+          --border: #2a1a0a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+          margin: 0;
+          font-family: 'Inter', sans-serif;
+          background: radial-gradient(circle at top, #0b1630 0%, var(--bg) 60%);
+          color: var(--text);
+          min-height: 100vh;
+        }
+
+        header {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background: rgba(6, 11, 20, 0.85);
+          backdrop-filter: blur(10px);
+          border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+          max-width: 1200px;
+          margin: auto;
+          padding: 1rem 1.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .logo {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          font-family: 'Orbitron', sans-serif;
+          font-size: 1.2rem;
+          letter-spacing: 1px;
+          text-decoration: none;
+        }
+
+        .logo-text { color: var(--primary); }
+
+        nav a {
+          margin-left: 1.5rem;
+          color: var(--muted);
+          text-decoration: none;
+          font-weight: 500;
+        }
+
+        nav a:hover { color: var(--primary); }
+
+        /* --- ESTILOS DE PERFIL Y HANGAR (FUSIONADOS) --- */
+        .profile-section {
+            max-width: 1200px;
+            margin: auto;
+            padding: 4rem 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+
+        .profile-card {
