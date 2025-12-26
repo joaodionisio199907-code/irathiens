@@ -27,7 +27,6 @@
             overflow-x: hidden;
         }
 
-        /* Efecto de partículas de fondo (estrellas) */
         body::before {
             content: "";
             position: fixed;
@@ -42,7 +41,6 @@
             margin: 0 auto;
         }
 
-        /* --- HEADER --- */
         header {
             display: flex;
             justify-content: space-between;
@@ -56,7 +54,6 @@
 
         .logo { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: var(--primary); text-shadow: 0 0 15px var(--primary); }
 
-        /* --- PERFIL PRINCIPAL --- */
         .profile-container {
             display: grid;
             grid-template-columns: 300px 1fr;
@@ -83,6 +80,8 @@
             border-radius: 50%;
             position: relative;
             animation: pulse 2s infinite;
+            background: #000;
+            overflow: hidden;
         }
 
         @keyframes pulse {
@@ -93,7 +92,14 @@
 
         .avatar-frame img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-        .handle-title { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--primary); margin: 10px 0; }
+        .handle-title { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1.5rem; 
+            color: var(--primary); 
+            margin: 10px 0; 
+            text-decoration: none;
+            display: block;
+        }
 
         .rsi-button {
             display: inline-block;
@@ -109,7 +115,6 @@
 
         .rsi-button:hover { background: var(--primary); color: #000; }
 
-        /* --- PANEL DE ACCIÓN --- */
         .control-panel {
             background: var(--glass);
             border: 1px solid var(--border);
@@ -144,7 +149,6 @@
 
         .btn-action:hover { letter-spacing: 2px; box-shadow: 0 0 20px var(--primary); }
 
-        /* --- GRID DE NAVES --- */
         .fleet-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -197,7 +201,6 @@
             padding: 5px 10px;
             z-index: 10;
         }
-
     </style>
 </head>
 <body>
@@ -213,7 +216,9 @@
             <div class="avatar-frame">
                 <img src="https://robertsspaceindustries.com/media/7p79ck2sc5r9rr/heap_infocus/Loading_The_Carrack.jpg" id="avatar-img">
             </div>
-            <div class="handle-title" id="display-name">RECRUIT_NAME</div>
+            <a id="display-name-link" href="#" target="_blank" style="text-decoration: none;">
+                <div class="handle-title" id="display-name">RECRUIT_NAME</div>
+            </a>
             <p style="color: #666;">ORGANIZACIÓN: IRATHIENS</p>
             <a id="rsi-link" href="#" target="_blank" class="rsi-button">RSI SPECTRUM PROFILE</a>
         </aside>
@@ -243,14 +248,6 @@
                         <option value="Drake Cutlass Black">Drake Cutlass Black</option>
                         <option value="Drake Caterpillar">Drake Caterpillar</option>
                     </optgroup>
-                    <optgroup label="Origin Jumpworks">
-                        <option value="Origin 890 Jump">Origin 890 Jump</option>
-                        <option value="Origin 600i Explorer">Origin 600i Explorer</option>
-                    </optgroup>
-                    <optgroup label="Robert Space Industries">
-                        <option value="RSI Perseus">RSI Perseus</option>
-                        <option value="RSI Constellation Phoenix">RSI Constellation Phoenix</option>
-                    </optgroup>
                 </select>
                 <button class="btn-action" onclick="addShipToHangar()" style="margin-top: 10px; background: var(--secondary); color: white;">AÑADIR A LA FLOTA</button>
             </div>
@@ -258,14 +255,13 @@
     </div>
 
     <h2 style="font-family: 'Orbitron'; border-left: 5px solid var(--primary); padding-left: 15px;">MI HANGAR DE COMBATE</h2>
-    <div class="fleet-grid" id="fleet-grid">
-        </div>
+    <div class="fleet-grid" id="fleet-grid"></div>
 </div>
 
 <script>
-    // --- LÓGICA DE PERFIL ---
+    // --- LÓGICA DE PERFIL Y FOTO DE RSI ---
     function saveHandle() {
-        const val = document.getElementById('handle-input').value;
+        const val = document.getElementById('handle-input').value.trim();
         if(val) {
             localStorage.setItem('irathien_handle', val);
             renderProfile(val);
@@ -273,16 +269,31 @@
     }
 
     function renderProfile(handle) {
+        // Actualizar texto del nombre
         document.getElementById('display-name').innerText = handle.toUpperCase();
-        document.getElementById('rsi-link').href = `https://robertsspaceindustries.com/en/citizens/${handle}`;
+        
+        // Actualizar enlaces al perfil de RSI (En el botón y en el nombre)
+        const profileUrl = `https://robertsspaceindustries.com/en/citizens/${handle}`;
+        document.getElementById('rsi-link').href = profileUrl;
+        document.getElementById('display-name-link').href = profileUrl;
+        
+        // --- ACTUALIZAR FOTO DE PERFIL DESDE RSI ---
+        // RSI genera una URL de avatar automática basada en el handle
+        const avatarImg = document.getElementById('avatar-img');
+        avatarImg.src = `https://robertsspaceindustries.com/en/citizens/${handle}/avatar`;
+
+        // Si el usuario no tiene foto o hay error, ponemos una por defecto
+        avatarImg.onerror = function() {
+            this.src = "https://robertsspaceindustries.com/media/7p79ck2sc5r9rr/heap_infocus/Loading_The_Carrack.jpg";
+        };
+
         document.getElementById('handle-input').value = handle;
     }
 
     // --- LÓGICA DE NAVES ---
     function addShipToHangar() {
         const shipName = document.getElementById('ship-selector').value;
-        const shipId = Date.now(); // ID único para cada nave
-        
+        const shipId = Date.now();
         const shipObj = { id: shipId, name: shipName, img: null };
         saveShip(shipObj);
         renderShip(shipObj);
@@ -296,7 +307,7 @@
         
         card.innerHTML = `
             <button class="delete-ship" onclick="deleteShip(${ship.id})">X</button>
-            <div class="ship-image-container" id="container-${ship.id}">
+            <div class="ship-image-container">
                 <img src="${ship.img || 'https://images.wallpapersden.com/image/download/star-citizen-4k-gaming-2020_a25tZ2aUmZqaraWkpJRmbmdlrWZnZ2U.jpg'}" id="img-${ship.id}">
                 <label class="upload-label">
                     SUBIR CAPTURA
@@ -316,7 +327,6 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById(`img-${id}`).src = e.target.result;
-                // Aquí podrías guardar la imagen en localStorage (pero cuidado: las imágenes pesan mucho para localStorage)
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -335,7 +345,7 @@
         document.getElementById(`ship-${id}`).remove();
     }
 
-    // Cargar datos al iniciar
+    // CARGA INICIAL: Recuperar datos guardados
     window.onload = () => {
         const savedHandle = localStorage.getItem('irathien_handle');
         if(savedHandle) renderProfile(savedHandle);
