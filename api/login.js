@@ -1,16 +1,12 @@
 export default function handler(req, res) {
-  const redirect = encodeURIComponent(
-    "irathiens.vercel.app/api/callback"
+  const redirectUri = encodeURIComponent(
+    "https://TU-DOMINIO.vercel.app/api/callback"
   );
 
   res.redirect(
-    `https://discord.com/oauth2/authorize` +
-    `?client_id=DISCORD_CLIENT_ID` +
-    `&response_type=code` +
-    `&scope=identify email` +
-    `&redirect_uri=${redirect}`
+    `https://id.twitch.tv/oauth2/authorize?response_type=code` +
+    `&client_id=${process.env.TWITCH_CLIENT_ID}` +
+    `&redirect_uri=${redirectUri}` +
+    `&scope=user:read:email`
   );
 }
-
-
-
