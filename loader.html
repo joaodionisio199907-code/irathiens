@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Irathiens | Cargando...</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060b14;
+      --primary: #ff9a1f;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at center, #0b1630 0%, #060b14 100%);
+      overflow: hidden;
+    }
+
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background: radial-gradient(circle at center, #0b1630 0%, #060b14 100%);
+    }
+
+    #particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    #loader img {
+      width: 120px;
+      height: auto;
+      animation: logo-spin 2s linear infinite;
+      filter: drop-shadow(0 0 20px var(--primary));
+      z-index: 10;
+    }
+
+    @keyframes logo-spin {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loader-text {
+      margin-top: 1rem;
+      font-family: 'Orbitron', sans-serif;
+      color: var(--primary);
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px var(--primary);
+      animation: pulse 1.5s infinite;
+      z-index: 10;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+    <canvas id="particles"></canvas>
+    <img src="logo.png" alt="Irathiens Logo">
+    <div class="loader-text">CARGANDO...</div>
+  </div>
+
+  <script>
+    // Partículas animadas
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particlesArray = [];
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if(this.x > canvas.width) this.x = 0;
+        if(this.x < 0) this.x = canvas.width;
+        if(this.y > canvas.height) this.y = 0;
+        if(this.y < 0) this.y = canvas.height;
+      }
+      draw() {
+        ctx.fillStyle = '#ff9a1f';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particlesArray = [];
+      for(let i=0;i<100;i++){
+        particlesArray.push(new Particle());
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particlesArray.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animateParticles);
+    }
+
+    window.addEventListener('resize', function() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    });
+
+    initParticles();
+    animateParticles();
+
+    // Redirigir a index.html después de 3 segundos
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 3000); // puedes ajustar el tiempo de carga aquí
+  </script>
+
+</body>
+</html>
