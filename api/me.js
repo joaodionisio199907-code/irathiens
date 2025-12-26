@@ -1,7 +1,5 @@
 export default function handler(req, res) {
-  const cookie = req.headers.cookie;
-  if (!cookie) return res.status(401).json(null);
-
+  const cookie = req.headers.cookie || "";
   const match = cookie.match(/user=([^;]+)/);
   if (!match) return res.status(401).json(null);
 
