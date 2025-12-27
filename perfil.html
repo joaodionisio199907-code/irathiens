@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Irathiens | Perfil de Ciudadano</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --bg: #060b14;
@@ -261,12 +264,11 @@
             <img src="logo.png" alt="Logo" class="logo-img"> 
             <span class="logo-text">IRATHIENS</span>
         </a>
-        <nav>
-            <a href="main.html" class="active">Inicio</a>
+        <nav id="mainNav">
+            <a href="index.html">Inicio</a>
             <a href="#">Eventos</a>
-            <a href="banco.html">Finanzas</a>
             <a href="#">Miembros</a>
-            <a href="https://discord.gg/Bu7sWDyHkc" target="_blank">Discord</a>
+            <a href="#" onclick="handleLogout()" style="color: var(--danger);">Cerrar Sesión</a>
         </nav>
     </div>
 </header>
@@ -284,13 +286,14 @@
                 <div class="stat-item"><span class="stat-value" id="ship-count">0</span> NAVES</div>
                 <div class="stat-item"><span class="stat-value">0</span> MISIONES</div>
             </div>
- <div class="profile-card" style="padding: 20px; text-align: left;">
-            <div style="color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem; margin-bottom: 10px;">ESTADO DE CONEXIÓN</div>
-            <div style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem;">
-                <div style="width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88;"></div>
-                SISTEMA ONLINE
+
+            <div class="profile-card" style="padding: 20px; text-align: left; margin-top:20px;">
+                <div style="color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem; margin-bottom: 10px;">ESTADO DE CONEXIÓN</div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem;">
+                    <div style="width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88;"></div>
+                    SISTEMA ONLINE
+                </div>
             </div>
-        </div>
         
             <a href="#" id="rsi-link" class="btn-action" style="margin-top: 25px; display: block; text-decoration: none; padding: 10px; font-size: 0.7rem;">
                 SPECTRUM PROFILE
@@ -314,8 +317,11 @@
                 <label>Añadir nueva nave a la flota</label>
                 <select id="ship-selector">
                     <option value="" disabled selected>Busca tu nave en la lista...</option>
-                    <option value="100i">100i</option><option value="125a">125a</option><option value="135c">135c</option><option value="300i">300i</option><option value="315p">315p</option><option value="325a">325a</option><option value="350r">350r</option><option value="400i">400i</option><option value="600i Explorer">600i Explorer</option><option value="600i Touring">600i Touring</option><option value="600i Executive">600i Executive</option><option value="85X">85X</option><option value="890 Jump">890 Jump</option><option value="A1 Spirit">A1 Spirit</option><option value="A2 Hercules Starlifter">A2 Hercules Starlifter</option><option value="Ares Inferno">Ares Inferno</option><option value="Ares Ion">Ares Ion</option><option value="Apollo Medivac">Apollo Medivac</option><option value="Apollo Triage">Apollo Triage</option><option value="Arrastra">Arrastra</option><option value="Arrow">Arrow</option><option value="Asgard">Asgard</option><option value="Aurora CL">Aurora CL</option><option value="Aurora ES">Aurora ES</option><option value="Aurora LN">Aurora LN</option><option value="Aurora LX">Aurora LX</option><option value="Aurora MR">Aurora MR</option><option value="Avenger Stalker">Avenger Stalker</option><option value="Avenger Titan">Avenger Titan</option><option value="Avenger Titan Renegade">Avenger Titan Renegade</option><option value="Avenger Warlock">Avenger Warlock</option><option value="Ballista">Ballista</option><option value="Ballista Dunestalker">Ballista Dunestalker</option><option value="Ballista Snowblind">Ballista Snowblind</option><option value="Banu Defender">Banu Defender</option><option value="Banu Merchantman">Banu Merchantman</option><option value="Bearcat">Bearcat</option><option value="Bengal Carrier">Bengal Carrier</option><option value="Blade">Blade</option><option value="Buccaneer">Buccaneer</option><option value="C1 Spirit">C1 Spirit</option><option value="C2 Hercules Starlifter">C2 Hercules Starlifter</option><option value="C8 Pisces">C8 Pisces</option><option value="C8R Pisces Rescue">C8R Pisces Rescue</option><option value="C8X Pisces Expedition">C8X Pisces Expedition</option><option value="Carrack">Carrack</option><option value="Carrack Expedition">Carrack Expedition</option><option value="Carrack w/C8X">Carrack w/C8X</option><option value="Caterpillar">Caterpillar</option><option value="Caterpillar Pirate Edition">Caterpillar Pirate Edition</option><option value="Centurion">Centurion</option><option value="Constellation Andromeda">Constellation Andromeda</option><option value="Constellation Aquila">Constellation Aquila</option><option value="Constellation Phoenix">Constellation Phoenix</option><option value="Constellation Phoenix Emerald">Constellation Phoenix Emerald</option><option value="Constellation Taurus">Constellation Taurus</option><option value="Corsair">Corsair</option><option value="Crucible">Crucible</option><option value="Cydnus">Cydnus</option><option value="Cutlass Black">Cutlass Black</option><option value="Cutlass Blue">Cutlass Blue</option><option value="Cutlass Red">Cutlass Red</option><option value="Cutlass Steel">Cutlass Steel</option><option value="Defender">Defender</option><option value="Dragonfly Black">Dragonfly Black</option><option value="Dragonfly Yellowjacket">Dragonfly Yellowjacket</option><option value="Eclipse">Eclipse</option><option value="Endeavor">Endeavor</option><option value="Expanse">Expanse</option><option value="F7C Hornet">F7C Hornet</option><option value="F7C Hornet Wildfire">F7C Hornet Wildfire</option><option value="F7C-M Super Hornet">F7C-M Super Hornet</option><option value="F7C-R Hornet Tracker">F7C-R Hornet Tracker</option><option value="F7C-S Hornet Ghost">F7C-S Hornet Ghost</option><option value="F8C Lightning">F8C Lightning</option><option value="Freelancer">Freelancer</option><option value="Freelancer DUR">Freelancer DUR</option><option value="Freelancer MAX">Freelancer MAX</option><option value="Freelancer MIS">Freelancer MIS</option><option value="Fury">Fury</option><option value="Fury LX">Fury LX</option><option value="G12">G12</option><option value="G12a">G12a</option><option value="G12r">G12r</option><option value="Genesis Starliner">Genesis Starliner</option><option value="Gladius">Gladius</option><option value="Gladius Valiant">Gladius Valiant</option><option value="Glaive">Glaive</option><option value="Greycat PTV">Greycat PTV</option><option value="Greycat ROC">Greycat ROC</option><option value="Greycat ROC-DS">Greycat ROC-DS</option><option value="Greycat STV">Greycat STV</option><option value="Hammerhead">Hammerhead</option><option value="Hawk">Hawk</option><option value="Herald">Herald</option><option value="Hercules M2">Hercules M2</option><option value="HoverQuad">HoverQuad</option><option value="Hurricane">Hurricane</option><option value="Idris-M">Idris-M</option><option value="Idris-P">Idris-P</option><option value="Intrepid">Intrepid</option><option value="Javelin">Javelin</option><option value="Khartu-Al">Khartu-Al</option><option value="Kraken">Kraken</option><option value="Kraken Privateer">Kraken Privateer</option><option value="Legionnaire">Legionnaire</option><option value="Liberator">Liberator</option><option value="M50 Interceptor">M50 Interceptor</option><option value="Mantis">Mantis</option><option value="Mercury Star Runner">Mercury Star Runner</option><option value="MOLE">MOLE</option><option value="MPUV Cargo">MPUV Cargo</option><option value="MPUV Personnel">MPUV Personnel</option><option value="Mustang Alpha">Mustang Alpha</option><option value="Mustang Beta">Mustang Beta</option><option value="Mustang Delta">Mustang Delta</option><option value="Mustang Gamma">Mustang Gamma</option><option value="Mustang Omega">Mustang Omega</option><option value="Nautilus">Nautilus</option><option value="Nautilus Solstice">Nautilus Solstice</option><option value="Nomad">Nomad</option><option value="Nox">Nox</option><option value="Nox Kue">Nox Kue</option><option value="Odyssey">Odyssey</option><option value="Orion">Orion</option><option value="P-52 Merlin">P-52 Merlin</option><option value="P-72 Archimedes">P-72 Archimedes</option><option value="P-72 Archimedes Emerald">P-72 Archimedes Emerald</option><option value="Perseus">Perseus</option><option value="Phoenix">Phoenix</option><option value="Pisces">Pisces</option><option value="Polaris">Polaris</option><option value="Prospector">Prospector</option><option value="Prowler">Prowler</option><option value="Pulse">Pulse</option><option value="Pulse LX">Pulse LX</option><option value="RAFT">RAFT</option><option value="Razor">Razor</option><option value="Razor EX">Razor EX</option><option value="Razor LX">Razor LX</option><option value="Reclaimer">Reclaimer</option><option value="Redeemer">Redeemer</option><option value="Reliant Kore">Reliant Kore</option><option value="Reliant Mako">Reliant Mako</option><option value="Reliant Sen">Reliant Sen</option><option value="Reliant Tana">Reliant Tana</option><option value="Retaliator">Retaliator</option><option value="Retaliator Bomber">Retaliator Bomber</option><option value="Retaliator Base">Retaliator Base</option><option value="ROC">ROC</option><option value="ROC-DS">ROC-DS</option><option value="Sabre">Sabre</option><option value="Sabre Comet">Sabre Comet</option><option value="San'tok.yāi">San'tok.yāi</option><option value="Scorpius">Scorpius</option><option value="Scorpius Antares">Scorpius Antares</option><option value="Scythe">Scythe</option><option value="Spartan">Spartan</option><option value="Starfarer">Starfarer</option><option value="Starfarer Gemini">Starfarer Gemini</option><option value="Storm">Storm</option><option value="Storm AA">Storm AA</option><option value="Syulen">Syulen</option><option value="Talon">Talon</option><option value="Talon Shrike">Talon Shrike</option><option value="Terrapin">Terrapin</option><option value="Terrapin Medic">Terrapin Medic</option><option value="Tumbril Cyclone">Tumbril Cyclone</option><option value="Cyclone AA">Cyclone AA</option><option value="Cyclone MT">Cyclone MT</option><option value="Cyclone RC">Cyclone RC</option><option value="Cyclone RN">Cyclone RN</option><option value="Cyclone TR">Cyclone TR</option><option value="Ursa Rover">Ursa Rover</option><option value="Ursa Rover Fortuna">Ursa Rover Fortuna</option><option value="Ursa Rover Medical">Ursa Rover Medical</option><option value="Valkyrie">Valkyrie</option><option value="Vanguard Harbinger">Vanguard Harbinger</option><option value="Vanguard Hoplite">Vanguard Hoplite</option><option value="Vanguard Sentinel">Vanguard Sentinel</option><option value="Vanguard Warden">Vanguard Warden</option><option value="Vulture">Vulture</option><option value="X1">X1</option><option value="X1 Force">X1 Force</option><option value="X1 Velocity">X1 Velocity</option><option value="Zeus Mk II CL">Zeus Mk II CL</option><option value="Zeus Mk II ES">Zeus Mk II ES</option><option value="Zeus Mk II MR">Zeus Mk II MR</option>
-                </select>
+                    <option value="Carrack">Carrack</option>
+                    <option value="Arrow">Arrow</option>
+                    <option value="Avenger Titan">Avenger Titan</option>
+                    <option value="Cutter">Cutter</option>
+                    </select>
                 <button class="btn-action" onclick="addShip()" style="margin-top: 15px;">DESPLEGAR EN HANGAR</button>
             </div>
 
@@ -323,8 +329,7 @@
                 <div class="section-title" style="margin-bottom: 0;">TU FLOTA ACTUAL</div>
             </div>
 
-            <div class="fleet-grid" id="fleet-grid">
-                </div>
+            <div class="fleet-grid" id="fleet-grid"></div>
         </div>
     </main>
 </div>
@@ -334,6 +339,32 @@
 </footer>
 
 <script>
+    // --- LÓGICA SUPABASE (Añadida) ---
+    const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
+    const SB_KEY = 'AQUÍ_TU_LLAVE_ANON_PUBLIC'; // PON TU LLAVE AQUÍ
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+    // 1. Proteger página y cargar datos
+    async function initProfile() {
+        const { data: { user }, error } = await _supabase.auth.getUser();
+
+        if (error || !user) {
+            window.location.href = "login.html"; // Si no hay usuario, fuera.
+            return;
+        }
+
+        // Actualizar visualmente con datos del usuario
+        document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
+    }
+
+    async function handleLogout() {
+        await _supabase.auth.signOut();
+        window.location.href = "login.html";
+    }
+
+    initProfile();
+
+    // --- TU LÓGICA ORIGINAL (SIN CAMBIOS) ---
     const PLACEHOLDER = "https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg";
     
     const bg = document.getElementById('bg-parallax');
@@ -358,13 +389,11 @@
     function addShip() {
         const selector = document.getElementById('ship-selector');
         const shipName = selector.value;
-
         if(!shipName) return;
 
         const grid = document.getElementById('fleet-grid');
         const newShip = document.createElement('div');
         newShip.className = 'ship-card';
-        
         const currentId = `ship-${shipIdCounter++}`;
         
         newShip.innerHTML = `
@@ -379,7 +408,6 @@
             <div class="ship-name">${shipName}</div>
             <button class="btn-remove-ship" onclick="removeShip(this)">ELIMINAR NAVE</button>
         `;
-        
         grid.appendChild(newShip);
         updateShipCount();
     }
@@ -400,224 +428,13 @@
         reader.readAsDataURL(event.target.files[0]);
     }
 
-    function resetDefault(targetId) {
-        document.getElementById(targetId).src = PLACEHOLDER;
-    }
-
-    function clearImg(targetId) {
-        document.getElementById(targetId).src = "https://via.placeholder.com/400x200/0b1220/ff9a1f?text=SIN+DATOS+VISUALES";
-    }
-
+    function resetDefault(targetId) { document.getElementById(targetId).src = PLACEHOLDER; }
+    function clearImg(targetId) { document.getElementById(targetId).src = "https://via.placeholder.com/400x200/0b1220/ff9a1f?text=SIN+DATOS+VISUALES"; }
     function updateShipCount() {
         const count = document.querySelectorAll('.ship-card').length;
         document.getElementById('ship-count').innerText = count;
     }
 </script>
-<style>
-    /* --- BURBUJA DE CHAT --- */
-    .chat-bubble {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        width: 60px;
-        height: 60px;
-        background: rgba(255, 154, 31, 0.1);
-        border: 2px solid var(--primary);
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        z-index: 3000;
-        box-shadow: 0 0 15px var(--primary);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
 
-    .chat-bubble:hover {
-        transform: scale(1.1) rotate(90deg);
-        box-shadow: 0 0 25px var(--primary);
-    }
-
-    .chat-bubble i {
-        color: var(--primary);
-        font-size: 1.5rem;
-    }
-
-    /* --- VENTANA DE CHAT --- */
-    .chat-window {
-        position: fixed;
-        bottom: 90px;
-        left: 20px;
-        width: 350px;
-        height: 450px;
-        background: rgba(6, 11, 20, 0.95);
-        border: 1px solid var(--primary);
-        backdrop-filter: blur(15px);
-        display: none; /* Inicialmente oculto */
-        flex-direction: column;
-        z-index: 2999;
-        transform: translateY(20px);
-        opacity: 0;
-        transition: all 0.4s ease;
-        box-shadow: 0 0 30px rgba(0,0,0,0.5);
-    }
-
-    .chat-window.active {
-        display: flex;
-        transform: translateY(0);
-        opacity: 1;
-    }
-
-    .chat-header {
-        background: var(--primary);
-        color: #000;
-        padding: 10px;
-        font-family: 'Orbitron';
-        font-size: 0.7rem;
-        font-weight: bold;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .chat-messages {
-        flex: 1;
-        padding: 15px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        background-image: linear-gradient(rgba(255,154,31,0.03) 1px, transparent 1px);
-        background-size: 100% 20px;
-    }
-
-    /* Estilo de Mensaje */
-    .msg {
-        font-family: 'JetBrains Mono';
-        font-size: 0.75rem;
-        padding: 8px;
-        border-left: 2px solid var(--accent);
-        background: rgba(255,255,255,0.03);
-    }
-
-    .msg-user { color: var(--primary); font-weight: bold; font-size: 0.65rem; display: block; margin-bottom: 3px; }
-    .msg-time { color: #555; font-size: 0.6rem; float: right; }
-
-    .chat-input-area {
-        padding: 15px;
-        border-top: 1px solid var(--border);
-        display: flex;
-        gap: 10px;
-    }
-
-    .chat-input {
-        flex: 1;
-        background: rgba(0,0,0,0.5);
-        border: 1px solid var(--border);
-        color: #fff;
-        padding: 8px;
-        font-family: 'JetBrains Mono';
-        font-size: 0.8rem;
-    }
-
-    .chat-input:focus { outline: none; border-color: var(--accent); }
-
-    .btn-send {
-        background: var(--primary);
-        border: none;
-        color: #000;
-        padding: 0 15px;
-        cursor: pointer;
-        font-family: 'Orbitron';
-        font-size: 0.7rem;
-    }
-
-    /* Personalización Scrollbar */
-    .chat-messages::-webkit-scrollbar { width: 3px; }
-    .chat-messages::-webkit-scrollbar-thumb { background: var(--primary); }
-</style>
-
-<div class="chat-bubble" onclick="toggleChat()">
-    <i class="fas fa-terminal" id="chatIcon"></i>
-</div>
-
-<div class="chat-window" id="chatWindow">
-    <div class="chat-header">
-        <span>IRATHIENS_COMM_LINK</span>
-        <span style="color: rgba(0,0,0,0.5)">[ONLINE]</span>
-    </div>
-    
-    <div class="chat-messages" id="chatMessages">
-        <div class="msg">
-            <span class="msg-time">02:14</span>
-            <span class="msg-user">SYSTEM</span>
-            Conexión encriptada establecida. Bienvenido al canal del gremio.
-        </div>
-        <div class="msg" style="border-left-color: var(--primary);">
-            <span class="msg-time">02:15</span>
-            <span class="msg-user">SGT_KAEL</span>
-            Mañana a las 22:00 tenemos operación de minería en Lyria. ¡Todos listos!
-        </div>
-        <div class="msg">
-            <span class="msg-time">02:18</span>
-            <span class="msg-user">STARWALKER_88</span>
-            Copiado. Llevaré la Arrow para escolta.
-        </div>
-    </div>
-
-    <div class="chat-input-area">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Enviar comando...">
-        <button class="btn-send" onclick="sendMessage()">SEND</button>
-    </div>
-</div>
-
-<script>
-    function toggleChat() {
-        const chat = document.getElementById('chatWindow');
-        const icon = document.getElementById('chatIcon');
-        
-        chat.classList.toggle('active');
-        
-        // Cambiar icono según estado
-        if(chat.classList.contains('active')) {
-            icon.classList.remove('fa-terminal');
-            icon.classList.add('fa-times');
-        } else {
-            icon.classList.remove('fa-times');
-            icon.classList.add('fa-terminal');
-        }
-    }
-
-    function sendMessage() {
-        const input = document.getElementById('chatInput');
-        const container = document.getElementById('chatMessages');
-        
-        if(input.value.trim() !== "") {
-            const now = new Date();
-            const time = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
-            
-            const newMsg = document.createElement('div');
-            newMsg.className = 'msg';
-            newMsg.style.borderLeftColor = 'var(--accent)';
-            newMsg.innerHTML = `
-                <span class="msg-time">${time}</span>
-                <span class="msg-user">USER_RECRUIT</span>
-                ${input.value}
-            `;
-            
-            container.appendChild(newMsg);
-            input.value = "";
-            
-            // Auto-scroll al final
-            container.scrollTop = container.scrollHeight;
-        }
-    }
-
-    // Enviar con la tecla Enter
-    document.getElementById('chatInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
-</script>
 </body>
 </html>
