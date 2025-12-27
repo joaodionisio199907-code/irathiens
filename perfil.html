@@ -339,58 +339,97 @@
 </footer>
 
 <script>
-    // --- LÓGICA SUPABASE (Añadida) ---
+    // --- CONFIGURACIÓN SUPABASE ---
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
-    const SB_KEY = 'AQUÍ_TU_LLAVE_ANON_PUBLIC'; // PON TU LLAVE AQUÍ
+    const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; // <--- PEGA TU LLAVE AQUÍ
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    // 1. Proteger página y cargar datos
+    let currentUser = null;
+    const PLACEHOLDER = "https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg";
+    let shipIdCounter = 1;
+
+    // 1. Proteger página y cargar datos de la base de datos
     async function initProfile() {
         const { data: { user }, error } = await _supabase.auth.getUser();
 
         if (error || !user) {
-            window.location.href = "login.html"; // Si no hay usuario, fuera.
+            window.location.href = "login.html";
             return;
         }
 
-        // Actualizar visualmente con datos del usuario
-        document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
+        currentUser = user;
+
+        // Intentamos obtener datos de la tabla 'perfiles' (en plural, como la creaste)
+        let { data: profile } = await _supabase
+            .from('perfiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+        // Si no existe, creamos la fila inicial
+        if (!profile) {
+            const { data: newProfile } = await _supabase
+                .from('perfiles')
+                .insert([{ id: user.id, handle: user.email.split('@')[0], ships: [], rank: 'Cadete de Flota' }])
+                .select()
+                .single();
+            profile = newProfile;
+        }
+
+        // Actualizar Interfaz
+        document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
+        document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
+        
+        // Dibujar naves guardadas
+        if (profile.ships) {
+            profile.ships.forEach(shipName => {
+                renderShipCard(shipName);
+            });
+        }
+        updateShipCount();
     }
 
-    async function handleLogout() {
-        await _supabase.auth.signOut();
-        window.location.href = "login.html";
-    }
-
-    initProfile();
-
-    // --- TU LÓGICA ORIGINAL (SIN CAMBIOS) ---
-    const PLACEHOLDER = "https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg";
-    
-    const bg = document.getElementById('bg-parallax');
-    window.addEventListener('mousemove', (e) => {
-        const x = e.clientX / window.innerWidth;
-        const y = e.clientY / window.innerHeight;
-        const moveX = (x - 0.5) * 25; 
-        const moveY = (y - 0.5) * 25;
-        bg.style.transform = `translate(${-moveX}px, ${-moveY}px)`;
-    });
-
-    function saveHandle() {
+    // 2. Guardar Handle
+    async function saveHandle() {
         const handle = document.getElementById('handle-input').value;
         if(handle) {
-            document.getElementById('display-name').innerText = handle.toUpperCase();
-            alert("Identidad vinculada: " + handle);
+            const { error } = await _supabase
+                .from('perfiles')
+                .update({ handle: handle })
+                .eq('id', currentUser.id);
+
+            if (!error) {
+                document.getElementById('display-name').innerText = handle.toUpperCase();
+                alert("Identidad vinculada y guardada en la base de datos.");
+            }
         }
     }
 
-    let shipIdCounter = 1;
-
-    function addShip() {
+    // 3. Añadir Nave
+    async function addShip() {
         const selector = document.getElementById('ship-selector');
         const shipName = selector.value;
         if(!shipName) return;
 
+        renderShipCard(shipName);
+        await syncShips(); 
+    }
+
+    // 4. Sincronizar con Supabase
+    async function syncShips() {
+        const shipElements = document.querySelectorAll('.ship-name');
+        const shipList = Array.from(shipElements).map(el => el.innerText);
+
+        await _supabase
+            .from('perfiles')
+            .update({ ships: shipList })
+            .eq('id', currentUser.id);
+        
+        updateShipCount();
+    }
+
+    // --- FUNCIONES VISUALES ---
+    function renderShipCard(shipName) {
         const grid = document.getElementById('fleet-grid');
         const newShip = document.createElement('div');
         newShip.className = 'ship-card';
@@ -412,28 +451,43 @@
         updateShipCount();
     }
 
-    function removeShip(button) {
+    async function removeShip(button) {
         if(confirm("¿Eliminar nave de la flota?")) {
             button.parentElement.remove();
-            updateShipCount();
+            await syncShips();
         }
     }
 
     function previewImg(event, targetId) {
         if (!event.target.files[0]) return;
         const reader = new FileReader();
-        reader.onload = function() {
-            document.getElementById(targetId).src = reader.result;
-        }
+        reader.onload = function() { document.getElementById(targetId).src = reader.result; }
         reader.readAsDataURL(event.target.files[0]);
     }
 
     function resetDefault(targetId) { document.getElementById(targetId).src = PLACEHOLDER; }
     function clearImg(targetId) { document.getElementById(targetId).src = "https://via.placeholder.com/400x200/0b1220/ff9a1f?text=SIN+DATOS+VISUALES"; }
+    
     function updateShipCount() {
         const count = document.querySelectorAll('.ship-card').length;
         document.getElementById('ship-count').innerText = count;
     }
+
+    async function handleLogout() {
+        await _supabase.auth.signOut();
+        window.location.href = "login.html";
+    }
+
+    // Parallax
+    const bg = document.getElementById('bg-parallax');
+    window.addEventListener('mousemove', (e) => {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        bg.style.transform = `translate(${(x - 0.5) * -25}px, ${(y - 0.5) * -25}px)`;
+    });
+
+    // Iniciar
+    initProfile();
 </script>
 
 </body>
