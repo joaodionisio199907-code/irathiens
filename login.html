@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Irathiens | Iniciar Sesión</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary: #ff9a1f;
@@ -50,7 +51,6 @@
             transition: all 0.5s cubic-bezier(0.6, -0.28, 0.735, 0.045);
         }
 
-        /* Animación de cierre tipo monitor antiguo */
         .closing {
             transform: scaleX(2) scaleY(0.005);
             opacity: 0;
@@ -161,7 +161,6 @@
 <body>
 
     <audio id="sfxClose" src="soundexit.mp3"></audio>
-
     <canvas id="starfield"></canvas>
 
     <div class="login-box" id="loginBox">
@@ -169,37 +168,33 @@
         <div class="logo">IRATHIENS_LOGIN</div>
         <form id="loginForm">
             <div class="input-group">
-                <label>Usuario</label>
-                <input type="text" id="username" required placeholder="Nombre de usuario...">
+                <label>Email de Usuario</label>
+                <input type="email" id="username" required placeholder="correo@ejemplo.com">
             </div>
             <div class="input-group">
                 <label>Contraseña</label>
                 <input type="password" id="password" required placeholder="••••••••">
             </div>
             <button type="submit" class="btn-login">Acceder al Sistema</button>
-            <p id="error" class="error-msg">ACCESO DENEGADO: Credenciales Incorrectas, escaneando ADN</p>
+            <p id="error" class="error-msg">ACCESO DENEGADO: Credenciales Incorrectas</p>
         </form>
     </div>
 
     <script>
-        // Función para cerrar con tu audio personalizado
+        // --- CONFIGURACIÓN SUPABASE ---
+        const SB_URL = 'TU_URL_AQUI'; 
+        const SB_KEY = 'TU_KEY_AQUI';
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
         function closeLogin() {
             const sound = document.getElementById('sfxClose');
             const box = document.getElementById('loginBox');
-            
-            // Reproducir sonido
-            sound.play().catch(e => console.log("El navegador bloqueó el audio hasta que interactúes con la página."));
-            
-            // Aplicar animación
+            sound.play().catch(e => console.log("Audio bloqueado"));
             box.classList.add('closing');
-            
-            // Redirigir después de medio segundo
-            setTimeout(() => {
-                window.location.href = "main.html";
-            }, 500);
+            setTimeout(() => { window.location.href = "main.html"; }, 500);
         }
 
-        // --- MOTOR DE ESTRELLAS (SIN CAMBIOS) ---
+        // --- MOTOR DE ESTRELLAS ---
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -253,18 +248,27 @@
         }
         updateAndDraw();
 
-        // --- LÓGICA DE LOGIN ---
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // --- LÓGICA DE LOGIN REAL CON SUPABASE ---
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            if(user === "admin" && pass === "irathien2025") {
-                localStorage.setItem('isLoggedIn', 'true');
-                window.location.href = "index.html"; 
+            const email = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('error');
+
+            const { data, error } = await _supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                errorElement.innerText = "ERROR: " + error.message;
+                errorElement.style.display = 'block';
             } else {
-                document.getElementById('error').style.display = 'block';
+                localStorage.setItem('user_token', data.session.access_token);
+                window.location.href = "index.html"; 
             }
         });
     </script>
 </body>
 </html>
+
