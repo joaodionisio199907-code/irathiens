@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopySpace | Irathiens Marketplace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg: #060b14;
+            --primary: #ff9a1f;
+            --accent: #ffb347;
+            --text: #e6f1ff;
+            --muted: #9fb3c8;
+            --border: rgba(255, 154, 31, 0.2);
+            --glass: rgba(11, 18, 32, 0.85);
+            --card-bg: rgba(11, 18, 32, 0.95);
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s ease; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- FONDO ANIMADO --- */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('img/Irathsky.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4; z-index: -2;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.6; z-index: -1;
+            animation: moveStars 150s linear infinite;
+        }
+
+        @keyframes moveStars {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 1000px; }
+        }
+
+        /* --- NAVBAR --- */
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(6, 11, 20, 0.9);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+            max-width: 1200px; margin: auto; padding: 0.8rem 1rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .logo {
+            font-family: 'Orbitron'; font-size: 1.1rem; text-decoration: none;
+            color: var(--primary); letter-spacing: 1px;
+        }
+
+        nav a {
+            margin-left: 1rem; color: var(--muted);
+            text-decoration: none; font-size: 0.75rem; text-transform: uppercase;
+        }
+
+        /* --- LAYOUT ADAPTATIVO --- */
+        .shop-container {
+            max-width: 1300px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+            padding: 0 15px;
+        }
+
+        /* --- SIDEBAR / FILTROS MÓVILES --- */
+        .sidebar {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .filter-group h4 {
+            font-family: 'Orbitron'; font-size: 0.7rem; color: var(--primary);
+            border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 12px;
+        }
+
+        .filter-btn {
+            display: block; width: 100%; background: none; border: none;
+            color: var(--muted); text-align: left; padding: 8px 0;
+            cursor: pointer; font-size: 0.8rem;
+        }
+
+        /* --- GRID PRODUCTOS --- */
+        .main-shop h2 { font-family: 'Orbitron'; margin: 10px 0 25px 0; font-size: 1.5rem; }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* --- TARJETAS --- */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-img {
+            height: 160px; width: 100%;
+            background-size: cover; background-position: center;
+        }
+
+        .card-content { padding: 15px; flex-grow: 1; }
+        .card-title { font-family: 'Orbitron'; font-size: 1rem; margin: 0 0 10px 0; color: #fff; }
+        .price-tag { font-family: 'Orbitron'; color: var(--accent); font-size: 1.1rem; display: block; margin: 10px 0; }
+
+        .btn-action {
+            width: 100%; background: transparent; border: 1px solid var(--primary);
+            color: var(--primary); padding: 12px; font-family: 'Orbitron';
+            font-size: 0.7rem; cursor: pointer; font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* --- ADAPTACIÓN MÓVIL (MEDIA QUERIES) --- */
+        @media (max-width: 900px) {
+            .shop-container {
+                grid-template-columns: 1fr; /* Una sola columna */
+                margin-top: 10px;
+            }
+
+            .sidebar {
+                border: none;
+                background: transparent;
+                padding: 0;
+                order: -1; /* Poner filtros arriba */
+            }
+
+            .filter-group {
+                display: flex;
+                overflow-x: auto; /* Scroll horizontal de categorías */
+                gap: 10px;
+                padding-bottom: 10px;
+                white-space: nowrap;
+            }
+
+            .filter-group h4 { display: none; } /* Ocultar títulos en móvil para ahorrar espacio */
+
+            .filter-btn {
+                background: var(--glass);
+                border: 1px solid var(--border);
+                padding: 8px 15px;
+                border-radius: 20px;
+                font-size: 0.7rem;
+                display: inline-block;
+                width: auto;
+            }
+
+            .main-shop h2 { font-size: 1.2rem; text-align: center; }
+
+            nav a { margin-left: 0.5rem; font-size: 0.65rem; }
+        }
+
+        .stock-badge {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(0, 255, 136, 0.1); color: #00ff88;
+            padding: 3px 8px; font-size: 0.6rem; border: 1px solid #00ff88;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav">
+        <a href="index.html" class="logo">IRATHIENS</a>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="#" style="color:var(--primary)">Shop</a>
+            <a href="Members.html">Flota</a>
+        </nav>
+    </div>
+</header>
+
+<div class="shop-container">
+    <aside class="sidebar">
+        <div class="filter-group">
+            <button class="filter-btn" style="border-color:var(--primary); color:var(--primary)">Todos</button>
+            <button class="filter-btn">Naves</button>
+            <button class="filter-btn">Armas</button>
+            <button class="filter-btn">Componentes</button>
+            <button class="filter-btn">Materiales</button>
+        </div>
+    </aside>
+
+    <main class="main-shop">
+        <h2>CENTRAL_SUMINISTROS</h2>
+
+        <div class="products-grid">
+            <div class="card">
+                <div class="stock-badge">STOCK: 1</div>
+                <div class="card-img" style="background-image: url('https://media.robertsspaceindustries.com/ebsk3896z1oet/store_slideshow_large.jpg');"></div>
+                <div class="card-content">
+                    <span style="font-size: 0.6rem; color: var(--primary); font-family: 'JetBrains Mono';">NAVE // HEAVY</span>
+                    <h3 class="card-title">Anvil Hurricane</h3>
+                    <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--muted); margin-bottom:10px;">
+                        <span><i class="fas fa-map-marker-alt"></i> Area18</span>
+                        <span>v.2.0</span>
+                    </div>
+                    <span class="price-tag">4.5M aUEC</span>
+                    <button class="btn-action">NEGOCIAR</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="stock-badge" style="color:var(--primary); border-color:var(--primary)">OFERTA</div>
+                <div class="card-img" style="background-image: url('https://starcitizen.tools/images/thumb/4/42/FS-9_LMG_in_Area18_weapon_shop.png/800px-FS-9_LMG_in_Area18_weapon_shop.png');"></div>
+                <div class="card-content">
+                    <span style="font-size: 0.6rem; color: var(--primary); font-family: 'JetBrains Mono';">ARMA // FPS</span>
+                    <h3 class="card-title">FS-9 LMG</h3>
+                    <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--muted); margin-bottom:10px;">
+                        <span><i class="fas fa-map-marker-alt"></i> Grim HEX</span>
+                        <span>Cal. 55</span>
+                    </div>
+                    <span class="price-tag">12.5K aUEC</span>
+                    <button class="btn-action">NEGOCIAR</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="stock-badge">STOCK: 5</div>
+                <div class="card-img" style="background-image: url('https://media.robertsspaceindustries.com/x9n7m89m3b8m3/store_slideshow_large.jpg');"></div>
+                <div class="card-content">
+                    <span style="font-size: 0.6rem; color: var(--primary); font-family: 'JetBrains Mono';">EXTRACCIÓN // ROC</span>
+                    <h3 class="card-title">Greycat ROC</h3>
+                    <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--muted); margin-bottom:10px;">
+                        <span><i class="fas fa-map-marker-alt"></i> New Babbage</span>
+                        <span>Mining Kit</span>
+                    </div>
+                    <span class="price-tag">172K aUEC</span>
+                    <button class="btn-action">NEGOCIAR</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer style="text-align:center; padding: 40px 20px; border-top: 1px solid var(--border); margin-top:50px;">
+    <p style="font-family:'Orbitron'; font-size:0.7rem; color:var(--primary);">IRATHIENS TRADE NETWORK © 2955</p>
+</footer>
+
+</body>
+</html>
