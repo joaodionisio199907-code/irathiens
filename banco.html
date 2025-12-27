@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irathiens | Financial Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #04080f;
+            --primary: #ff9a1f;
+            --primary-dim: rgba(255, 154, 31, 0.1);
+            --accent: #00f2ff;
+            --danger: #ff4444;
+            --success: #00ff88;
+            --glass: rgba(6, 11, 20, 0.8);
+            --border: rgba(255, 154, 31, 0.3);
+            --font-main: 'Inter', sans-serif;
+            --font-hud: 'Orbitron', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; cursor: crosshair; }
+
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            background-image: 
+                linear-gradient(rgba(255, 154, 31, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 154, 31, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            color: #fff;
+            font-family: var(--font-main);
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        /* --- EFECTO SCANLINE --- */
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 4px, 3px 100%;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* --- HEADER PROFESIONAL --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 40px;
+            border-left: 5px solid var(--primary);
+            padding-left: 20px;
+        }
+
+        .header-title h1 {
+            font-family: var(--font-hud);
+            font-size: 2.2rem;
+            margin: 0;
+            letter-spacing: 5px;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-dim);
+        }
+
+        .system-status {
+            text-align: right;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+
+        /* --- GRID PRINCIPAL --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 20px;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Decoración esquinas */
+        .card::after {
+            content: ""; position: absolute; top: -1px; right: -1px;
+            width: 15px; height: 15px; border-top: 2px solid var(--primary); border-right: 2px solid var(--primary);
+        }
+
+        .label {
+            font-family: var(--font-hud);
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+            display: block;
+            letter-spacing: 2px;
+        }
+
+        .big-value {
+            font-family: var(--font-hud);
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        /* --- SECCIÓN DE ACTIVOS / NAVES --- */
+        .assets-list {
+            grid-column: span 1;
+        }
+
+        .asset-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        /* --- DISTRIBUCIÓN POR DIVISIONES --- */
+        .division-bar {
+            height: 12px;
+            background: #111;
+            margin: 15px 0;
+            display: flex;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .div-militar { width: 50%; background: var(--primary); }
+        .div-mineria { width: 30%; background: var(--accent); }
+        .div-logistica { width: 20%; background: #fff; }
+
+        /* --- TABLA DE AUDITORÍA --- */
+        .audit-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .audit-table th {
+            font-family: var(--font-hud);
+            font-size: 0.65rem;
+            text-align: left;
+            padding: 10px;
+            background: var(--primary-dim);
+            color: var(--primary);
+        }
+
+        .audit-table td {
+            padding: 12px 10px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* --- MARKET STATUS --- */
+        .market-ticker {
+            grid-column: span 4;
+            background: #000;
+            padding: 10px;
+            border: 1px solid var(--accent);
+            display: flex;
+            gap: 40px;
+            overflow: hidden;
+        }
+
+        .ticker-item {
+            white-space: nowrap;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+        }
+
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="header-title">
+            <span style="font-family: var(--font-mono); color: var(--accent); font-size: 0.8rem;">SECURE_PROTOCOL: ENABLED</span>
+            <h1>FINANCIAL_COMMAND_CENTER</h1>
+        </div>
+        <div class="system-status">
+            LOCAL_TIME: <span id="clock">00:00:00</span><br>
+            SERVER: MAGNUS_V.4<br>
+            STATUS: <span style="color: var(--success);">ONLINE</span>
+        </div>
+    </header>
+
+    <div class="market-ticker">
+        <div class="ticker-item">QUANTANIUM: <span class="trend-up">88.4 aUEC/unit ▲</span></div>
+        <div class="ticker-item">LATHANITE: <span class="trend-down">32.1 aUEC/unit ▼</span></div>
+        <div class="ticker-item">BEXALITE: <span class="trend-up">112.5 aUEC/unit ▲</span></div>
+        <div class="ticker-item">AGRICIUM: <span class="trend-down">24.0 aUEC/unit ▼</span></div>
+        <div class="ticker-item">FUEL_COST: <span class="trend-up">5.2 aUEC/unit ▲</span></div>
+    </div>
+
+    <br>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <span class="label">CAPITAL_TOTAL_DISPONIBLE</span>
+            <div class="big-value" style="color: var(--primary);">12.750.400 <small style="font-size: 0.8rem;">aUEC</small></div>
+            <div style="font-size: 0.7rem; color: var(--accent); margin-top: 10px;">LIQUIDEZ: 94.2%</div>
+        </div>
+
+        <div class="card" style="grid-column: span 2;">
+            <span class="label">DISTRIBUCIÓN_POR_DEPARTAMENTO</span>
+            <div class="division-bar">
+                <div class="div-militar" title="Defensa/Seguridad"></div>
+                <div class="div-mineria" title="Industria/Minería"></div>
+                <div class="div-logistica" title="Logística/Transporte"></div>
+            </div>
+            <div style="display:flex; justify-content: space-between; font-size: 0.7rem; font-family: var(--font-mono);">
+                <span>● MILITAR (50%)</span>
+                <span>● INDUSTRIAL (30%)</span>
+                <span>● LOGÍSTICA (20%)</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="label">GASTOS_OPERATIVOS_MES</span>
+            <div class="big-value" style="color: var(--danger);">-1.200.000</div>
+            <span style="font-size: 0.6rem; color: #777;">MANTENIMIENTO_FLOTA_INCLUIDO</span>
+        </div>
+
+        <div class="card" style="grid-column: span 3; height: 400px;">
+            <span class="label">HISTORIAL_CRECIMIENTO_DE_RESERVAS</span>
+            <canvas id="mainChart"></canvas>
+        </div>
+
+        <div class="card assets-list">
+            <span class="label">RESERVAS_DE_FLOTA (BANK_OWNED)</span>
+            <div class="asset-item"><span>RSI Perseus</span> <span>2</span></div>
+            <div class="asset-item"><span>Aegis Idris-P</span> <span>1</span></div>
+            <div class="asset-item"><span>Anvil Carrack</span> <span>3</span></div>
+            <div class="asset-item"><span>MISC Orion</span> <span>2</span></div>
+            <div class="asset-item"><span>Drake Caterpillar</span> <span>5</span></div>
+            <div style="margin-top: 15px; text-align: center;">
+                <button style="background: none; border: 1px solid var(--accent); color: var(--accent); font-family: var(--font-hud); font-size: 0.6rem; padding: 5px 10px;">VER_INVENTARIO_COMPLETO</button>
+            </div>
+        </div>
+
+        <div class="card" style="grid-column: span 4;">
+            <span class="label">REGISTRO_DE_TRANSACCIONES_RECIENTES</span>
+            <table class="audit-table">
+                <thead>
+                    <tr>
+                        <th>OP_ID</th>
+                        <th>TIMESTAMP</th>
+                        <th>ENTIDAD_ORIGEN</th>
+                        <th>CONCEPTO</th>
+                        <th>ESTADO</th>
+                        <th>VALOR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#IR-991</td>
+                        <td>2025-12-27 01:22</td>
+                        <td>DIVISION_MILITAR</td>
+                        <td>RE-ARMAMENTO_OPERACIÓN_XENO</td>
+                        <td style="color: var(--success);">APROBADO</td>
+                        <td style="color: var(--danger);">-450.000</td>
+                    </tr>
+                    <tr>
+                        <td>#IR-990</td>
+                        <td>2025-12-26 23:15</td>
+                        <td>MINING_TEAM_01</td>
+                        <td>VENTA_BRUTA_QUANTANIUM</td>
+                        <td style="color: var(--success);">VERIFICADO</td>
+                        <td style="color: var(--success);">+890.200</td>
+                    </tr>
+                    <tr>
+                        <td>#IR-989</td>
+                        <td>2025-12-26 18:05</td>
+                        <td>LOGISTICS_HQ</td>
+                        <td>COMPRA_COMBUSTIBLE_ORION</td>
+                        <td style="color: var(--success);">APROBADO</td>
+                        <td style="color: var(--danger);">-120.000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // RELOJ EN TIEMPO REAL
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toISOString().split('T')[1].split('.')[0];
+    }
+    setInterval(updateClock, 1000);
+
+    // GRÁFICO PROFESIONAL
+    const ctx = document.getElementById('mainChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['SEP', 'OCT', 'NOV', 'DIC-01', 'DIC-15', 'DIC-27'],
+            datasets: [{
+                label: 'Reservas aUEC',
+                data: [5000000, 7200000, 6800000, 9500000, 11000000, 12750400],
+                borderColor: '#ff9a1f',
+                backgroundColor: 'rgba(255, 154, 31, 0.05)',
+                borderWidth: 2,
+                pointBackgroundColor: '#00f2ff',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#555' } },
+                x: { grid: { display: false }, ticks: { color: '#555' } }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
