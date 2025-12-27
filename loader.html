@@ -3,137 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciando Salto Quántico | Irathiens</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <title>Irathiens | Organización Star Citizen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
+            --bg: #060b14;
+            --bg-soft: #0b1220;
             --primary: #ff9a1f;
+            --accent: #ffb347;
+            --text: #e6f1ff;
+            --muted: #9fb3c8;
+            --border: rgba(255, 154, 31, 0.2);
+            --glass: rgba(11, 18, 32, 0.85);
+            --shadow: rgba(255, 154, 31, 0.15);
             --hull: #060b14;
-            --energy: #00f2ff;
         }
 
-        body, html {
+        * { box-sizing: border-box; transition: all 0.3s ease; }
+
+        body {
             margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--hull);
-            color: white;
-            font-family: 'Orbitron', sans-serif;
-            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- ESTILOS DEL LOADER (MODO SALTO) --- */
+        #loader-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--hull);
+            z-index: 9999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
-        canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
+        #quantumDrive { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
-        /* --- INTERFAZ HUD --- */
-        .loader-container {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            width: 300px;
-        }
+        .loader-container { position: relative; z-index: 10; text-align: center; width: 300px; }
+        .status-text { font-family: 'Orbitron'; font-size: 0.8rem; letter-spacing: 3px; color: var(--primary); margin-bottom: 10px; text-transform: uppercase; text-shadow: 0 0 10px var(--primary); }
+        .progress-frame { border: 1px solid rgba(255, 154, 31, 0.3); padding: 4px; position: relative; background: rgba(0, 0, 0, 0.5); }
+        .progress-bar { height: 8px; width: 0%; background: linear-gradient(90deg, var(--primary), #fff); box-shadow: 0 0 15px var(--primary); }
+        .percentage { margin-top: 10px; font-size: 1.2rem; color: #fff; font-family: 'Orbitron'; }
+        
+        #flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 10000; opacity: 0; pointer-events: none; }
+        .white-out { animation: flashAnim 1.2s forwards; }
+        @keyframes flashAnim { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+        .shake { animation: shakeAnim 0.1s infinite; }
+        @keyframes shakeAnim { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -2px); } 100% { transform: translate(1px, 2px); } }
 
-        .status-text {
-            font-size: 0.8rem;
-            letter-spacing: 3px;
-            color: var(--primary);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px var(--primary);
-        }
-
-        /* --- BARRA DE CARGA CHULA --- */
-        .progress-frame {
-            border: 1px solid rgba(255, 154, 31, 0.3);
-            padding: 4px;
-            position: relative;
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .progress-bar {
-            height: 8px;
-            width: 0%;
-            background: linear-gradient(90deg, var(--primary), #fff);
-            box-shadow: 0 0 15px var(--primary);
-            transition: width 0.1s ease;
-        }
-
-        .percentage {
-            margin-top: 10px;
-            font-size: 1.2rem;
-            color: #fff;
-        }
-
-        /* --- EFECTO EXPLOSIÓN BLANCA --- */
-        #flash {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 100;
+        /* --- ESTILOS DEL CONTENIDO PRINCIPAL (OCULTO AL INICIO) --- */
+        #main-content {
             opacity: 0;
-            pointer-events: none;
+            display: none;
+            transition: opacity 1s ease-in;
         }
 
-        .white-out {
-            animation: flashAnim 1.2s forwards;
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('img/Irathsky.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4;
+            z-index: -2;
         }
 
-        @keyframes flashAnim {
-            0% { opacity: 0; }
-            20% { opacity: 1; }
-            100% { opacity: 1; }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.6;
+            z-index: -1;
+            animation: moveStars 150s linear infinite;
         }
 
-        .shake {
-            animation: shake 0.1s infinite;
-        }
+        @keyframes moveStars { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
 
-        @keyframes shake {
-            0% { transform: translate(1px, 1px); }
-            50% { transform: translate(-1px, -2px); }
-            100% { transform: translate(1px, 2px); }
-        }
+        header { position: sticky; top: 0; z-index: 100; background: rgba(6, 11, 20, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); }
+        .nav { max-width: 1200px; margin: auto; padding: 0.8rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+        .logo { display: flex; align-items: center; gap: 0.8rem; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; text-decoration: none; }
+        .logo-text { color: var(--primary); text-shadow: 0 0 10px var(--shadow); }
+        .logo-img { height: 32px; width: auto; filter: drop-shadow(0 0 5px var(--primary)); }
+        nav a { margin-left: 1.5rem; color: var(--muted); text-decoration: none; font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        nav a:hover { color: var(--primary); }
+        .btn-login { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 8px 16px; border-radius: 4px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; margin-left: 15px; }
+
+        .hero { max-width: 1200px; margin: 80px auto; padding: 0 20px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: center; }
+        .hero-content h1 { font-family: 'Orbitron', sans-serif; font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; color: #fff; text-shadow: 0 0 20px rgba(255, 154, 31, 0.5); }
+        .hero-content p { font-size: 1.1rem; color: var(--text); line-height: 1.7; margin-bottom: 30px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; backdrop-filter: blur(5px); }
+        .btn-main { display: inline-block; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #000; padding: 15px 35px; border-radius: 8px; font-family: 'Orbitron'; font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+
+        .status-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 30px; backdrop-filter: blur(10px); }
+        .status-line { margin: 15px 0; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; }
+
+        .info-grid { max-width: 1200px; margin: 80px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--glass); border: 1px solid var(--border); padding: 30px; border-radius: 12px; backdrop-filter: blur(10px); }
+
+        footer { margin-top: 100px; padding: 40px 20px; text-align: center; background: rgba(6, 11, 20, 0.9); border-top: 1px solid var(--border); color: var(--muted); }
     </style>
 </head>
 <body>
 
-    <div id="flash"></div>
-    <canvas id="quantumDrive"></canvas>
-
-    <div class="loader-container" id="hud">
-        <div class="status-text" id="status">Iniciando Motor Cuántico...</div>
-        <div class="progress-frame">
-            <div class="progress-bar" id="bar"></div>
+    <div id="loader-wrapper">
+        <div id="flash"></div>
+        <canvas id="quantumDrive"></canvas>
+        <div class="loader-container" id="hud">
+            <div class="status-text" id="status">Iniciando Motor Cuántico...</div>
+            <div class="progress-frame">
+                <div class="progress-bar" id="bar"></div>
+            </div>
+            <div class="percentage" id="percent">0%</div>
         </div>
-        <div class="percentage" id="percent">0%</div>
+    </div>
+
+    <div id="main-content">
+        <header>
+            <div class="nav">
+                <a href="#" class="logo">
+                    <img src="logo.png" alt="Logo" class="logo-img"> 
+                    <span class="logo-text">IRATHIENS</span>
+                </a>
+                <nav>
+                    <a href="perfil.html">Perfil</a>
+                    <a href="#">Eventos</a>
+                    <a href="#">Miembros</a>
+                    <a href="https://discord.gg/Bu7sWDyHkc" target="_blank">Discord</a>
+                    <button class="btn-login" onclick="window.location.href='login.html'">LOGIN</button>
+                </nav>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="hero-content">
+                <h1>FORJANDO ALIANZAS EN EL VERSO</h1>
+                <p>
+                    Irathiens es una organización de Star Citizen centrada en la cooperación,
+                    la estrategia y el crecimiento conjunto. Operamos con visión a largo plazo,
+                    disciplina y compromiso con nuestros aliados.
+                </p>
+                <a class="btn-main" href="https://robertsspaceindustries.com/en/orgs/IRATH" target="_blank">Solicitar Ingreso</a>
+            </div>
+
+            <div class="status-panel">
+                <h3 style="font-family: 'Orbitron'; color: var(--primary); margin-top:0;">ORGANIZATION_STATUS</h3>
+                <div class="status-line">
+                    <span>OPERACIONES</span>
+                    <span style="color: #00ff88; font-weight: bold;">✔ ACTIVA</span>
+                </div>
+                <div class="status-line">
+                    <span>COORDINACIÓN</span>
+                    <span>SISTEMA INTEGRADO</span>
+                </div>
+                <div class="status-line">
+                    <span>REGIÓN</span>
+                    <span>ESPAÑA / EU</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="info-grid">
+            <div class="info-card">
+                <h3 style="font-family: 'Orbitron'; color: var(--primary);">EVENTOS</h3>
+                <p>Operaciones conjuntas, entrenamientos tácticos y eventos multitudinarios organizados de forma regular para todos nuestros miembros.</p>
+            </div>
+            <div class="info-card">
+                <h3 style="font-family: 'Orbitron'; color: var(--primary);">DIPLOMACIA</h3>
+                <p>Sistema avanzado de embajada para la gestión de alianzas estratégicas, pactos de no agresión y cooperación inter-org.</p>
+            </div>
+            <div class="info-card">
+                <h3 style="font-family: 'Orbitron'; color: var(--primary);">MIEMBROS</h3>
+                <p>Estructura jerárquica clara, rangos definidos por méritos y comunicación constante a través de nuestros canales oficiales.</p>
+            </div>
+        </section>
+
+        <footer>
+            <div>© 2025 IRATHIENS ORGANIZATION</div>
+            <div style="font-family: 'Orbitron'; color: var(--primary); font-size: 0.8rem; margin-top: 10px;">
+                ✨ IRATHIEN NO ES SOLO UNA ORGANIZACIÓN... ES UNA HERMANDAD ENTRE LAS ESTRELLAS.
+            </div>
+        </footer>
     </div>
 
     <script>
+        // LÓGICA DEL MOTOR DE ESTRELLAS
         const canvas = document.getElementById('quantumDrive');
         const ctx = canvas.getContext('2d');
         const bar = document.getElementById('bar');
         const percent = document.getElementById('percent');
         const status = document.getElementById('status');
-        const hud = document.getElementById('hud');
         const flash = document.getElementById('flash');
+        const loaderWrapper = document.getElementById('loader-wrapper');
+        const mainContent = document.getElementById('main-content');
 
         let width, height, stars = [];
         let progress = 0;
-        let speed = 2; // Velocidad inicial suave
+        let speed = 2;
         let isJumping = false;
 
         function init() {
@@ -146,8 +219,7 @@
                 stars.push({
                     x: Math.random() * width - width / 2,
                     y: Math.random() * height - height / 2,
-                    z: Math.random() * width,
-                    o: Math.random()
+                    z: Math.random() * width
                 });
             }
         }
@@ -156,43 +228,35 @@
         init();
 
         function draw() {
-            ctx.fillStyle = "rgba(6, 11, 20, 0.2)"; // Estela de movimiento
+            ctx.fillStyle = "rgba(6, 11, 20, 0.2)";
             ctx.fillRect(0, 0, width, height);
-            
             ctx.save();
             ctx.translate(width / 2, height / 2);
-
             stars.forEach(s => {
                 s.z -= speed;
                 if (s.z <= 0) s.z = width;
-
                 let x = s.x * (width / s.z);
                 let y = s.y * (width / s.z);
                 let size = (1 - s.z / width) * 2;
-                
-                // Efecto estiramiento según velocidad
                 let stretch = isJumping ? speed * 0.5 : speed * 0.1;
-
                 ctx.beginPath();
                 ctx.strokeStyle = `rgba(255, 255, 255, ${1 - s.z / width})`;
                 ctx.lineWidth = size;
                 ctx.moveTo(x, y);
-                ctx.lineTo(x, y + stretch); // Estiramiento hacia el centro
+                ctx.lineTo(x, y + stretch);
                 ctx.stroke();
             });
-
             ctx.restore();
             requestAnimationFrame(draw);
         }
-
         draw();
 
-        // Lógica de carga
+        // LÓGICA DE CARGA Y TRANSICIÓN
         const loadingInterval = setInterval(() => {
-            progress += Math.random() * 2;
+            progress += Math.random() * 2.5;
             
             if (progress >= 70 && !isJumping) {
-                speed = 40; // Acelera antes del salto
+                speed = 45;
                 status.innerText = "CALIBRANDO SALTO...";
                 status.style.color = "#00f2ff";
             }
@@ -209,20 +273,24 @@
 
         function executeJump() {
             isJumping = true;
-            speed = 150; // Velocidad extrema
+            speed = 160;
             status.innerText = "¡SALTO INMINENTE!";
-            status.style.color = "#fff";
             document.body.classList.add('shake');
 
             setTimeout(() => {
                 flash.classList.add('white-out');
+                
+                // OCULTAR LOADER Y MOSTRAR WEB JUSTO EN EL FLASH
                 setTimeout(() => {
-                    // AQUÍ PONES LA PÁGINA A LA QUE QUIERES IR
-                    window.location.href = "index.html"; 
-                }, 800);
+                    loaderWrapper.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    setTimeout(() => {
+                        mainContent.style.opacity = '1';
+                        document.body.classList.remove('shake');
+                    }, 50);
+                }, 400); // Se oculta cuando el flash es más brillante
             }, 1000);
         }
     </script>
 </body>
-
 </html>
