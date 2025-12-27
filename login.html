@@ -12,150 +12,78 @@
             --border: rgba(0, 242, 255, 0.3);
             --glass: rgba(13, 22, 31, 0.85);
             --danger-led: #ff0000;
+            --hologram: rgba(0, 242, 255, 0.1);
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            font-family: 'Rajdhani', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #000; font-family: 'Rajdhani', sans-serif;
+            display: flex; align-items: center; justify-content: center;
             overflow: hidden;
         }
 
-        #starfield {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
+        #starfield { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
 
-        .login-box {
-            position: relative;
-            background: var(--glass);
-            padding: 40px;
-            border: 1px solid var(--border);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            backdrop-filter: blur(10px);
+        .login-box, .register-box {
+            position: relative; background: var(--glass); padding: 40px;
+            border: 1px solid var(--border); width: 100%; max-width: 400px;
+            text-align: center; backdrop-filter: blur(10px);
             box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
             clip-path: polygon(0 0, 100% 0, 100% 88%, 88% 100%, 0 100%);
-            z-index: 10;
-            transition: all 0.5s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+            z-index: 10; transition: all 0.5s cubic-bezier(0.6, -0.28, 0.735, 0.045);
         }
 
-        .closing {
-            transform: scaleX(2) scaleY(0.005);
-            opacity: 0;
-            filter: brightness(10) blur(1px);
-        }
+        /* Clase para ocultar suavemente */
+        .hidden { display: none; opacity: 0; transform: scale(0.8) rotateX(20deg); }
 
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 11;
-        }
-
-        .close-btn::before, .close-btn::after {
-            content: '';
-            position: absolute;
-            width: 2px;
-            height: 18px;
-            background: var(--danger-led);
-            box-shadow: 0 0 10px var(--danger-led), 0 0 20px var(--danger-led);
-            transition: 0.3s;
-        }
-
-        .close-btn::before { transform: rotate(45deg); }
-        .close-btn::after { transform: rotate(-45deg); }
-
-        .close-btn:hover::before, .close-btn:hover::after {
-            background: #fff;
-            box-shadow: 0 0 15px #fff;
-        }
+        .closing { transform: scaleX(2) scaleY(0.005); opacity: 0; filter: brightness(10) blur(1px); }
 
         .logo {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--primary);
-            font-size: 1.6rem;
-            margin-bottom: 30px;
-            letter-spacing: 4px;
+            font-family: 'Orbitron', sans-serif; color: var(--primary);
+            font-size: 1.6rem; margin-bottom: 30px; letter-spacing: 4px;
             text-shadow: 0 0 15px var(--primary);
         }
 
-        .input-group {
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
+        .input-group { margin-bottom: 25px; text-align: left; }
         label {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--primary);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 1px;
+            display: block; font-size: 0.75rem; color: var(--primary);
+            margin-bottom: 8px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;
         }
 
         input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--border);
-            color: white;
-            font-family: 'Rajdhani';
-            font-size: 1rem;
-            outline: none;
-            transition: 0.3s;
+            width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border); color: white;
+            font-family: 'Rajdhani'; font-size: 1rem; outline: none; transition: 0.3s;
         }
 
-        input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
-        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
 
         .btn-login {
-            width: 100%;
-            padding: 15px;
-            background: var(--primary);
-            color: #000;
-            border: none;
-            font-family: 'Orbitron';
-            font-weight: bold;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.4s;
-            text-transform: uppercase;
+            width: 100%; padding: 15px; background: var(--primary);
+            color: #000; border: none; font-family: 'Orbitron';
+            font-weight: bold; font-size: 0.9rem; cursor: pointer;
+            transition: 0.4s; text-transform: uppercase;
         }
 
-        .btn-login:hover {
-            letter-spacing: 2px;
-            box-shadow: 0 0 25px var(--primary);
-            transform: scale(1.02);
-        }
+        .btn-login:hover { letter-spacing: 2px; box-shadow: 0 0 25px var(--primary); transform: scale(1.02); }
 
-        .error-msg {
-            color: #ff4444;
-            font-size: 0.85rem;
-            margin-top: 15px;
-            display: none;
-            font-weight: bold;
+        /* Botón de cambio de modo */
+        .switch-mode {
+            margin-top: 20px; color: var(--border); font-size: 0.8rem;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+            transition: 0.3s;
         }
+        .switch-mode:hover { color: var(--primary); text-shadow: 0 0 5px var(--primary); }
+
+        .error-msg { color: #ff4444; font-size: 0.85rem; margin-top: 15px; display: none; font-weight: bold; }
+        
+        /* Efecto Escáner para el Registro */
+        .hologram-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: var(--primary); opacity: 0.5;
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
     </style>
 </head>
 <body>
@@ -164,7 +92,6 @@
     <canvas id="starfield"></canvas>
 
     <div class="login-box" id="loginBox">
-        <div class="close-btn" onclick="closeLogin()"></div>
         <div class="logo">IRATHIENS_LOGIN</div>
         <form id="loginForm">
             <div class="input-group">
@@ -176,30 +103,89 @@
                 <input type="password" id="password" required placeholder="••••••••">
             </div>
             <button type="submit" class="btn-login">Acceder al Sistema</button>
-            <p id="error" class="error-msg">ACCESO DENEGADO: Credenciales Incorrectas</p>
+            <p id="error" class="error-msg">ACCESO DENEGADO</p>
         </form>
+        <div class="switch-mode" onclick="toggleForm()">¿No tienes cuenta? Registrar Ciudadano</div>
+    </div>
+
+    <div class="register-box hidden" id="registerBox">
+        <div class="hologram-line"></div>
+        <div class="logo" style="color: #00f2ff; text-shadow: 0 0 15px #00f2ff;">NUEVO_REGISTRO</div>
+        <form id="registerForm">
+            <div class="input-group">
+                <label style="color: #00f2ff;">Email de Alistamiento</label>
+                <input type="email" id="regEmail" required placeholder="tu@correo.com" style="border-color: #00f2ff;">
+            </div>
+            <div class="input-group">
+                <label style="color: #00f2ff;">Establecer Contraseña</label>
+                <input type="password" id="regPassword" required placeholder="Mínimo 6 caracteres" style="border-color: #00f2ff;">
+            </div>
+            <button type="submit" class="btn-login" style="background: #00f2ff;">Confirmar Alistamiento</button>
+            <p id="regError" class="error-msg">ERROR EN REGISTRO</p>
+        </form>
+        <div class="switch-mode" onclick="toggleForm()">Volver al Terminal de Acceso</div>
     </div>
 
     <script>
-        // --- CONFIGURACIÓN SUPABASE ---
         const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co'; 
         const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        function closeLogin() {
-            const sound = document.getElementById('sfxClose');
-            const box = document.getElementById('loginBox');
-            sound.play().catch(e => console.log("Audio bloqueado"));
-            box.classList.add('closing');
-            setTimeout(() => { window.location.href = "main.html"; }, 500);
+        // Intercambiar entre Login y Registro
+        function toggleForm() {
+            const login = document.getElementById('loginBox');
+            const register = document.getElementById('registerBox');
+            login.classList.toggle('hidden');
+            register.classList.toggle('hidden');
         }
 
-        // --- MOTOR DE ESTRELLAS ---
+        // --- LÓGICA DE REGISTRO ---
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const errorElement = document.getElementById('regError');
+
+            const { data, error } = await _supabase.auth.signUp({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                errorElement.innerText = "FALLO: " + error.message;
+                errorElement.style.display = 'block';
+            } else {
+                alert("CIUDADANO REGISTRADO. Revisa tu email para confirmar o intenta loguearte.");
+                toggleForm();
+            }
+        });
+
+        // --- LÓGICA DE LOGIN ---
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('error');
+
+            const { data, error } = await _supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                errorElement.innerText = "ACCESO DENEGADO: " + error.message;
+                errorElement.style.display = 'block';
+            } else {
+                window.location.href = "perfil.html"; 
+            }
+        });
+
+        // --- MOTOR DE ESTRELLAS (TU CÓDIGO) ---
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         let stars = [];
         const numStars = 500;
-        let speed = 20;
+        let speed = 2;
 
         function initStars() {
             stars = [];
@@ -222,7 +208,7 @@
         resize();
 
         function updateAndDraw() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.2)"; 
+            ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.save();
             ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -236,7 +222,6 @@
                 ctx.beginPath();
                 ctx.strokeStyle = `rgba(0, 242, 255, ${1 - s.z / canvas.width})`;
                 ctx.lineWidth = size;
-                ctx.lineCap = 'round';
                 const prevX = s.x * (canvas.width / (s.z + speed));
                 const prevY = s.y * (canvas.width / (s.z + speed));
                 ctx.moveTo(x, y);
@@ -247,30 +232,10 @@
             requestAnimationFrame(updateAndDraw);
         }
         updateAndDraw();
-
-        // --- LÓGICA DE LOGIN REAL CON SUPABASE ---
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorElement = document.getElementById('error');
-
-            const { data, error } = await _supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
-
-            if (error) {
-                errorElement.innerText = "ERROR: " + error.message;
-                errorElement.style.display = 'block';
-            } else {
-                localStorage.setItem('user_token', data.session.access_token);
-                window.location.href = "indexperfil.html"; 
-            }
-        });
     </script>
 </body>
 </html>
+
 
 
 
