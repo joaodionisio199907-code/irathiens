@@ -10,6 +10,7 @@
             --primary: #ff9a1f;
             --border: rgba(0, 242, 255, 0.3);
             --glass: rgba(13, 22, 31, 0.85);
+            --danger-led: #ff0000;
         }
 
         body, html {
@@ -25,7 +26,6 @@
             overflow: hidden;
         }
 
-        /* Canvas para las estrellas */
         #starfield {
             position: fixed;
             top: 0;
@@ -45,9 +45,47 @@
             text-align: center;
             backdrop-filter: blur(10px);
             box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
-            /* Corte diagonal estilo SC */
             clip-path: polygon(0 0, 100% 0, 100% 88%, 88% 100%, 0 100%);
             z-index: 10;
+            transition: all 0.5s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+        }
+
+        /* Animación de cierre tipo monitor antiguo */
+        .closing {
+            transform: scaleX(2) scaleY(0.005);
+            opacity: 0;
+            filter: brightness(10) blur(1px);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 11;
+        }
+
+        .close-btn::before, .close-btn::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 18px;
+            background: var(--danger-led);
+            box-shadow: 0 0 10px var(--danger-led), 0 0 20px var(--danger-led);
+            transition: 0.3s;
+        }
+
+        .close-btn::before { transform: rotate(45deg); }
+        .close-btn::after { transform: rotate(-45deg); }
+
+        .close-btn:hover::before, .close-btn:hover::after {
+            background: #fff;
+            box-shadow: 0 0 15px #fff;
         }
 
         .logo {
@@ -122,9 +160,12 @@
 </head>
 <body>
 
+    <audio id="sfxClose" src="soundexit.mp3"></audio>
+
     <canvas id="starfield"></canvas>
 
-    <div class="login-box">
+    <div class="login-box" id="loginBox">
+        <div class="close-btn" onclick="closeLogin()"></div>
         <div class="logo">IRATHIENS_LOGIN</div>
         <form id="loginForm">
             <div class="input-group">
@@ -141,13 +182,29 @@
     </div>
 
     <script>
-        // --- MOTOR DE HIPERESPACIO ---
+        // Función para cerrar con tu audio personalizado
+        function closeLogin() {
+            const sound = document.getElementById('sfxClose');
+            const box = document.getElementById('loginBox');
+            
+            // Reproducir sonido
+            sound.play().catch(e => console.log("El navegador bloqueó el audio hasta que interactúes con la página."));
+            
+            // Aplicar animación
+            box.classList.add('closing');
+            
+            // Redirigir después de medio segundo
+            setTimeout(() => {
+                window.location.href = "main.html";
+            }, 500);
+        }
+
+        // --- MOTOR DE ESTRELLAS (SIN CAMBIOS) ---
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
-
         let stars = [];
         const numStars = 500;
-        let speed = 20; // Ajusta esto para más o menos velocidad
+        let speed = 20;
 
         function initStars() {
             stars = [];
@@ -170,57 +227,37 @@
         resize();
 
         function updateAndDraw() {
-            // Limpieza con estela (Motion Blur)
             ctx.fillStyle = "rgba(0, 0, 0, 0.2)"; 
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
             ctx.save();
             ctx.translate(canvas.width / 2, canvas.height / 2);
-
             for (let i = 0; i < numStars; i++) {
                 let s = stars[i];
-                
-                // Movimiento hacia adelante
                 s.z -= speed;
-
-                // Si la estrella pasa la cámara, la mandamos al fondo
                 if (s.z <= 0) s.z = canvas.width;
-
-                // Proyección 3D a 2D
                 const x = s.x * (canvas.width / s.z);
                 const y = s.y * (canvas.width / s.z);
-                
-                // Calculamos el tamaño y longitud según la cercanía
                 const size = (1 - s.z / canvas.width) * 3;
-                
-                // Dibujar la estrella/línea
                 ctx.beginPath();
                 ctx.strokeStyle = `rgba(0, 242, 255, ${1 - s.z / canvas.width})`;
                 ctx.lineWidth = size;
                 ctx.lineCap = 'round';
-                
-                // Punto anterior para crear la línea de velocidad
                 const prevX = s.x * (canvas.width / (s.z + speed));
                 const prevY = s.y * (canvas.width / (s.z + speed));
-
                 ctx.moveTo(x, y);
                 ctx.lineTo(prevX, prevY);
                 ctx.stroke();
             }
-
             ctx.restore();
             requestAnimationFrame(updateAndDraw);
         }
-
         updateAndDraw();
 
-        // --- LOGIN LOGIC ---
+        // --- LÓGICA DE LOGIN ---
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
-
-            // Cambia estos valores por los que quieras
             if(user === "admin" && pass === "irathien2025") {
                 localStorage.setItem('isLoggedIn', 'true');
                 window.location.href = "index.html"; 
