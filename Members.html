@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irathiens | Personnel Manifest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #04080f;
+            --primary: #ff9a1f;
+            --accent: #00f2ff;
+            --glass: rgba(6, 11, 20, 0.95);
+            --border: rgba(255, 154, 31, 0.3);
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: #fff;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at center, #0b1630 0%, #04080f 100%);
+            overflow-x: hidden;
+        }
+
+        /* --- NAVBAR --- */
+        header.main-nav {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(4, 8, 15, 0.95);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1200px; margin: auto;
+            padding: 0.8rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .logo { display: flex; align-items: center; gap: 0.8rem; font-family: 'Orbitron', sans-serif; text-decoration: none; }
+        .logo-text { color: var(--primary); font-size: 1.2rem; letter-spacing: 2px; }
+        
+        nav a { margin-left: 1.5rem; color: #9fb3c8; text-decoration: none; font-weight: 500; font-size: 0.85rem; text-transform: uppercase; }
+        nav a:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        /* --- HEADER --- */
+        .manifest-header { text-align: center; padding: 60px 20px 40px; }
+        .manifest-header h1 { font-family: 'Orbitron'; font-size: 2.2rem; letter-spacing: 8px; color: #fff; margin: 0; }
+        .system-line { height: 2px; width: 60px; background: var(--primary); margin: 20px auto; box-shadow: 0 0 15px var(--primary); }
+
+        /* --- GRID DE CARTAS --- */
+        .personnel-grid {
+            max-width: 1200px; margin: 0 auto 100px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px; padding: 0 20px;
+        }
+
+        .holo-card {
+            background: var(--glass); border-radius: 15px;
+            padding: 1px; overflow: hidden; position: relative;
+        }
+
+        .holo-card::before {
+            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, var(--primary), transparent);
+            animation: rotateBorder 5s linear infinite;
+        }
+
+        @keyframes rotateBorder { 100% { transform: rotate(360deg); } }
+
+        .card-inner {
+            background: #060b14; border-radius: 14px; padding: 25px;
+            position: relative; z-index: 1; height: 100%;
+        }
+
+        .photo-box {
+            width: 100%; height: 220px; background: #000; overflow: hidden;
+            border: 1px solid var(--border); margin-bottom: 20px; position: relative;
+        }
+
+        .photo-box img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: sepia(100%) saturate(200%) hue-rotate(330deg);
+            opacity: 0.8;
+        }
+
+        .scanlines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.4) 2px);
+            pointer-events: none;
+        }
+
+        .member-role { font-family: 'JetBrains Mono'; color: var(--accent); font-size: 0.7rem; letter-spacing: 2px; }
+        .member-name { font-family: 'Orbitron'; font-size: 1.5rem; margin: 10px 0; color: #fff; }
+
+        .btn-expediente {
+            width: 100%; background: transparent; border: 1px solid var(--primary);
+            color: var(--primary); font-family: 'Orbitron'; padding: 12px;
+            cursor: pointer; font-size: 0.75rem; letter-spacing: 2px; margin-top: 15px;
+        }
+
+        .btn-expediente:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary); }
+
+        /* --- VENTANA EMERGENTE (ESTILO PC/OS) --- */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+
+        .window-terminal {
+            background: #0b1220; border: 2px solid var(--primary);
+            width: 450px; position: relative;
+            transform: scale(0); /* Estado inicial para animación */
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .overlay.active { display: flex; }
+        .overlay.active .window-terminal { transform: scale(1); }
+
+        .window-header {
+            background: var(--primary); color: #000; padding: 8px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold;
+        }
+
+        .window-body { padding: 30px; }
+
+        .data-row { margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+        .data-label { display: block; font-family: 'Orbitron'; font-size: 0.6rem; color: var(--primary); margin-bottom: 5px; }
+        .data-value { font-family: 'JetBrains Mono'; font-size: 1rem; color: #fff; }
+
+        /* Social Links */
+        .social-box { display: flex; gap: 15px; margin-top: 10px; }
+        .social-link {
+            color: #fff; text-decoration: none; font-size: 1.2rem;
+            width: 40px; height: 40px; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center; border-radius: 5px;
+        }
+        .social-link:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,242,255,0.05); }
+
+        .btn-rsi {
+            display: block; width: 100%; text-align: center;
+            background: rgba(255,154,31,0.1); border: 1px solid var(--primary);
+            color: var(--primary); padding: 10px; text-decoration: none;
+            font-family: 'Orbitron'; font-size: 0.7rem; margin-top: 20px;
+        }
+        .btn-rsi:hover { background: var(--primary); color: #000; }
+
+        .close-btn { cursor: pointer; font-size: 1.2rem; }
+
+    </style>
+</head>
+<body>
+
+<header class="main-nav">
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <span class="logo-text">IRATHIENS</span>
+        </a>
+        <nav>
+            <a href="perfil.html">Perfil</a>
+            <a href="banco.html">Banco</a>
+            <a href="miembros.html" style="color: var(--primary);">Miembros</a>
+            <a href="https://discord.gg/Bu7sWDyHkc" target="_blank">Discord</a>
+        </nav>
+    </div>
+</header>
+
+<div class="manifest-header">
+    <h1>EXPEDIENTES_DE_RED</h1>
+    <div class="system-line"></div>
+</div>
+
+<div class="personnel-grid">
+    <div class="holo-card">
+        <div class="card-inner">
+            <div class="photo-box">
+                <div class="scanlines"></div>
+                <img src="https://via.placeholder.com/400x300/060b14/ff9a1f?text=SGT_KAEL" alt="Member">
+            </div>
+            <span class="member-role">ESTRATEGA / LÍDER</span>
+            <h2 class="member-name">SGT_KAEL</h2>
+            <button class="btn-expediente" onclick="openWindow('SGT_KAEL')">ABRIR EXPEDIENTE</button>
+        </div>
+    </div>
+
+    <div class="holo-card">
+        <div class="card-inner">
+            <div class="photo-box">
+                <div class="scanlines"></div>
+                <img src="https://via.placeholder.com/400x300/060b14/ff9a1f?text=STARWALKER" alt="Member">
+            </div>
+            <span class="member-role">PILOTO DE COMBATE</span>
+            <h2 class="member-name">STARWALKER_88</h2>
+            <button class="btn-expediente" onclick="openWindow('STARWALKER_88')">ABRIR EXPEDIENTE</button>
+        </div>
+    </div>
+</div>
+
+<div class="overlay" id="overlayWindow">
+    <div class="window-terminal">
+        <div class="window-header">
+            <span>FILE_VIEWER.EXE</span>
+            <span class="close-btn" onclick="closeWindow()">×</span>
+        </div>
+        <div class="window-body">
+            <div class="data-row">
+                <span class="data-label">IDENTIDAD_CONFIRMADA</span>
+                <span class="data-value" id="winName">NOMBRE_AQUÍ</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">ROL_OPERATIVO</span>
+                <span class="data-value" id="winRole">ROL_AQUÍ</span>
+            </div>
+            
+            <span class="data-label">CANALES_DE_TRANSMISIÓN</span>
+            <div class="social-box">
+                <a href="#" id="winTwitch" target="_blank" class="social-link" title="Twitch"><i class="fab fa-twitch"></i></a>
+                <a href="#" id="winDiscord" target="_blank" class="social-link" title="Discord"><i class="fab fa-discord"></i></a>
+            </div>
+
+            <a href="#" id="winRSI" target="_blank" class="btn-rsi">VER PERFIL CIUDADANO (RSI)</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // BASE DE DATOS DE MIEMBROS
+    const members = {
+        "SGT_KAEL": {
+            role: "COMMANDER - SECTOR 01",
+            rsi: "https://robertsspaceindustries.com/citizens/SGT_KAEL",
+            twitch: "https://twitch.tv/sgt_kael",
+            discord: "https://discord.gg/Bu7sWDyHkc"
+        },
+        "STARWALKER_88": {
+            role: "INTERCEPTOR PILOT",
+            rsi: "https://robertsspaceindustries.com/citizens/STARWALKER_88",
+            twitch: "https://twitch.tv/starwalker88",
+            discord: "https://discord.gg/Bu7sWDyHkc"
+        }
+    };
+
+    function openWindow(id) {
+        const data = members[id];
+        if(!data) return;
+
+        // Inyectar datos
+        document.getElementById('winName').innerText = id;
+        document.getElementById('winRole').innerText = data.role;
+        document.getElementById('winRSI').href = data.rsi;
+        document.getElementById('winTwitch').href = data.twitch;
+        document.getElementById('winDiscord').href = data.discord;
+
+        // Mostrar con animación
+        document.getElementById('overlayWindow').classList.add('active');
+    }
+
+    function closeWindow() {
+        document.getElementById('overlayWindow').classList.remove('active');
+    }
+
+    // Cerrar si se hace clic en el fondo
+    window.onclick = (e) => {
+        if(e.target.id === 'overlayWindow') closeWindow();
+    }
+</script>
+
+</body>
+</html>
