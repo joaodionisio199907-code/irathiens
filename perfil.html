@@ -413,6 +413,211 @@
         document.getElementById('ship-count').innerText = count;
     }
 </script>
+<style>
+    /* --- BURBUJA DE CHAT --- */
+    .chat-bubble {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 154, 31, 0.1);
+        border: 2px solid var(--primary);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 3000;
+        box-shadow: 0 0 15px var(--primary);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
 
+    .chat-bubble:hover {
+        transform: scale(1.1) rotate(90deg);
+        box-shadow: 0 0 25px var(--primary);
+    }
+
+    .chat-bubble i {
+        color: var(--primary);
+        font-size: 1.5rem;
+    }
+
+    /* --- VENTANA DE CHAT --- */
+    .chat-window {
+        position: fixed;
+        bottom: 90px;
+        left: 20px;
+        width: 350px;
+        height: 450px;
+        background: rgba(6, 11, 20, 0.95);
+        border: 1px solid var(--primary);
+        backdrop-filter: blur(15px);
+        display: none; /* Inicialmente oculto */
+        flex-direction: column;
+        z-index: 2999;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.4s ease;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+
+    .chat-window.active {
+        display: flex;
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .chat-header {
+        background: var(--primary);
+        color: #000;
+        padding: 10px;
+        font-family: 'Orbitron';
+        font-size: 0.7rem;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background-image: linear-gradient(rgba(255,154,31,0.03) 1px, transparent 1px);
+        background-size: 100% 20px;
+    }
+
+    /* Estilo de Mensaje */
+    .msg {
+        font-family: 'JetBrains Mono';
+        font-size: 0.75rem;
+        padding: 8px;
+        border-left: 2px solid var(--accent);
+        background: rgba(255,255,255,0.03);
+    }
+
+    .msg-user { color: var(--primary); font-weight: bold; font-size: 0.65rem; display: block; margin-bottom: 3px; }
+    .msg-time { color: #555; font-size: 0.6rem; float: right; }
+
+    .chat-input-area {
+        padding: 15px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 10px;
+    }
+
+    .chat-input {
+        flex: 1;
+        background: rgba(0,0,0,0.5);
+        border: 1px solid var(--border);
+        color: #fff;
+        padding: 8px;
+        font-family: 'JetBrains Mono';
+        font-size: 0.8rem;
+    }
+
+    .chat-input:focus { outline: none; border-color: var(--accent); }
+
+    .btn-send {
+        background: var(--primary);
+        border: none;
+        color: #000;
+        padding: 0 15px;
+        cursor: pointer;
+        font-family: 'Orbitron';
+        font-size: 0.7rem;
+    }
+
+    /* Personalización Scrollbar */
+    .chat-messages::-webkit-scrollbar { width: 3px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--primary); }
+</style>
+
+<div class="chat-bubble" onclick="toggleChat()">
+    <i class="fas fa-terminal" id="chatIcon"></i>
+</div>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <span>IRATHIENS_COMM_LINK</span>
+        <span style="color: rgba(0,0,0,0.5)">[ONLINE]</span>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+        <div class="msg">
+            <span class="msg-time">02:14</span>
+            <span class="msg-user">SYSTEM</span>
+            Conexión encriptada establecida. Bienvenido al canal del gremio.
+        </div>
+        <div class="msg" style="border-left-color: var(--primary);">
+            <span class="msg-time">02:15</span>
+            <span class="msg-user">SGT_KAEL</span>
+            Mañana a las 22:00 tenemos operación de minería en Lyria. ¡Todos listos!
+        </div>
+        <div class="msg">
+            <span class="msg-time">02:18</span>
+            <span class="msg-user">STARWALKER_88</span>
+            Copiado. Llevaré la Arrow para escolta.
+        </div>
+    </div>
+
+    <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Enviar comando...">
+        <button class="btn-send" onclick="sendMessage()">SEND</button>
+    </div>
+</div>
+
+<script>
+    function toggleChat() {
+        const chat = document.getElementById('chatWindow');
+        const icon = document.getElementById('chatIcon');
+        
+        chat.classList.toggle('active');
+        
+        // Cambiar icono según estado
+        if(chat.classList.contains('active')) {
+            icon.classList.remove('fa-terminal');
+            icon.classList.add('fa-times');
+        } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-terminal');
+        }
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const container = document.getElementById('chatMessages');
+        
+        if(input.value.trim() !== "") {
+            const now = new Date();
+            const time = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
+            
+            const newMsg = document.createElement('div');
+            newMsg.className = 'msg';
+            newMsg.style.borderLeftColor = 'var(--accent)';
+            newMsg.innerHTML = `
+                <span class="msg-time">${time}</span>
+                <span class="msg-user">USER_RECRUIT</span>
+                ${input.value}
+            `;
+            
+            container.appendChild(newMsg);
+            input.value = "";
+            
+            // Auto-scroll al final
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+
+    // Enviar con la tecla Enter
+    document.getElementById('chatInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+</script>
 </body>
 </html>
