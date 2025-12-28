@@ -98,10 +98,11 @@
 
         // 2. Consultar el rol en la tabla 'profiles'
         // IMPORTANTE: Asegúrate de que la tabla se llama 'profiles' y no 'perfiles'
-        let { data: profile, error: dbError } = await _supabase.from('profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single();
+       // CAMBIO: 'profiles' por 'perfiles'
+let { data: profile, error: dbError } = await _supabase.from('perfiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
 
         if (dbError) {
             console.error("Error al consultar rol:", dbError.message);
