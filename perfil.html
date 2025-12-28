@@ -493,6 +493,37 @@ let { data: profile, error: dbError } = await _supabase.from('perfiles')
 
     // Arrancar
     initProfile();
+// ... (aquí termina tu función de estrellas)
+        ctx.restore();
+        requestAnimationFrame(updateAndDraw);
+    } // <--- ESTA LLAVE ES LA QUE CIERRA LA FUNCIÓN DE ESTRELLAS
+    
+    updateAndDraw();
+
+    // 1. Deshabilitar el Click Derecho (Menú contextual)
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        alert("SISTEMA DE SEGURIDAD IRATHIENS: Acceso al código restringido.");
+    }, false);
+
+    // 2. Bloquear atajos de teclado (F12, Ctrl+Shift+I, Ctrl+U)
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123 || 
+           (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67 || e.keyCode == 74)) || 
+           (e.ctrlKey && e.keyCode == 85)) {
+            return false;
+        }
+    };
+
+    // 3. Deshabilitar arrastre y selección (PERMITIENDO INPUTS)
+    document.onselectstart = function(e) { 
+        if (e.target.tagName === 'INPUT') return true; // Esto permite que puedan escribir su email
+        return false; 
+    };
+    document.ondragstart = function() { return false; };
 </script>
+
+</body>
+</html>
 </body>
 </html>
