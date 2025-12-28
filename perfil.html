@@ -267,6 +267,73 @@
     };
 
     init();
+    // 1. Abrir/Cerrar Chat
+function toggleChat() {
+    document.getElementById('chatWindow').classList.toggle('active');
+}
+
+// 2. Enviar mensaje detectando el usuario actual
+async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const content = input.value.trim();
+    
+    // Sacamos el nombre del elemento "display-name" que ya tienes en tu perfil
+    const userName = document.getElementById('display-name').innerText || "Desconocido";
+
+    if (content !== "") {
+        const { error } = await _supabase
+            .from('mensajes')
+            .insert([{ 
+                user_name: userName, 
+                content: content,
+                user_id: currentUser.id 
+            }]);
+
+        if (!error) input.value = "";
+    }
+}
+
+// 3. Escuchar mensajes nuevos y cargar historial (Últimas 24h)
+async function initChat() {
+    // Cargar mensajes existentes
+    let { data: msgs } = await _supabase
+        .from('mensajes')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+    if (msgs) msgs.forEach(m => renderMsg(m));
+
+    // Suscribirse a tiempo real
+    _supabase
+        .channel('chat-room')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
+            renderMsg(payload.new);
+        })
+        .subscribe();
+}
+
+function renderMsg(data) {
+    const container = document.getElementById('chatMessages');
+    const time = new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    const div = document.createElement('div');
+    div.className = 'msg';
+    div.innerHTML = `
+        <span class="msg-time">${time}</span>
+        <span class="msg-user">${data.user_name}</span>
+        ${data.content}
+    `;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+}
+
+// Escuchar tecla Enter
+document.getElementById('chatInput')?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendChatMessage();
+});
+
+// Llamar a initChat() después de que init() de tu perfil termine
+// Solo añade "initChat();" al final de tu función init() existente.
 </script>
     <style>
     .chat-bubble {
