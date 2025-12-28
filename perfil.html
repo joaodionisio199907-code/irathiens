@@ -102,6 +102,15 @@
 
         nav a:hover, nav a.active { color: var(--primary); }
 
+        /* Estilo para el botón Admin oculto */
+        #admin-link {
+            display: none; 
+            border: 1px solid var(--primary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: var(--primary);
+        }
+
         .main-container {
             max-width: 1200px;
             margin: 40px auto;
@@ -269,15 +278,8 @@
             <a href="banco.html">Banco</a>
             <a href="Boxes.html">Cajas</a> 
             <a href="Members.html">Miembros</a>
-            <nav id="mainNav">
-    <a href="index.html">Inicio</a>
-    <a href="banco.html">Banco</a>
-    <a href="Boxes.html">Cajas</a> 
-    <a href="Members.html">Miembros</a>
-    <a href="AdminPanel.html" id="admin-link" class="admin-btn">ADMIN</a>
-    <a href="index.html" onclick="handleLogout()" style="color: var(--danger);">Cerrar Sesión</a>
-</nav>
-            <a href="index.html" onclick="handleLogout()" style="color: var(--danger);">Cerrar Sesión</a>
+            <a href="AdminPanel.html" id="admin-link">ADMIN</a>
+            <a href="#" onclick="handleLogout()" style="color: var(--danger);">Cerrar Sesión</a>
         </nav>
     </div>
 </header>
@@ -330,7 +332,7 @@
                     <option value="Arrow">Arrow</option>
                     <option value="Avenger Titan">Avenger Titan</option>
                     <option value="Cutter">Cutter</option>
-                    </select>
+                </select>
                 <button class="btn-action" onclick="addShip()" style="margin-top: 15px;">DESPLEGAR EN HANGAR</button>
             </div>
 
@@ -348,7 +350,7 @@
 </footer>
 
 <script>
-    // --- CONFIGURACIÓN SUPABASE (Tus datos intactos) ---
+    // --- CONFIGURACIÓN SUPABASE ---
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
@@ -357,48 +359,45 @@
     const PLACEHOLDER = "https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg";
     let shipIdCounter = 1;
 
-    // 1. FUNCIÓN DE INICIO (Sin tocar tu lógica de naves, solo añadí el cambio de nombre)
     async function initProfile() {
-    const { data: { user }, error } = await _supabase.auth.getUser();
+        const { data: { user }, error } = await _supabase.auth.getUser();
 
-    if (error || !user) {
-        window.location.href = "login.html";
-        return;
-    }
-
-    currentUser = user;
-
-    // Pedimos el perfil completo incluyendo el campo 'role'
-    // IMPORTANTE: Asegúrate que tu tabla en Supabase se llame 'perfiles' (como en tu código)
-    let { data: profile } = await _supabase.from('perfiles').select('*').eq('id', user.id).single();
-    
-    // --- LÓGICA DE ADMIN ---
-    if (profile && profile.role === 'admin') {
-        const adminBtn = document.getElementById('admin-link');
-        if (adminBtn) adminBtn.style.display = 'inline-block';
-    }
-
-    // --- TU LÓGICA ORIGINAL DE NOMBRE ---
-    if (profile && profile.handle) {
-        document.getElementById('display-name').innerText = profile.handle.toUpperCase();
-    } else {
-        document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
-    }
-
-    if (profile) {
-        document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
-        if (profile.ships) {
-            profile.ships.forEach(shipName => { renderShipCard(shipName); });
+        if (error || !user) {
+            window.location.href = "login.html";
+            return;
         }
-    }
-    updateShipCount();
-}
 
-    // 2. TUS FUNCIONES ORIGINALES (Tal cual las tenías)
+        currentUser = user;
+
+        // Cambiado de 'perfiles' a 'profiles' para que coincida con tu Supabase
+        let { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
+        
+        // --- LÓGICA DE ADMIN CORREGIDA ---
+        if (profile && profile.role === 'admin') {
+            const adminBtn = document.getElementById('admin-link');
+            if (adminBtn) adminBtn.style.display = 'inline-block';
+        }
+
+        // --- LÓGICA DE NOMBRE ---
+        if (profile && profile.handle) {
+            document.getElementById('display-name').innerText = profile.handle.toUpperCase();
+        } else {
+            document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
+        }
+
+        if (profile) {
+            document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
+            if (profile.ships && Array.isArray(profile.ships)) {
+                profile.ships.forEach(shipName => { renderShipCard(shipName); });
+            }
+        }
+        updateShipCount();
+    }
+
     async function saveHandle() {
         const handle = document.getElementById('handle-input').value;
         if(handle) {
-            const { error } = await _supabase.from('perfiles').update({ handle: handle }).eq('id', currentUser.id);
+            const { error } = await _supabase.from('profiles').update({ handle: handle }).eq('id', currentUser.id);
             if (!error) {
                 document.getElementById('display-name').innerText = handle.toUpperCase();
                 alert("Identidad vinculada y guardada.");
@@ -417,7 +416,7 @@
     async function syncShips() {
         const shipElements = document.querySelectorAll('.ship-name');
         const shipList = Array.from(shipElements).map(el => el.innerText);
-        await _supabase.from('perfiles').update({ ships: shipList }).eq('id', currentUser.id);
+        await _supabase.from('profiles').update({ ships: shipList }).eq('id', currentUser.id);
         updateShipCount();
     }
 
@@ -459,7 +458,8 @@
     
     function updateShipCount() {
         const count = document.querySelectorAll('.ship-card').length;
-        document.getElementById('ship-count').innerText = count;
+        const countEl = document.getElementById('ship-count');
+        if (countEl) countEl.innerText = count;
     }
 
     async function handleLogout() {
@@ -467,7 +467,6 @@
         window.location.href = "login.html";
     }
 
-    // Parallax (Tuyo original)
     const bg = document.getElementById('bg-parallax');
     window.addEventListener('mousemove', (e) => {
         const x = e.clientX / window.innerWidth;
@@ -475,9 +474,7 @@
         bg.style.transform = `translate(${(x - 0.5) * -25}px, ${(y - 0.5) * -25}px)`;
     });
 
-    // Iniciar
     initProfile();
 </script>
-
 </body>
 </html>
