@@ -6,9 +6,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background: #04080f; color: #ff9a1f; font-family: 'JetBrains Mono', monospace; padding: 40px; }
+        body { background: #04080f; color: #ff9a1f; font-family: 'JetBrains Mono', monospace; padding: 20px; }
         .admin-box { 
-            max-width: 600px; margin: auto; border: 2px solid #ff9a1f; 
+            max-width: 800px; margin: auto; border: 2px solid #ff9a1f; 
             padding: 30px; background: rgba(255,154,31,0.05);
             box-shadow: 0 0 20px rgba(255,154,31,0.2);
         }
@@ -24,6 +24,15 @@
             border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; 
         }
         button:hover { background: #fff; }
+        
+        /* Estilos de la Tabla */
+        .member-list { margin-top: 40px; border-top: 2px solid #ff9a1f; padding-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
+        th { text-align: left; color: #ff9a1f; border-bottom: 1px solid #ff9a1f; padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid rgba(255,154,31,0.1); color: white; }
+        .btn-delete { background: #ff4444; color: white; padding: 5px 10px; border: none; font-size: 0.7rem; cursor: pointer; width: auto; }
+        .btn-delete:hover { background: white; color: red; }
+        
         .nav-back { text-align: center; margin-top: 20px; }
         .nav-back a { color: #9fb3c8; text-decoration: none; font-size: 0.8rem; }
     </style>
@@ -33,24 +42,32 @@
 <div class="admin-box">
     <h1>MANDO CENTRAL</h1>
     <p style="text-align: center; font-size: 0.7rem;">ALTA DE NUEVOS CIUDADANOS</p>
-    <hr style="border: 0; border-top: 1px solid #ff9a1f; margin: 20px 0;">
-
+    
     <div class="input-group">
-        <label>ID ÚNICO (Opcional - Deja vacío para miembros manuales)</label>
-        <input type="text" id="member-id" placeholder="UUID del usuario...">
-    </div>
-
-    <div class="input-group">
-        <label>HANDLE RSI (Nombre en Star Citizen)</label>
+        <label>HANDLE RSI</label>
         <input type="text" id="member-handle" placeholder="Ej: SGT_KAEL">
     </div>
-
     <div class="input-group">
-        <label>RANGO / ROL</label>
+        <label>RANGO</label>
         <input type="text" id="member-rank" placeholder="Ej: Piloto de Caza">
     </div>
-
     <button onclick="crearMiembro()">REGISTRAR EN EL MANIFIESTO</button>
+
+    <div class="member-list">
+        <h2 style="font-family: 'Orbitron'; font-size: 1rem;">MANIFIESTO ACTUAL</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>HANDLE</th>
+                    <th>RANGO</th>
+                    <th>ROL</th>
+                    <th>ACCIÓN</th>
+                </tr>
+            </thead>
+            <tbody id="members-table-body">
+                </tbody>
+        </table>
+    </div>
 
     <div class="nav-back">
         <a href="Members.html">← VOLVER AL MANIFIESTO</a>
@@ -62,66 +79,72 @@
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
+    // 1. CARGAR MIEMBROS AL INICIAR
+    async function loadMembers() {
+        const { data: members, error } = await _supabase
+            .from('perfiles') // Usamos tu nombre de tabla real
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) return console.error(error);
+
+        const tbody = document.getElementById('members-table-body');
+        tbody.innerHTML = '';
+
+        members.forEach(m => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${m.handle || 'S/N'}</td>
+                <td>${m.rank || 'Ciudadano'}</td>
+                <td>${m.role}</td>
+                <td>
+                    <button class="btn-delete" onclick="eliminarMiembro('${m.id}')">ELIMINAR</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // 2. CREAR MIEMBRO
     async function crearMiembro() {
-        const id = document.getElementById('member-id').value || crypto.randomUUID();
         const handle = document.getElementById('member-handle').value;
         const rank = document.getElementById('member-rank').value;
+        if(!handle || !rank) return alert("Completa los campos");
 
-        if(!handle || !rank) return alert("Rellena handle y rango");
-
-        const { error } = await _supabase.from('profiles').insert([
-            { id: id, handle: handle, rank: rank, role: 'user' }
+        const { error } = await _supabase.from('perfiles').insert([
+            { id: crypto.randomUUID(), handle: handle, rank: rank, role: 'user' }
         ]);
 
-        if (error) {
-            alert("ERROR: " + error.message);
-        } else {
-            alert("CIUDADANO REGISTRADO CORRECTAMENTE");
-            window.location.href = "Members.html";
+        if (error) alert("Error: " + error.message);
+        else {
+            alert("REGISTRADO");
+            loadMembers(); // Recargamos la tabla
         }
     }
 
-    // Seguridad básica: Si no eres admin, te echa
-  async function checkAdmin() {
-        console.log("Verificando credenciales de Mando Central...");
-        
-        // 1. Obtener usuario actual
-        const { data: { user }, error: authError } = await _supabase.auth.getUser();
-        
-        if (authError || !user) {
-            console.error("Sesión no encontrada:", authError);
-            window.location.href = "login.html";
-            return;
+    // 3. ELIMINAR MIEMBRO
+    async function eliminarMiembro(id) {
+        if(confirm("¿Seguro que quieres eliminar a este ciudadano del manifiesto?")) {
+            const { error } = await _supabase.from('perfiles').delete().eq('id', id);
+            if (error) alert("Error al eliminar");
+            else loadMembers();
         }
+    }
 
-        console.log("Usuario autenticado:", user.id);
-
-        // 2. Consultar el rol en la tabla 'profiles'
-        // IMPORTANTE: Asegúrate de que la tabla se llama 'profiles' y no 'perfiles'
-       // CAMBIO: 'profiles' por 'perfiles'
-let { data: profile, error: dbError } = await _supabase.from('perfiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-        if (dbError) {
-            console.error("Error al consultar rol:", dbError.message);
-            alert("ERROR DE SISTEMA: No se pudo verificar tu rango.");
-            window.location.href = "index.html";
-            return;
-        }
-
-        // 3. Validar si es admin
+    // 4. SEGURIDAD
+    async function checkAdmin() {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (!user) { window.location.href = "login.html"; return; }
+        
+        let { data: profile } = await _supabase.from('perfiles').select('role').eq('id', user.id).single();
         if (!profile || profile.role !== 'admin') {
-            console.warn("Acceso denegado. Rol detectado:", profile ? profile.role : "Ninguno");
-            alert("ACCESO DENEGADO: SOLO ALTO MANDO");
             window.location.href = "index.html";
         } else {
-            console.log("Acceso concedido. Bienvenido, Almirante.");
+            loadMembers(); // Si es admin, cargamos la lista
         }
     }
+
     checkAdmin();
 </script>
-
 </body>
 </html>
