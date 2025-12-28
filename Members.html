@@ -234,22 +234,30 @@
 
     // 1. CARGAR MIEMBROS DESDE LA BASE DE DATOS
     async function loadMembers() {
-        const { data: profiles, error } = await _supabase.from('profiles').select('*');
+        // CAMBIO: Usamos 'perfiles' en lugar de 'profiles'
+        const { data: profiles, error } = await _supabase.from('perfiles').select('*');
         const { data: { user } } = await _supabase.auth.getUser();
 
-        if (error) return;
+        if (error) {
+            console.error("Error en Supabase:", error.message);
+            return;
+        }
 
         const grid = document.getElementById('members-list');
-        grid.innerHTML = ''; // Limpiar lista
+        grid.innerHTML = ''; 
 
         profiles.forEach(member => {
             const card = document.createElement('div');
             card.className = 'holo-card';
+            
+            // CAMBIO: Si el miembro tiene avatar_url lo usa, si no, usa la imagen de la Carrack por defecto
+            const fotoMostrada = member.avatar_url || "https://robertsspaceindustries.com/media/7p79ck2sc5r9rr/heap_infocus/Loading_The_Carrack.jpg";
+
             card.innerHTML = `
                 <div class="card-inner">
                     <div class="photo-box">
                         <div class="scanlines"></div>
-                        <img src="https://robertsspaceindustries.com/media/7p79ck2sc5r9rr/heap_infocus/Loading_The_Carrack.jpg" alt="Member">
+                        <img src="${fotoMostrada}" alt="Member">
                     </div>
                     <span class="member-role">${(member.rank || 'CADETE').toUpperCase()}</span>
                     <h2 class="member-name">${(member.handle || 'CIUDADANO').toUpperCase()}</h2>
@@ -258,54 +266,29 @@
             `;
             grid.appendChild(card);
 
-            // Si el usuario logueado es ADMIN, mostramos controles
+            // Mostrar controles de admin si el usuario logueado es admin
             if (user && member.id === user.id && member.role === 'admin') {
                 document.getElementById('admin-controls').style.display = 'block';
             }
         });
     }
 
-    // 2. ABRIR VENTANA DE DETALLES
+    // 2. ABRIR VENTANA DE DETALLES (Corregido a 'perfiles')
     async function openMemberFile(id) {
-        const { data: member } = await _supabase.from('profiles').select('*').eq('id', id).single();
+        const { data: member } = await _supabase.from('perfiles').select('*').eq('id', id).single();
         if (!member) return;
 
         document.getElementById('winName').innerText = (member.handle || 'DESCONOCIDO').toUpperCase();
         document.getElementById('winRole').innerText = (member.rank || 'SIN ASIGNAR').toUpperCase();
         
-        // Mostrar naves si tiene
         if (member.ships && member.ships.length > 0) {
-            document.getElementById('winShips').innerText = member.ships.join(', ');
+            document.getElementById('winShips').innerText = Array.isArray(member.ships) ? member.ships.join(', ') : member.ships;
         } else {
             document.getElementById('winShips').innerText = "SIN NAVES EN HANGAR";
         }
 
         document.getElementById('winRSI').href = `https://robertsspaceindustries.com/citizens/${member.handle}`;
         document.getElementById('overlayWindow').classList.add('active');
-    }
-
-    // 3. AÑADIR MIEMBRO (SOLO ADMIN)
-    async function addNewMember() {
-        const name = document.getElementById('new-name').value;
-        const rank = document.getElementById('new-rank').value;
-
-        if (!name || !rank) {
-            alert("Introduce nombre y rango");
-            return;
-        }
-
-        // Para añadir un miembro manual sin que se registre, generamos un ID aleatorio
-        // Nota: Esto creará una fila en tu tabla 'profiles'
-        const { error } = await _supabase.from('profiles').insert([
-            { handle: name, rank: rank, role: 'user', id: crypto.randomUUID() }
-        ]);
-
-        if (error) {
-            alert("Error al añadir: " + error.message);
-        } else {
-            alert("Miembro registrado en el manifiesto");
-            location.reload();
-        }
     }
 
     function closeWindow() {
@@ -319,9 +302,9 @@
     // Arrancar
     loadMembers();
 </script>
-
 </body>
 </html>
+
 
 
 
