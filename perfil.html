@@ -359,8 +359,8 @@
     const PLACEHOLDER = "https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg";
     let shipIdCounter = 1;
 
-    async function initProfile() {
-        // 1. Obtener el usuario de la sesión
+   async function initProfile() {
+        // 1. Obtener el usuario de la sesión activa
         const { data: { user }, error: authError } = await _supabase.auth.getUser();
 
         if (authError || !user) {
@@ -370,46 +370,51 @@
         }
 
         currentUser = user;
-        console.log("Tu ID de Usuario es:", user.id);
+        console.log("ID detectado por el navegador:", user.id);
 
-        // 2. Obtener el perfil de la base de datos
+        // 2. Buscar tu perfil en la tabla 'profiles'
         let { data: profile, error: dbError } = await _supabase.from('profiles')
             .select('*')
             .eq('id', user.id)
             .single();
         
         if (dbError) {
-            console.warn("No se encontró perfil para este ID en la tabla 'profiles'.");
+            console.warn("Aviso: No se encontró perfil en la tabla 'profiles'.");
+            console.error("Detalle:", dbError.message);
         }
 
-        // 3. LÓGICA DEL BOTÓN ADMIN (CORREGIDA)
+        // 3. ACTIVAR BOTÓN ADMIN (Si el rol es 'admin')
         const adminBtn = document.getElementById('admin-link');
         if (profile && profile.role === 'admin') {
-            console.log("¡ROL ADMIN DETECTADO!");
+            console.log("¡Confirmado! Eres Admin.");
             if (adminBtn) {
                 adminBtn.style.setProperty('display', 'inline-block', 'important');
             }
+        } else {
+            console.log("Rol detectado:", profile ? profile.role : "Ninguno");
         }
 
-        // 4. ACTUALIZAR INTERFAZ
+        // 4. ACTUALIZAR INTERFAZ VISUAL
         if (profile) {
-            // Nombre y Rango
-            document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
-            document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
+            const nameDisplay = document.getElementById('display-name');
+            if (nameDisplay) nameDisplay.innerText = (profile.handle || "CIUDADANO").toUpperCase();
             
-            // Cargar Naves
+            const rankDisplay = document.querySelector('.user-rank');
+            if (rankDisplay) rankDisplay.innerText = profile.rank || "Cadete de Flota";
+
+            // Cargar naves si existen
             if (profile.ships && Array.isArray(profile.ships)) {
                 const grid = document.getElementById('fleet-grid');
-                grid.innerHTML = ''; // Limpiar antes de cargar
+                grid.innerHTML = ''; // Limpiamos antes de cargar
                 profile.ships.forEach(shipName => { renderShipCard(shipName); });
             }
         } else {
+            // Si no hay perfil aún, usamos el email como nombre provisional
             document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
         }
         
         updateShipCount();
     }
-
     async function saveHandle() {
         const handle = document.getElementById('handle-input').value;
         if(handle) {
