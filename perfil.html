@@ -359,35 +359,40 @@
 
     // 1. FUNCIÓN DE INICIO (Sin tocar tu lógica de naves, solo añadí el cambio de nombre)
     async function initProfile() {
-        const { data: { user }, error } = await _supabase.auth.getUser();
+    const { data: { user }, error } = await _supabase.auth.getUser();
 
-        if (error || !user) {
-            window.location.href = "login.html";
-            return;
-        }
-
-        currentUser = user;
-
-        // --- BLOQUE PARA CAMBIAR EL NOMBRE "CIUDADANO" ---
-        let { data: profile } = await _supabase.from('perfiles').select('*').eq('id', user.id).single();
-        
-        // Si hay un perfil guardado, cambia el texto del ID "display-name"
-        if (profile && profile.handle) {
-            document.getElementById('display-name').innerText = profile.handle.toUpperCase();
-        } else {
-            // Si no hay perfil, usa la parte inicial del email
-            document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
-        }
-        // ------------------------------------------------
-
-        if (profile) {
-            document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
-            if (profile.ships) {
-                profile.ships.forEach(shipName => { renderShipCard(shipName); });
-            }
-        }
-        updateShipCount();
+    if (error || !user) {
+        window.location.href = "login.html";
+        return;
     }
+
+    currentUser = user;
+
+    // Pedimos el perfil completo incluyendo el campo 'role'
+    // IMPORTANTE: Asegúrate que tu tabla en Supabase se llame 'perfiles' (como en tu código)
+    let { data: profile } = await _supabase.from('perfiles').select('*').eq('id', user.id).single();
+    
+    // --- LÓGICA DE ADMIN ---
+    if (profile && profile.role === 'admin') {
+        const adminBtn = document.getElementById('admin-link');
+        if (adminBtn) adminBtn.style.display = 'inline-block';
+    }
+
+    // --- TU LÓGICA ORIGINAL DE NOMBRE ---
+    if (profile && profile.handle) {
+        document.getElementById('display-name').innerText = profile.handle.toUpperCase();
+    } else {
+        document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
+    }
+
+    if (profile) {
+        document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
+        if (profile.ships) {
+            profile.ships.forEach(shipName => { renderShipCard(shipName); });
+        }
+    }
+    updateShipCount();
+}
 
     // 2. TUS FUNCIONES ORIGINALES (Tal cual las tenías)
     async function saveHandle() {
