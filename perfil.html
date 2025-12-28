@@ -359,7 +359,7 @@
     const PLACEHOLDER = "https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg";
     let shipIdCounter = 1;
 
-    async function initProfile() {
+   async function initProfile() {
         const { data: { user }, error } = await _supabase.auth.getUser();
 
         if (error || !user) {
@@ -369,29 +369,29 @@
 
         currentUser = user;
 
-        // Cambiado de 'perfiles' a 'profiles' para que coincida con tu Supabase
-        let { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
+        // Buscamos tu perfil usando el ID que acabas de pegar en la base de datos
+        let { data: profile } = await _supabase.from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
         
-        // --- LÓGICA DE ADMIN CORREGIDA ---
+        console.log("Tu ID de sesión:", user.id);
+        console.log("Perfil encontrado en DB:", profile);
+
+        // Si el perfil existe y el rol es admin, forzamos que se vea el botón
         if (profile && profile.role === 'admin') {
             const adminBtn = document.getElementById('admin-link');
-            if (adminBtn) adminBtn.style.display = 'inline-block';
-        }
-
-        // --- LÓGICA DE NOMBRE ---
-        if (profile && profile.handle) {
-            document.getElementById('display-name').innerText = profile.handle.toUpperCase();
-        } else {
-            document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
-        }
-
-        if (profile) {
-            document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
-            if (profile.ships && Array.isArray(profile.ships)) {
-                profile.ships.forEach(shipName => { renderShipCard(shipName); });
+            if (adminBtn) {
+                adminBtn.style.display = 'inline-block';
+                console.log("¡Acceso de Admin concedido!");
             }
         }
-        updateShipCount();
+
+        // Actualizar visualmente el nombre
+        if (profile) {
+            document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
+            document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
+        }
     }
 
     async function saveHandle() {
