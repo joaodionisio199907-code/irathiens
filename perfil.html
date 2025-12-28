@@ -359,8 +359,8 @@
     const PLACEHOLDER = "https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg";
     let shipIdCounter = 1;
 
-   async function initProfile() {
-        // 1. Obtener el usuario que tiene la sesión abierta
+    async function initProfile() {
+        // 1. Obtener el usuario de la sesión
         const { data: { user }, error: authError } = await _supabase.auth.getUser();
 
         if (authError || !user) {
@@ -370,57 +370,44 @@
         }
 
         currentUser = user;
-        console.log("ID detectado por el navegador:", user.id);
+        console.log("Tu ID de Usuario es:", user.id);
 
-        // 2. Intentar buscar ese ID en la tabla 'profiles'
+        // 2. Obtener el perfil de la base de datos
         let { data: profile, error: dbError } = await _supabase.from('profiles')
             .select('*')
             .eq('id', user.id)
             .single();
         
         if (dbError) {
-            console.warn("Aviso: No se encontró perfil en la tabla 'profiles' para este ID. Revisa Supabase.");
-            console.error("Detalle del error:", dbError.message);
+            console.warn("No se encontró perfil para este ID en la tabla 'profiles'.");
         }
 
-        // 3. LÓGICA DE ACTIVACIÓN DEL BOTÓN ADMIN
+        // 3. LÓGICA DEL BOTÓN ADMIN (CORREGIDA)
         const adminBtn = document.getElementById('admin-link');
-        
         if (profile && profile.role === 'admin') {
-            console.log("¡Confirmado! Eres Admin en la base de datos.");
+            console.log("¡ROL ADMIN DETECTADO!");
             if (adminBtn) {
-                adminBtn.style.display = 'inline-block';
-                adminBtn.style.visibility = 'visible'; // Refuerzo visual
-                adminBtn.style.color = '#ff9a1f';     // Aseguramos color
+                adminBtn.style.setProperty('display', 'inline-block', 'important');
             }
-        } else {
-            console.log("El rol actual en la base de datos es:", profile ? profile.role : "Ninguno");
         }
 
-        // 4. Actualizar textos en la interfaz
+        // 4. ACTUALIZAR INTERFAZ
         if (profile) {
-            const nameDisplay = document.getElementById('display-name');
-            if (nameDisplay) nameDisplay.innerText = (profile.handle || "CIUDADANO").toUpperCase();
+            // Nombre y Rango
+            document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
+            document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
             
-            const rankDisplay = document.querySelector('.user-rank');
-            if (rankDisplay) rankDisplay.innerText = profile.rank || "Cadete de Flota";
-
+            // Cargar Naves
             if (profile.ships && Array.isArray(profile.ships)) {
+                const grid = document.getElementById('fleet-grid');
+                grid.innerHTML = ''; // Limpiar antes de cargar
                 profile.ships.forEach(shipName => { renderShipCard(shipName); });
             }
         } else {
-            // Si no hay perfil, mostramos el email por defecto
             document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
         }
         
         updateShipCount();
-    }
-
-        // Actualizar visualmente el nombre
-        if (profile) {
-            document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
-            document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
-        }
     }
 
     async function saveHandle() {
@@ -496,13 +483,15 @@
         window.location.href = "login.html";
     }
 
+    // Efecto Parallax
     const bg = document.getElementById('bg-parallax');
     window.addEventListener('mousemove', (e) => {
         const x = e.clientX / window.innerWidth;
         const y = e.clientY / window.innerHeight;
-        bg.style.transform = `translate(${(x - 0.5) * -25}px, ${(y - 0.5) * -25}px)`;
+        if(bg) bg.style.transform = `translate(${(x - 0.5) * -25}px, ${(y - 0.5) * -25}px)`;
     });
 
+    // Arrancar
     initProfile();
 </script>
 </body>
