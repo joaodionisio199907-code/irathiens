@@ -367,10 +367,11 @@
         console.log("ID detectado por el navegador:", user.id);
 
         // 2. Buscar tu perfil en la tabla 'profiles'
-        let { data: profile, error: dbError } = await _supabase.from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
+       // CAMBIO: 'profiles' por 'perfiles'
+let { data: profile, error: dbError } = await _supabase.from('perfiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
         
         if (dbError) {
             console.warn("Aviso: No se encontró perfil en la tabla 'profiles'.");
