@@ -316,21 +316,31 @@ function renderMsg(data) {
     const container = document.getElementById('chatMessages');
     const time = new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
+    // Determinamos si es un mensaje especial
+    // Si el nombre es 'SYSTEM' o si quieres añadir lógica por ID de admin
+    const isSystem = data.user_name === 'SYSTEM';
+    const isAdmin = data.user_name === 'JOAO_DIONISIO' || data.user_name === 'ADMIN'; // Puedes añadir aquí los nombres de admin
+
     const div = document.createElement('div');
     div.className = 'msg';
+    
+    // Aplicamos estilos especiales si es Admin
+    if (isAdmin) {
+        div.style.borderLeftColor = '#00ffff'; // Borde Cyan
+        div.style.background = 'rgba(0, 255, 255, 0.05)'; // Fondo sutil Cyan
+    }
+
     div.innerHTML = `
         <span class="msg-time">${time}</span>
-        <span class="msg-user">${data.user_name}</span>
-        ${data.content}
+        <span class="msg-user" style="color: ${isAdmin ? '#00ffff' : '#ff9a1f'}">
+            ${data.user_name} ${isAdmin ? '[ADMIN]' : ''}
+        </span>
+        <span style="color: ${isAdmin ? '#e6f1ff' : 'inherit'}">${data.content}</span>
     `;
+    
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
 }
-
-// Escuchar tecla Enter
-document.getElementById('chatInput')?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendChatMessage();
-});
 
 // Llamar a initChat() después de que init() de tu perfil termine
 // Solo añade "initChat();" al final de tu función init() existente.
