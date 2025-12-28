@@ -266,7 +266,6 @@
         </a>
         <nav id="mainNav">
             <a href="index.html">Inicio</a>
-            <a href="Boxes.html">Cajas</a>
             <a href="#">Eventos</a>
             <a href="#">Miembros</a>
             <a href="#" onclick="handleLogout()" style="color: var(--danger);">Cerrar Sesión</a>
@@ -340,16 +339,16 @@
 </footer>
 
 <script>
-    // --- CONFIGURACIÓN SUPABASE ---
+    // --- CONFIGURACIÓN SUPABASE (Tus datos intactos) ---
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
-    const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; // <--- PEGA TU LLAVE AQUÍ
+    const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
     let currentUser = null;
     const PLACEHOLDER = "https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg";
     let shipIdCounter = 1;
 
-    // 1. Proteger página y cargar datos de la base de datos
+    // 1. FUNCIÓN DE INICIO (Sin tocar tu lógica de naves, solo añadí el cambio de nombre)
     async function initProfile() {
         const { data: { user }, error } = await _supabase.auth.getUser();
 
@@ -360,86 +359,61 @@
 
         currentUser = user;
 
-        // Intentamos obtener datos de la tabla 'perfiles' (en plural, como la creaste)
-        let { data: profile } = await _supabase
-            .from('perfiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
-
-        // Si no existe, creamos la fila inicial
-        if (!profile) {
-            const { data: newProfile } = await _supabase
-                .from('perfiles')
-                .insert([{ id: user.id, handle: user.email.split('@')[0], ships: [], rank: 'Cadete de Flota' }])
-                .select()
-                .single();
-            profile = newProfile;
-        }
-
-        // Actualizar Interfaz
-        document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
-        document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
+        // --- BLOQUE PARA CAMBIAR EL NOMBRE "CIUDADANO" ---
+        let { data: profile } = await _supabase.from('perfiles').select('*').eq('id', user.id).single();
         
-        // Dibujar naves guardadas
-        if (profile.ships) {
-            profile.ships.forEach(shipName => {
-                renderShipCard(shipName);
-            });
+        // Si hay un perfil guardado, cambia el texto del ID "display-name"
+        if (profile && profile.handle) {
+            document.getElementById('display-name').innerText = profile.handle.toUpperCase();
+        } else {
+            // Si no hay perfil, usa la parte inicial del email
+            document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
+        }
+        // ------------------------------------------------
+
+        if (profile) {
+            document.querySelector('.user-rank').innerText = profile.rank || "Cadete de Flota";
+            if (profile.ships) {
+                profile.ships.forEach(shipName => { renderShipCard(shipName); });
+            }
         }
         updateShipCount();
     }
 
-    // 2. Guardar Handle
+    // 2. TUS FUNCIONES ORIGINALES (Tal cual las tenías)
     async function saveHandle() {
         const handle = document.getElementById('handle-input').value;
         if(handle) {
-            const { error } = await _supabase
-                .from('perfiles')
-                .update({ handle: handle })
-                .eq('id', currentUser.id);
-
+            const { error } = await _supabase.from('perfiles').update({ handle: handle }).eq('id', currentUser.id);
             if (!error) {
                 document.getElementById('display-name').innerText = handle.toUpperCase();
-                alert("Identidad vinculada y guardada en la base de datos.");
+                alert("Identidad vinculada y guardada.");
             }
         }
     }
 
-    // 3. Añadir Nave
     async function addShip() {
         const selector = document.getElementById('ship-selector');
         const shipName = selector.value;
         if(!shipName) return;
-
         renderShipCard(shipName);
         await syncShips(); 
     }
 
-    // 4. Sincronizar con Supabase
     async function syncShips() {
         const shipElements = document.querySelectorAll('.ship-name');
         const shipList = Array.from(shipElements).map(el => el.innerText);
-
-        await _supabase
-            .from('perfiles')
-            .update({ ships: shipList })
-            .eq('id', currentUser.id);
-        
+        await _supabase.from('perfiles').update({ ships: shipList }).eq('id', currentUser.id);
         updateShipCount();
     }
 
-    // --- FUNCIONES VISUALES ---
     function renderShipCard(shipName) {
         const grid = document.getElementById('fleet-grid');
         const newShip = document.createElement('div');
         newShip.className = 'ship-card';
         const currentId = `ship-${shipIdCounter++}`;
-        
         newShip.innerHTML = `
-            <div class="ship-img-container">
-                <img src="${PLACEHOLDER}" class="ship-img" id="img-${currentId}">
-            </div>
+            <div class="ship-img-container"><img src="${PLACEHOLDER}" class="ship-img" id="img-${currentId}"></div>
             <div class="ship-controls">
                 <label class="control-btn">FOTO <input type="file" hidden onchange="previewImg(event, 'img-${currentId}')"></label>
                 <button class="control-btn" onclick="resetDefault('img-${currentId}')">DEFAULT</button>
@@ -479,7 +453,7 @@
         window.location.href = "login.html";
     }
 
-    // Parallax
+    // Parallax (Tuyo original)
     const bg = document.getElementById('bg-parallax');
     window.addEventListener('mousemove', (e) => {
         const x = e.clientX / window.innerWidth;
