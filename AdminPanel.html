@@ -1,46 +1,195 @@
-<div class="input-group">
-    <label>HANDLE RSI</label>
-    <input type="text" id="member-handle" placeholder="Ej: SGT_KAEL">
-</div>
-<div class="input-group">
-    <label>RANGO</label>
-    <input type="text" id="member-rank" placeholder="Ej: Piloto de Caza">
-</div>
-<div class="input-group">
-    <label>URL DE LA FOTO (Avatar)</label>
-    <input type="text" id="member-photo" placeholder="https://enlace-a-tu-foto.jpg">
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Irathiens | Mando Central</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --primary: #ff9a1f; --bg: #04080f; }
+        body { background: var(--bg); color: var(--primary); font-family: 'JetBrains Mono', monospace; padding: 20px; }
+        
+        .admin-box { 
+            max-width: 900px; margin: auto; border: 2px solid var(--primary); 
+            padding: 30px; background: rgba(255,154,31,0.05);
+            box-shadow: 0 0 20px rgba(255,154,31,0.2);
+        }
 
-<button onclick="crearMiembro()">REGISTRAR EN EL MANIFIESTO</button>
+        h1 { font-family: 'Orbitron'; text-align: center; letter-spacing: 3px; color: #fff; }
+        
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.7rem; margin-bottom: 5px; text-transform: uppercase; }
+        
+        input { 
+            width: 100%; padding: 12px; background: #000; border: 1px solid var(--primary); 
+            color: white; outline: none; box-sizing: border-box;
+        }
+
+        button { 
+            width: 100%; padding: 15px; background: var(--primary); color: black; 
+            border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { background: #fff; transform: scale(1.01); }
+
+        /* Estilos Tabla de Miembros */
+        .member-list { margin-top: 40px; border-top: 1px solid var(--primary); padding-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; color: #fff; }
+        th { text-align: left; color: var(--primary); border-bottom: 2px solid var(--primary); padding: 10px; font-family: 'Orbitron'; }
+        td { padding: 10px; border-bottom: 1px solid rgba(255,154,31,0.1); }
+        
+        .img-preview { width: 45px; height: 45px; border-radius: 5px; object-fit: cover; border: 1px solid var(--primary); }
+        
+        .btn-delete { background: #ff4444; color: white; padding: 5px 10px; border: none; cursor: pointer; font-size: 0.7rem; width: auto; }
+        .btn-delete:hover { background: white; color: red; }
+
+        .nav-back { text-align: center; margin-top: 25px; }
+        .nav-back a { color: #9fb3c8; text-decoration: none; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="admin-box">
+    <h1>MANDO CENTRAL</h1>
+    <p style="text-align: center; font-size: 0.7rem; color: #9fb3c8;">REGISTRO ESTRATÉGICO DE PERSONAL</p>
+    
+    <hr style="border: 0; border-top: 1px solid rgba(255,154,31,0.3); margin: 20px 0;">
+
+    <div class="input-row">
+        <div class="input-group">
+            <label>Handle RSI</label>
+            <input type="text" id="member-handle" placeholder="Ej: SGT_KAEL">
+        </div>
+        <div class="input-group">
+            <label>Rango / Especialidad</label>
+            <input type="text" id="member-rank" placeholder="Ej: Piloto de Caza">
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>URL de la Foto (Avatar)</label>
+        <input type="text" id="member-photo" placeholder="https://ejemplo.com/foto.jpg">
+    </div>
+
+    <button onclick="crearMiembro()">REGISTRAR CIUDADANO</button>
+
+    <div class="member-list">
+        <h2 style="font-family: 'Orbitron'; font-size: 1rem;">PERSONAL EN ACTIVO</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>FOTO</th>
+                    <th>HANDLE</th>
+                    <th>RANGO</th>
+                    <th>ACCIÓN</th>
+                </tr>
+            </thead>
+            <tbody id="members-table-body">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="nav-back">
+        <a href="Members.html">← VOLVER AL MANIFIESTO</a>
+    </div>
+</div>
 
 <script>
-    // Actualiza la función crearMiembro dentro de tu script
+    const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
+    const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+    // 1. CARGAR LISTA DE MIEMBROS
+    async function loadMembers() {
+        const { data: members, error } = await _supabase
+            .from('perfiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) return console.error("Error cargando:", error.message);
+
+        const tbody = document.getElementById('members-table-body');
+        tbody.innerHTML = '';
+
+        members.forEach(m => {
+            const row = document.createElement('tr');
+            const foto = m.avatar_url || 'https://via.placeholder.com/50/000/ff9a1f?text=?';
+            row.innerHTML = `
+                <td><img src="${foto}" class="img-preview"></td>
+                <td>${m.handle || 'SIN_NOMBRE'}</td>
+                <td>${m.rank || 'CIUDADANO'}</td>
+                <td>
+                    <button class="btn-delete" onclick="eliminarMiembro('${m.id}')">BORRAR</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // 2. CREAR MIEMBRO
     async function crearMiembro() {
         const handle = document.getElementById('member-handle').value;
         const rank = document.getElementById('member-rank').value;
         const photo = document.getElementById('member-photo').value;
 
-        if(!handle || !rank) return alert("Completa handle y rango");
+        if(!handle || !rank) return alert("Error: El Handle y el Rango son obligatorios.");
 
         const { error } = await _supabase.from('perfiles').insert([
             { 
                 id: crypto.randomUUID(), 
                 handle: handle, 
                 rank: rank, 
-                avatar_url: photo, // Aquí es donde se guarda la foto
+                avatar_url: photo, 
                 role: 'user' 
             }
         ]);
 
         if (error) {
-            alert("Error: " + error.message);
+            alert("Error de base de datos: " + error.message);
         } else {
-            alert("CIUDADANO REGISTRADO CORRECTAMENTE");
+            alert("SISTEMA ACTUALIZADO: Ciudadano registrado.");
             // Limpiar campos
             document.getElementById('member-handle').value = '';
             document.getElementById('member-rank').value = '';
             document.getElementById('member-photo').value = '';
-            loadMembers(); // Recargar la tabla de abajo
+            loadMembers();
         }
     }
+
+    // 3. ELIMINAR MIEMBRO
+    async function eliminarMiembro(id) {
+        if(confirm("¿Eliminar este expediente de la base de datos?")) {
+            const { error } = await _supabase.from('perfiles').delete().eq('id', id);
+            if (error) alert("Error al borrar");
+            else loadMembers();
+        }
+    }
+
+    // 4. SEGURIDAD DE ACCESO
+    async function checkAdmin() {
+        const { data: { user }, error: authError } = await _supabase.auth.getUser();
+        if (authError || !user) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        let { data: profile, error: dbError } = await _supabase.from('perfiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+        if (dbError || !profile || profile.role !== 'admin') {
+            alert("ACCESO DENEGADO: Solo Alto Mando.");
+            window.location.href = "index.html";
+        } else {
+            loadMembers(); // Si todo es OK, carga la lista
+        }
+    }
+
+    // Iniciar verificación
+    checkAdmin();
 </script>
+
+</body>
+</html>
