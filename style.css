@@ -174,4 +174,18 @@ footer {
     0% { transform: translateY(-100%); }
     100% { transform: translateY(100%); }
 }
+/* Estilo especial para el botón Admin */
+nav a.admin-btn {
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: none; /* Oculto por defecto */
+}
+nav a.admin-btn:hover {
+    background: var(--primary);
+    color: black;
+    box-shadow: 0 0 10px var(--shadow);
+}
+
 
