@@ -360,32 +360,61 @@
     let shipIdCounter = 1;
 
    async function initProfile() {
-        const { data: { user }, error } = await _supabase.auth.getUser();
+        // 1. Obtener el usuario que tiene la sesión abierta
+        const { data: { user }, error: authError } = await _supabase.auth.getUser();
 
-        if (error || !user) {
+        if (authError || !user) {
+            console.error("Error de autenticación:", authError);
             window.location.href = "login.html";
             return;
         }
 
         currentUser = user;
+        console.log("ID detectado por el navegador:", user.id);
 
-        // Buscamos tu perfil usando el ID que acabas de pegar en la base de datos
-        let { data: profile } = await _supabase.from('profiles')
+        // 2. Intentar buscar ese ID en la tabla 'profiles'
+        let { data: profile, error: dbError } = await _supabase.from('profiles')
             .select('*')
             .eq('id', user.id)
             .single();
         
-        console.log("Tu ID de sesión:", user.id);
-        console.log("Perfil encontrado en DB:", profile);
+        if (dbError) {
+            console.warn("Aviso: No se encontró perfil en la tabla 'profiles' para este ID. Revisa Supabase.");
+            console.error("Detalle del error:", dbError.message);
+        }
 
-        // Si el perfil existe y el rol es admin, forzamos que se vea el botón
+        // 3. LÓGICA DE ACTIVACIÓN DEL BOTÓN ADMIN
+        const adminBtn = document.getElementById('admin-link');
+        
         if (profile && profile.role === 'admin') {
-            const adminBtn = document.getElementById('admin-link');
+            console.log("¡Confirmado! Eres Admin en la base de datos.");
             if (adminBtn) {
                 adminBtn.style.display = 'inline-block';
-                console.log("¡Acceso de Admin concedido!");
+                adminBtn.style.visibility = 'visible'; // Refuerzo visual
+                adminBtn.style.color = '#ff9a1f';     // Aseguramos color
             }
+        } else {
+            console.log("El rol actual en la base de datos es:", profile ? profile.role : "Ninguno");
         }
+
+        // 4. Actualizar textos en la interfaz
+        if (profile) {
+            const nameDisplay = document.getElementById('display-name');
+            if (nameDisplay) nameDisplay.innerText = (profile.handle || "CIUDADANO").toUpperCase();
+            
+            const rankDisplay = document.querySelector('.user-rank');
+            if (rankDisplay) rankDisplay.innerText = profile.rank || "Cadete de Flota";
+
+            if (profile.ships && Array.isArray(profile.ships)) {
+                profile.ships.forEach(shipName => { renderShipCard(shipName); });
+            }
+        } else {
+            // Si no hay perfil, mostramos el email por defecto
+            document.getElementById('display-name').innerText = user.email.split('@')[0].toUpperCase();
+        }
+        
+        updateShipCount();
+    }
 
         // Actualizar visualmente el nombre
         if (profile) {
