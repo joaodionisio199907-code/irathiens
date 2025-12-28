@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Irathiens | Mando Central</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background: #04080f; color: #ff9a1f; font-family: 'JetBrains Mono', monospace; padding: 40px; }
+        .admin-box { 
+            max-width: 600px; margin: auto; border: 2px solid #ff9a1f; 
+            padding: 30px; background: rgba(255,154,31,0.05);
+            box-shadow: 0 0 20px rgba(255,154,31,0.2);
+        }
+        h1 { font-family: 'Orbitron'; text-align: center; letter-spacing: 3px; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.7rem; margin-bottom: 5px; }
+        input { 
+            width: 100%; padding: 10px; background: #000; border: 1px solid #ff9a1f; 
+            color: white; outline: none; box-sizing: border-box;
+        }
+        button { 
+            width: 100%; padding: 15px; background: #ff9a1f; color: black; 
+            border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; 
+        }
+        button:hover { background: #fff; }
+        .nav-back { text-align: center; margin-top: 20px; }
+        .nav-back a { color: #9fb3c8; text-decoration: none; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="admin-box">
+    <h1>MANDO CENTRAL</h1>
+    <p style="text-align: center; font-size: 0.7rem;">ALTA DE NUEVOS CIUDADANOS</p>
+    <hr style="border: 0; border-top: 1px solid #ff9a1f; margin: 20px 0;">
+
+    <div class="input-group">
+        <label>ID ÚNICO (Opcional - Deja vacío para miembros manuales)</label>
+        <input type="text" id="member-id" placeholder="UUID del usuario...">
+    </div>
+
+    <div class="input-group">
+        <label>HANDLE RSI (Nombre en Star Citizen)</label>
+        <input type="text" id="member-handle" placeholder="Ej: SGT_KAEL">
+    </div>
+
+    <div class="input-group">
+        <label>RANGO / ROL</label>
+        <input type="text" id="member-rank" placeholder="Ej: Piloto de Caza">
+    </div>
+
+    <button onclick="crearMiembro()">REGISTRAR EN EL MANIFIESTO</button>
+
+    <div class="nav-back">
+        <a href="Members.html">← VOLVER AL MANIFIESTO</a>
+    </div>
+</div>
+
+<script>
+    const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
+    const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+    async function crearMiembro() {
+        const id = document.getElementById('member-id').value || crypto.randomUUID();
+        const handle = document.getElementById('member-handle').value;
+        const rank = document.getElementById('member-rank').value;
+
+        if(!handle || !rank) return alert("Rellena handle y rango");
+
+        const { error } = await _supabase.from('profiles').insert([
+            { id: id, handle: handle, rank: rank, role: 'user' }
+        ]);
+
+        if (error) {
+            alert("ERROR: " + error.message);
+        } else {
+            alert("CIUDADANO REGISTRADO CORRECTAMENTE");
+            window.location.href = "Members.html";
+        }
+    }
+
+    // Seguridad básica: Si no eres admin, te echa
+    async function checkAdmin() {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (!user) { window.location.href = "login.html"; return; }
+        
+        let { data: profile } = await _supabase.from('profiles').select('role').eq('id', user.id).single();
+        if (!profile || profile.role !== 'admin') {
+            alert("ACCESO DENEGADO: SOLO ALTO MANDO");
+            window.location.href = "index.html";
+        }
+    }
+    checkAdmin();
+</script>
+
+</body>
+</html>
