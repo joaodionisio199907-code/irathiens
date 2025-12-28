@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irathiens | Fleet Command & Casino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #060b14;
+            --primary: #ff9a1f;
+            --accent: #00f2ff;
+            --glass: rgba(11, 18, 32, 0.95);
+            --border: rgba(255, 154, 31, 0.2);
+            --legendary: #9b59b6;
+            --mythic: #e74c3c;
+            --rare: #2ecc71;
+            --solana: #9945FF;
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        body {
+            margin: 0; font-family: 'Inter', sans-serif;
+            background-color: var(--bg); color: #fff;
+            background-image: url('img/Irathsky.png'); background-attachment: fixed;
+            background-size: cover; overflow-x: hidden;
+        }
+
+        /* --- NAVBAR ORIGINAL MANTENIDO --- */
+        header {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(6, 11, 20, 0.9); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+            max-width: 1400px; margin: auto; padding: 0.8rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 0.8rem;
+            font-family: 'Orbitron'; font-size: 1.2rem; text-decoration: none; color: var(--primary);
+        }
+
+        nav { display: flex; align-items: center; gap: 1.5rem; }
+        nav a {
+            color: #9fb3c8; text-decoration: none; font-weight: 500; font-size: 0.85rem;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        nav a:hover { color: var(--primary); }
+
+        /* --- CARTERA Y PERFIL (NUEVO) --- */
+        .user-controls { display: flex; gap: 15px; align-items: center; }
+
+        .dropdown-wrapper { position: relative; }
+
+        .nav-btn {
+            background: rgba(255,154,31,0.05); border: 1px solid var(--border);
+            padding: 8px 15px; border-radius: 4px; cursor: pointer;
+            font-family: 'Orbitron'; font-size: 0.75rem; color: var(--primary);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .nav-btn:hover { border-color: var(--primary); background: rgba(255,154,31,0.1); }
+
+        .dropdown-menu {
+            position: absolute; top: 120%; right: 0; width: 240px;
+            background: var(--glass); border: 1px solid var(--primary);
+            padding: 15px; display: none; z-index: 1100;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        .dropdown-wrapper:hover .dropdown-menu { display: block; }
+
+        .balance-item {
+            display: flex; justify-content: space-between; margin-bottom: 12px;
+            padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .menu-link {
+            display: flex; align-items: center; gap: 10px; color: #fff;
+            text-decoration: none; padding: 10px; border-radius: 4px; font-size: 0.8rem;
+        }
+        .menu-link:hover { background: rgba(255,255,255,0.05); color: var(--primary); }
+
+        /* --- RULETA PRO --- */
+        .casino-main { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+        .decryptor-box {
+            background: var(--glass); border: 1px solid var(--border);
+            border-radius: 8px; padding: 40px; position: relative;
+        }
+
+        .viewport {
+            width: 100%; height: 220px; background: #000;
+            border: 2px solid #1a1a1a; overflow: hidden; position: relative;
+            margin: 30px 0;
+        }
+
+        .viewport::after {
+            content: ""; position: absolute; left: 50%; top: 0; width: 3px; height: 100%;
+            background: var(--primary); z-index: 100; box-shadow: 0 0 15px var(--primary);
+        }
+
+        .track { display: flex; position: absolute; top: 0; left: 0; height: 100%; will-change: transform; }
+
+        .reward-card {
+            min-width: 180px; height: 180px; margin: 10px;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .reward-card i { font-size: 3rem; margin-bottom: 10px; }
+        .reward-card span { font-family: 'Orbitron'; font-size: 0.6rem; text-align: center; }
+
+        /* Rarezas */
+        .rarity-mythic { color: var(--mythic); border-bottom: 3px solid var(--mythic); }
+        .rarity-legendary { color: var(--legendary); border-bottom: 3px solid var(--legendary); }
+        .rarity-rare { color: var(--rare); border-bottom: 3px solid var(--rare); }
+
+        /* --- BOTONES --- */
+        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .btn-gamble {
+            background: transparent; border: 1px solid var(--primary); color: var(--primary);
+            padding: 20px; font-family: 'Orbitron'; cursor: pointer; font-weight: bold;
+        }
+        .btn-gamble:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px rgba(255,154,31,0.3); }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav">
+        <a href="index.html" class="logo">
+            <span style="font-weight: 900;">IRATHIENS</span>
+        </a>
+        
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="ShopySpace.html">Tienda</a>
+            <a href="#" style="color: var(--primary);">Casino</a>
+            <a href="Members.html">Flota</a>
+        </nav>
+
+        <div class="user-controls">
+            <div class="dropdown-wrapper">
+                <div class="nav-btn"><i class="fas fa-wallet"></i> CARTERA</div>
+                <div class="dropdown-menu">
+                    <div class="balance-item"><span>aUEC</span> <span id="val-auec" style="color: var(--primary);">0</span></div>
+                    <div class="balance-item"><span>EUROS</span> <span id="val-eur" style="color: #00ff88;">0.00€</span></div>
+                    <div class="balance-item"><span>SOLANA</span> <span id="val-sol" style="color: var(--solana);">0.00</span></div>
+                </div>
+            </div>
+
+            <div class="dropdown-wrapper">
+                <div class="nav-btn" style="border-color: var(--accent); color: var(--accent);">
+                    <i class="fas fa-user-astronaut"></i> <span id="user-display">PILOTO</span>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="config.html" class="menu-link"><i class="fas fa-cog"></i> CONFIGURACIÓN</a>
+                    <a href="inventory.html" class="menu-link"><i class="fas fa-box-open"></i> MI HANGAR</a>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 0;"></div>
+                    <a href="#" class="menu-link" style="color: var(--mythic);" onclick="signOut()">
+                        <i class="fas fa-sign-out-alt"></i> CERRAR SESIÓN
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="casino-main">
+    <div class="decryptor-box">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="font-family: 'Orbitron'; letter-spacing: 5px; margin: 0;">QUANTUM_DECRYPTOR</h2>
+            <span style="color: var(--primary); font-size: 0.7rem; font-family: 'JetBrains Mono';">SISTEMA V.6 ONLINE</span>
+        </div>
+
+        <div class="viewport">
+            <div class="track" id="rouletteTrack"></div>
+        </div>
+
+        <div class="btn-grid">
+            <button class="btn-gamble" onclick="spin('common', 5000)">CAJA SUMINISTROS<span>5,000 aUEC</span></button>
+            <button class="btn-gamble" onclick="spin('elite', 25000)" style="border-color: var(--legendary); color: var(--legendary);">CAJA ELITE<span>25,000 aUEC</span></button>
+            <button class="btn-gamble" onclick="spin('sol', 1)" style="border-color: var(--solana); color: var(--solana);">CAJA SOLANA<span>0.1 SOL</span></button>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const prizes = [
+        { name: "AURORA MR", icon: "fa-shuttle-space", rarity: "rare" },
+        { name: "MULTITOOL", icon: "fa-tools", rarity: "common" },
+        { name: "CARRACK", icon: "fa-rocket", rarity: "mythic" },
+        { name: "FS-9 LMG", icon: "fa-gun", rarity: "rare" },
+        { name: "CONSTELLATION", icon: "fa-space-awesome", rarity: "legendary" },
+        { name: "MEDPEN", icon: "fa-syringe", rarity: "common" }
+    ];
+
+    async function init() {
+        // Conexión Supabase aquí
+        // Cargar saldos...
+        document.getElementById('val-auec').innerText = "250,000";
+        document.getElementById('user-display').innerText = "ADM_KAEL";
+    }
+
+    function spin(boxType, cost) {
+        const track = document.getElementById('rouletteTrack');
+        track.style.transition = "none";
+        track.style.transform = "translateX(0)";
+        track.innerHTML = "";
+
+        const pool = [];
+        for(let i=0; i<80; i++) {
+            const p = prizes[Math.floor(Math.random() * prizes.length)];
+            pool.push(p);
+            const card = document.createElement('div');
+            card.className = `reward-card rarity-${p.rarity}`;
+            card.innerHTML = `<i class="fas ${p.icon}"></i><span>${p.name}</span>`;
+            track.appendChild(card);
+        }
+
+        setTimeout(() => {
+            const cardWidth = 200; // card + margins
+            const stopAt = (75 * cardWidth) - (window.innerWidth / 2) + (cardWidth / 2);
+            track.style.transition = "transform 7s cubic-bezier(0.1, 0, 0.1, 1)";
+            track.style.transform = `translateX(-${stopAt}px)`;
+        }, 100);
+    }
+
+    init();
+</script>
+</body>
+</html>
