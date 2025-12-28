@@ -232,9 +232,45 @@
             requestAnimationFrame(updateAndDraw);
         }
         updateAndDraw();
-    </script>
+
+    // 1. Deshabilitar el Click Derecho (Menú contextual)
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        alert("SISTEMA DE SEGURIDAD IRATHIENS: Acceso al código restringido.");
+    }, false);
+
+    // 2. Bloquear atajos de teclado (F12, Ctrl+Shift+I, Ctrl+U)
+    document.onkeydown = function(e) {
+        // F12
+        if (e.keyCode == 123) {
+            return false;
+        }
+        // Ctrl+Shift+I (Inspeccionar)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+            return false;
+        }
+        // Ctrl+Shift+C (Seleccionar elemento)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+            return false;
+        }
+        // Ctrl+Shift+J (Consola)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+            return false;
+        }
+        // Ctrl+U (Ver código fuente)
+        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+            return false;
+        }
+    };
+
+    // 3. Deshabilitar arrastre de imágenes y selección de texto
+    document.onselectstart = function() { return false; }; // No permite seleccionar texto
+    document.ondragstart = function() { return false; };   // No permite arrastrar imágenes
+</script>
+
 </body>
 </html>
+
 
 
 
