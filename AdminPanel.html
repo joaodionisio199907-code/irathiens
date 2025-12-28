@@ -1,150 +1,46 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Irathiens | Mando Central</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { background: #04080f; color: #ff9a1f; font-family: 'JetBrains Mono', monospace; padding: 20px; }
-        .admin-box { 
-            max-width: 800px; margin: auto; border: 2px solid #ff9a1f; 
-            padding: 30px; background: rgba(255,154,31,0.05);
-            box-shadow: 0 0 20px rgba(255,154,31,0.2);
-        }
-        h1 { font-family: 'Orbitron'; text-align: center; letter-spacing: 3px; }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 0.7rem; margin-bottom: 5px; }
-        input { 
-            width: 100%; padding: 10px; background: #000; border: 1px solid #ff9a1f; 
-            color: white; outline: none; box-sizing: border-box;
-        }
-        button { 
-            width: 100%; padding: 15px; background: #ff9a1f; color: black; 
-            border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; 
-        }
-        button:hover { background: #fff; }
-        
-        /* Estilos de la Tabla */
-        .member-list { margin-top: 40px; border-top: 2px solid #ff9a1f; padding-top: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
-        th { text-align: left; color: #ff9a1f; border-bottom: 1px solid #ff9a1f; padding: 10px; }
-        td { padding: 10px; border-bottom: 1px solid rgba(255,154,31,0.1); color: white; }
-        .btn-delete { background: #ff4444; color: white; padding: 5px 10px; border: none; font-size: 0.7rem; cursor: pointer; width: auto; }
-        .btn-delete:hover { background: white; color: red; }
-        
-        .nav-back { text-align: center; margin-top: 20px; }
-        .nav-back a { color: #9fb3c8; text-decoration: none; font-size: 0.8rem; }
-    </style>
-</head>
-<body>
-
-<div class="admin-box">
-    <h1>MANDO CENTRAL</h1>
-    <p style="text-align: center; font-size: 0.7rem;">ALTA DE NUEVOS CIUDADANOS</p>
-    
-    <div class="input-group">
-        <label>HANDLE RSI</label>
-        <input type="text" id="member-handle" placeholder="Ej: SGT_KAEL">
-    </div>
-    <div class="input-group">
-        <label>RANGO</label>
-        <input type="text" id="member-rank" placeholder="Ej: Piloto de Caza">
-    </div>
-    <button onclick="crearMiembro()">REGISTRAR EN EL MANIFIESTO</button>
-
-    <div class="member-list">
-        <h2 style="font-family: 'Orbitron'; font-size: 1rem;">MANIFIESTO ACTUAL</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>HANDLE</th>
-                    <th>RANGO</th>
-                    <th>ROL</th>
-                    <th>ACCIÓN</th>
-                </tr>
-            </thead>
-            <tbody id="members-table-body">
-                </tbody>
-        </table>
-    </div>
-
-    <div class="nav-back">
-        <a href="Members.html">← VOLVER AL MANIFIESTO</a>
-    </div>
+<div class="input-group">
+    <label>HANDLE RSI</label>
+    <input type="text" id="member-handle" placeholder="Ej: SGT_KAEL">
+</div>
+<div class="input-group">
+    <label>RANGO</label>
+    <input type="text" id="member-rank" placeholder="Ej: Piloto de Caza">
+</div>
+<div class="input-group">
+    <label>URL DE LA FOTO (Avatar)</label>
+    <input type="text" id="member-photo" placeholder="https://enlace-a-tu-foto.jpg">
 </div>
 
+<button onclick="crearMiembro()">REGISTRAR EN EL MANIFIESTO</button>
+
 <script>
-    const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
-    const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
-    const _supabase = supabase.createClient(SB_URL, SB_KEY);
-
-    // 1. CARGAR MIEMBROS AL INICIAR
-    async function loadMembers() {
-        const { data: members, error } = await _supabase
-            .from('perfiles') // Usamos tu nombre de tabla real
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) return console.error(error);
-
-        const tbody = document.getElementById('members-table-body');
-        tbody.innerHTML = '';
-
-        members.forEach(m => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${m.handle || 'S/N'}</td>
-                <td>${m.rank || 'Ciudadano'}</td>
-                <td>${m.role}</td>
-                <td>
-                    <button class="btn-delete" onclick="eliminarMiembro('${m.id}')">ELIMINAR</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    // 2. CREAR MIEMBRO
+    // Actualiza la función crearMiembro dentro de tu script
     async function crearMiembro() {
         const handle = document.getElementById('member-handle').value;
         const rank = document.getElementById('member-rank').value;
-        if(!handle || !rank) return alert("Completa los campos");
+        const photo = document.getElementById('member-photo').value;
+
+        if(!handle || !rank) return alert("Completa handle y rango");
 
         const { error } = await _supabase.from('perfiles').insert([
-            { id: crypto.randomUUID(), handle: handle, rank: rank, role: 'user' }
+            { 
+                id: crypto.randomUUID(), 
+                handle: handle, 
+                rank: rank, 
+                avatar_url: photo, // Aquí es donde se guarda la foto
+                role: 'user' 
+            }
         ]);
 
-        if (error) alert("Error: " + error.message);
-        else {
-            alert("REGISTRADO");
-            loadMembers(); // Recargamos la tabla
-        }
-    }
-
-    // 3. ELIMINAR MIEMBRO
-    async function eliminarMiembro(id) {
-        if(confirm("¿Seguro que quieres eliminar a este ciudadano del manifiesto?")) {
-            const { error } = await _supabase.from('perfiles').delete().eq('id', id);
-            if (error) alert("Error al eliminar");
-            else loadMembers();
-        }
-    }
-
-    // 4. SEGURIDAD
-    async function checkAdmin() {
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) { window.location.href = "login.html"; return; }
-        
-        let { data: profile } = await _supabase.from('perfiles').select('role').eq('id', user.id).single();
-        if (!profile || profile.role !== 'admin') {
-            window.location.href = "index.html";
+        if (error) {
+            alert("Error: " + error.message);
         } else {
-            loadMembers(); // Si es admin, cargamos la lista
+            alert("CIUDADANO REGISTRADO CORRECTAMENTE");
+            // Limpiar campos
+            document.getElementById('member-handle').value = '';
+            document.getElementById('member-rank').value = '';
+            document.getElementById('member-photo').value = '';
+            loadMembers(); // Recargar la tabla de abajo
         }
     }
-
-    checkAdmin();
 </script>
-</body>
-</html>
