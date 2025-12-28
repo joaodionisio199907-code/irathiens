@@ -82,14 +82,41 @@
     }
 
     // Seguridad básica: Si no eres admin, te echa
-    async function checkAdmin() {
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) { window.location.href = "login.html"; return; }
+  async function checkAdmin() {
+        console.log("Verificando credenciales de Mando Central...");
         
-        let { data: profile } = await _supabase.from('profiles').select('role').eq('id', user.id).single();
+        // 1. Obtener usuario actual
+        const { data: { user }, error: authError } = await _supabase.auth.getUser();
+        
+        if (authError || !user) {
+            console.error("Sesión no encontrada:", authError);
+            window.location.href = "login.html";
+            return;
+        }
+
+        console.log("Usuario autenticado:", user.id);
+
+        // 2. Consultar el rol en la tabla 'profiles'
+        // IMPORTANTE: Asegúrate de que la tabla se llama 'profiles' y no 'perfiles'
+        let { data: profile, error: dbError } = await _supabase.from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+        if (dbError) {
+            console.error("Error al consultar rol:", dbError.message);
+            alert("ERROR DE SISTEMA: No se pudo verificar tu rango.");
+            window.location.href = "index.html";
+            return;
+        }
+
+        // 3. Validar si es admin
         if (!profile || profile.role !== 'admin') {
+            console.warn("Acceso denegado. Rol detectado:", profile ? profile.role : "Ninguno");
             alert("ACCESO DENEGADO: SOLO ALTO MANDO");
             window.location.href = "index.html";
+        } else {
+            console.log("Acceso concedido. Bienvenido, Almirante.");
         }
     }
     checkAdmin();
