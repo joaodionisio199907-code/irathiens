@@ -187,98 +187,45 @@
 <footer>© 2025 Irathiens Command · Seguridad Encriptada</footer>
 
 <script>
-    const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
-    const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
-    const _supabase = supabase.createClient(SB_URL, SB_KEY);
+   const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
+const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
+const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    let currentUser = null;
+let currentUser = null;
 
-    async function init() {
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) { window.location.href = "login.html"; return; }
-        currentUser = user;
+// --- INICIO DE LA APLICACIÓN ---
+async function init() {
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) { window.location.href = "login.html"; return; }
+    currentUser = user;
 
-        let { data: profile } = await _supabase.from('perfiles').select('*').eq('id', user.id).single();
-        
-        if (profile) {
-            document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
-            document.getElementById('display-rank').innerText = profile.rank || "Cadete de Flota";
-            if (profile.role === 'admin') document.getElementById('admin-link').style.display = 'inline';
-            if (profile.ships) profile.ships.forEach(s => renderShipCard(s));
-        }
-        updateShipCount();
-    }
-
-    async function saveHandle() {
-        const val = document.getElementById('handle-input').value;
-        if (!val) return;
-        await _supabase.from('perfiles').upsert({ id: currentUser.id, handle: val });
-        location.reload();
-    }
-
-    function renderShipCard(name) {
-        const grid = document.getElementById('fleet-grid');
-        const card = document.createElement('div');
-        card.className = 'ship-card';
-        card.innerHTML = `
-            <img src="https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg" class="ship-img">
-            <div style="font-family:Orbitron; font-size:0.9rem; color:#ffb347; margin-top:10px">${name}</div>
-            <button onclick="removeShip(this)" style="background:rgba(255,0,0,0.1); border:1px solid red; color:red; cursor:pointer; width:100%; margin-top:10px; padding:5px; border-radius:4px; font-family:Orbitron; font-size:0.6rem;">ELIMINAR</button>
-        `;
-        grid.appendChild(card);
-    }
-
-    async function addShip() {
-        const name = document.getElementById('ship-selector').value;
-        if (!name) return;
-        renderShipCard(name);
-        const ships = Array.from(document.querySelectorAll('.ship-card div')).map(el => el.innerText);
-        await _supabase.from('perfiles').update({ ships: ships }).eq('id', currentUser.id);
-        updateShipCount();
-    }
-
-    function removeShip(btn) {
-        if(confirm("¿Retirar nave del hangar?")) {
-            btn.parentElement.remove();
-            updateShipCount();
+    // Cargar Perfil y Naves
+    let { data: profile } = await _supabase.from('perfiles').select('*').eq('id', user.id).single();
+    
+    if (profile) {
+        document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
+        document.getElementById('display-rank').innerText = profile.rank || "Cadete de Flota";
+        if (profile.role === 'admin') document.getElementById('admin-link').style.display = 'inline';
+        if (profile.ships) {
+            document.getElementById('fleet-grid').innerHTML = ''; // Limpiar antes de cargar
+            profile.ships.forEach(s => renderShipCard(s));
         }
     }
+    updateShipCount();
 
-    function updateShipCount() {
-        document.getElementById('ship-count').innerText = document.querySelectorAll('.ship-card').length;
-    }
+    // Iniciar Chat
+    initChat();
+}
 
-    async function handleLogout() {
-        await _supabase.auth.signOut();
-        window.location.href = "login.html";
-    }
-
-    // Parallax
-    window.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * -20;
-        const y = (e.clientY / window.innerHeight - 0.5) * -20;
-        document.getElementById('bg-parallax').style.transform = `translate(${x}px, ${y}px)`;
-    });
-
-    // Seguridad
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.onkeydown = e => {
-        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) || (e.ctrlKey && e.keyCode == 85)) return false;
-    };
-
-    init();
-    // 1. Abrir/Cerrar Chat
+// --- LÓGICA DEL CHAT ---
 function toggleChat() {
     document.getElementById('chatWindow').classList.toggle('active');
 }
 
-// 2. Enviar mensaje detectando el usuario actual
 async function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const content = input.value.trim();
-    
-    // Sacamos el nombre del elemento "display-name" que ya tienes en tu perfil
-    const userName = document.getElementById('display-name').innerText || "Desconocido";
+    const userName = document.getElementById('display-name').innerText;
 
     if (content !== "") {
         const { error } = await _supabase
@@ -288,46 +235,33 @@ async function sendChatMessage() {
                 content: content,
                 user_id: currentUser.id 
             }]);
-
         if (!error) input.value = "";
     }
 }
 
-// 3. Escuchar mensajes nuevos y cargar historial (Últimas 24h)
 async function initChat() {
-    // Cargar mensajes existentes
-    let { data: msgs } = await _supabase
-        .from('mensajes')
-        .select('*')
-        .order('created_at', { ascending: true });
-
+    // 1. Cargar mensajes de la base de datos
+    let { data: msgs } = await _supabase.from('mensajes').select('*').order('created_at', { ascending: true });
     if (msgs) msgs.forEach(m => renderMsg(m));
 
-    // Suscribirse a tiempo real
-    _supabase
-        .channel('chat-room')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
-            renderMsg(payload.new);
-        })
-        .subscribe();
+    // 2. Escuchar mensajes nuevos en tiempo real
+    _supabase.channel('chat-room').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
+        renderMsg(payload.new);
+    }).subscribe();
 }
 
 function renderMsg(data) {
     const container = document.getElementById('chatMessages');
     const time = new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    // Determinamos si es un mensaje especial
-    // Si el nombre es 'SYSTEM' o si quieres añadir lógica por ID de admin
-    const isSystem = data.user_name === 'SYSTEM';
-    const isAdmin = data.user_name === 'JOAO_DIONISIO' || data.user_name === 'ADMIN'; // Puedes añadir aquí los nombres de admin
+    // NOMBRES QUE TENDRÁN COLOR CYAN [ADMIN]
+    const isAdmin = data.user_name === 'JOAO_DIONISIO' || data.user_name === 'ADMIN';
 
     const div = document.createElement('div');
     div.className = 'msg';
-    
-    // Aplicamos estilos especiales si es Admin
     if (isAdmin) {
-        div.style.borderLeftColor = '#00ffff'; // Borde Cyan
-        div.style.background = 'rgba(0, 255, 255, 0.05)'; // Fondo sutil Cyan
+        div.style.borderLeftColor = '#00ffff';
+        div.style.background = 'rgba(0, 255, 255, 0.05)';
     }
 
     div.innerHTML = `
@@ -337,13 +271,75 @@ function renderMsg(data) {
         </span>
         <span style="color: ${isAdmin ? '#e6f1ff' : 'inherit'}">${data.content}</span>
     `;
-    
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
 }
 
-// Llamar a initChat() después de que init() de tu perfil termine
-// Solo añade "initChat();" al final de tu función init() existente.
+// --- GESTIÓN DE NAVES (SISTEMA DE ANTES) ---
+function renderShipCard(name) {
+    const grid = document.getElementById('fleet-grid');
+    const card = document.createElement('div');
+    card.className = 'ship-card';
+    card.innerHTML = `
+        <img src="https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg" class="ship-img">
+        <div style="font-family:Orbitron; font-size:0.9rem; color:#ffb347; margin-top:10px">${name}</div>
+        <button onclick="removeShip(this)" style="background:rgba(255,0,0,0.1); border:1px solid red; color:red; cursor:pointer; width:100%; margin-top:10px; padding:5px; border-radius:4px; font-family:Orbitron; font-size:0.6rem;">ELIMINAR</button>
+    `;
+    grid.appendChild(card);
+}
+
+async function addShip() {
+    const name = document.getElementById('ship-selector').value;
+    if (!name) return;
+    renderShipCard(name);
+    const ships = Array.from(document.querySelectorAll('.ship-card div')).map(el => el.innerText);
+    await _supabase.from('perfiles').update({ ships: ships }).eq('id', currentUser.id);
+    updateShipCount();
+}
+
+async function removeShip(btn) {
+    if(confirm("¿Retirar nave del hangar?")) {
+        btn.parentElement.remove();
+        const ships = Array.from(document.querySelectorAll('.ship-card div')).map(el => el.innerText);
+        await _supabase.from('perfiles').update({ ships: ships }).eq('id', currentUser.id);
+        updateShipCount();
+    }
+}
+
+function updateShipCount() {
+    const count = document.querySelectorAll('.ship-card').length;
+    document.getElementById('ship-count').innerText = count;
+}
+
+// --- UTILIDADES ---
+async function saveHandle() {
+    const val = document.getElementById('handle-input').value;
+    if (!val) return;
+    await _supabase.from('perfiles').upsert({ id: currentUser.id, handle: val });
+    location.reload();
+}
+
+async function handleLogout() {
+    await _supabase.auth.signOut();
+    window.location.href = "login.html";
+}
+
+// Tecla Enter para el chat
+document.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && document.activeElement.id === 'chatInput') {
+        sendChatMessage();
+    }
+});
+
+// Efecto Parallax del fondo
+window.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * -20;
+    const y = (e.clientY / window.innerHeight - 0.5) * -20;
+    const bg = document.getElementById('bg-parallax');
+    if(bg) bg.style.transform = `translate(${x}px, ${y}px)`;
+});
+
+init();
 </script>
     <style>
     .chat-bubble {
