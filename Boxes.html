@@ -52,7 +52,7 @@
         }
         nav a:hover { color: var(--primary); }
 
-        /* --- CARTERA Y PERFIL (NUEVO) --- */
+        /* --- CARTERA Y PERFIL --- */
         .user-controls { display: flex; gap: 15px; align-items: center; }
 
         .dropdown-wrapper { position: relative; }
@@ -135,7 +135,7 @@
 <header>
     <div class="nav">
         <a href="index.html" class="logo">
-            <span style="font-weight: 900;">IRATHIENS</span>
+            <span style="font-weight: 900;">IRATHIENS CASINO</span>
         </a>
         
         <nav>
@@ -157,7 +157,7 @@
 
             <div class="dropdown-wrapper">
                 <div class="nav-btn" style="border-color: var(--accent); color: var(--accent);">
-                    <i class="fas fa-user-astronaut"></i> <span id="user-display">PILOTO</span>
+                    <i class="fas fa-user-astronaut"></i> <span id="user-display">CARGANDO...</span>
                 </div>
                 <div class="dropdown-menu">
                     <a href="config.html" class="menu-link"><i class="fas fa-cog"></i> CONFIGURACIÓN</a>
@@ -193,6 +193,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+    // --- CONFIGURACIÓN SUPABASE ---
+    const SUPABASE_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     const prizes = [
         { name: "AURORA MR", icon: "fa-shuttle-space", rarity: "rare" },
         { name: "MULTITOOL", icon: "fa-tools", rarity: "common" },
@@ -203,10 +209,29 @@
     ];
 
     async function init() {
-        // Conexión Supabase aquí
-        // Cargar saldos...
-        document.getElementById('val-auec').innerText = "250,000";
-        document.getElementById('user-display').innerText = "ADM_KAEL";
+        // Verificar sesión de Supabase
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+        if (session) {
+            const user = session.user;
+            
+            // 1. Mostrar nombre de usuario (metadatos o email)
+            const userName = user.user_metadata.display_name || user.email.split('@')[0];
+            document.getElementById('user-display').innerText = userName.toUpperCase();
+
+            // 2. Aquí puedes cargar saldos reales si los tienes en una tabla
+            document.getElementById('val-auec').innerText = "250,000";
+            document.getElementById('val-eur').innerText = "10.00€";
+            document.getElementById('val-sol').innerText = "0.50";
+        } else {
+            // Si no hay sesión iniciada
+            document.getElementById('user-display').innerText = "INVITADO";
+        }
+    }
+
+    async function signOut() {
+        const { error } = await supabaseClient.auth.signOut();
+        window.location.reload();
     }
 
     function spin(boxType, cost) {
@@ -226,13 +251,14 @@
         }
 
         setTimeout(() => {
-            const cardWidth = 200; // card + margins
+            const cardWidth = 200; 
             const stopAt = (75 * cardWidth) - (window.innerWidth / 2) + (cardWidth / 2);
             track.style.transition = "transform 7s cubic-bezier(0.1, 0, 0.1, 1)";
             track.style.transform = `translateX(-${stopAt}px)`;
         }, 100);
     }
 
+    // Inicializar al cargar la página
     init();
 </script>
 </body>
