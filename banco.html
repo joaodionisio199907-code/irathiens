@@ -353,9 +353,18 @@
 
 // Ejecutar cuando se abre la página
 document.addEventListener('DOMContentLoaded', cargarCapitalReal);
+    const canalFinanzas = _supabase
+  .channel('cambios-finanzas')
+  .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tesoreria_corp' }, (payload) => {
+      const nuevoMonto = payload.new.cantidad;
+      const formateado = new Intl.NumberFormat('de-DE').format(nuevoMonto);
+      document.querySelector('.big-value').innerHTML = `${formateado} <small style="font-size: 0.8rem;">aUEC</small>`;
+  })
+  .subscribe();
 </script>
 
 </body>
 
 </html>
+
 
