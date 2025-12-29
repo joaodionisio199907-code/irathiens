@@ -297,15 +297,62 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // RELOJ EN TIEMPO REAL
+    // --- CONFIGURACIÓN DE CONEXIÓN ---
+    const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
+    const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+    // --- RELOJ EN TIEMPO REAL ---
     function updateClock() {
         const now = new Date();
         document.getElementById('clock').innerText = now.toISOString().split('T')[1].split('.')[0];
     }
     setInterval(updateClock, 1000);
 
-    // GRÁFICO PROFESIONAL
+    // --- CARGAR CAPITAL DESDE SUPABASE ---
+    async function cargarCapitalReal() {
+        console.log("Consultando tesorería...");
+        const { data, error } = await _supabase
+            .from('tesoreria_corp')
+            .select('cantidad')
+            .eq('id', 1)
+            .single();
+
+        if (error) {
+            console.error("Error cargando capital:", error.message);
+            return;
+        }
+
+        if (data) {
+            const formateado = new Intl.NumberFormat('de-DE').format(data.cantidad);
+            const display = document.querySelector('.big-value');
+            if (display) {
+                display.innerHTML = `${formateado} <small style="font-size: 0.8rem;">aUEC</small>`;
+            }
+        }
+    }
+
+    // --- SISTEMA DE TIEMPO REAL (REALTIME) ---
+    const canalFinanzas = _supabase
+        .channel('cambios-finanzas')
+        .on('postgres_changes', { 
+            event: 'UPDATE', 
+            schema: 'public', 
+            table: 'tesoreria_corp' 
+        }, (payload) => {
+            console.log("Cambio detectado en tiempo real:", payload);
+            const nuevoMonto = payload.new.cantidad;
+            const formateado = new Intl.NumberFormat('de-DE').format(nuevoMonto);
+            const display = document.querySelector('.big-value');
+            if (display) {
+                display.innerHTML = `${formateado} <small style="font-size: 0.8rem;">aUEC</small>`;
+            }
+        })
+        .subscribe();
+
+    // --- GRÁFICO PROFESIONAL (CHART.JS) ---
     const ctx = document.getElementById('mainChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
@@ -332,39 +379,14 @@
             }
         }
     });
-    async function cargarCapitalReal() {
-    const { data, error } = await _supabase
-        .from('tesoreria_corp')
-        .select('cantidad')
-        .eq('id', 1)
-        .single();
 
-    if (data) {
-        // Formateamos el número para que tenga puntos (805.031.572)
-        const formateado = new Intl.NumberFormat('de-DE').format(data.cantidad);
-        
-        // Buscamos el div con la clase 'big-value' y actualizamos el texto
-        const display = document.querySelector('.big-value');
-        if (display) {
-            display.innerHTML = `${formateado} <small style="font-size: 0.8rem;">aUEC</small>`;
-        }
-    }
-}
-
-// Ejecutar cuando se abre la página
-document.addEventListener('DOMContentLoaded', cargarCapitalReal);
-    const canalFinanzas = _supabase
-  .channel('cambios-finanzas')
-  .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tesoreria_corp' }, (payload) => {
-      const nuevoMonto = payload.new.cantidad;
-      const formateado = new Intl.NumberFormat('de-DE').format(nuevoMonto);
-      document.querySelector('.big-value').innerHTML = `${formateado} <small style="font-size: 0.8rem;">aUEC</small>`;
-  })
-  .subscribe();
+    // Ejecutar carga inicial al abrir
+    document.addEventListener('DOMContentLoaded', cargarCapitalReal);
 </script>
 
 </body>
 
 </html>
+
 
 
