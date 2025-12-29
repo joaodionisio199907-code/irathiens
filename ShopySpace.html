@@ -362,6 +362,38 @@
 window.addEventListener('load', loadMarketItems);
 
     window.onload = init;
+    // Función para verificar quién es el piloto actual y cargar su perfil
+async function checkUserSession() {
+    const { data: { session } } = await _supabase.auth.getSession();
+    
+    if (session) {
+        const user = session.user;
+        // Buscamos su perfil automático creado por el Trigger
+        const { data: profile } = await _supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+        if (profile) {
+            // Actualizamos la interfaz con sus datos reales
+            document.getElementById('profile-handle').innerText = profile.rsi_handle || "PILOTO_SIN_NOMBRE";
+            document.getElementById('bio-token').innerText = profile.bio_token;
+            document.getElementById('karma-val').innerText = profile.karma_points;
+            
+            if (profile.is_verified) {
+                const tag = document.getElementById('status-tag');
+                tag.innerText = "ESTADO: VERIFICADO";
+                tag.style.color = "var(--success)";
+            }
+        }
+    } else {
+        console.log("SISTEMA: No hay sesión activa. Por favor, inicia sesión.");
+    }
+}
+
+// Ejecutar al cargar la página
+window.addEventListener('load', checkUserSession);
 </script>
 
 </body>
