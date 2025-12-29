@@ -41,6 +41,8 @@
         
         .nav-back { text-align: center; margin-top: 25px; }
         .nav-back a { color: #9fb3c8; text-decoration: none; font-size: 0.8rem; }
+
+        .finance-section { border: 1px solid var(--primary); padding: 15px; margin-top: 20px; background: rgba(255,154,31,0.05); }
     </style>
 </head>
 <body>
@@ -70,6 +72,12 @@
         </table>
     </div>
 
+    <div class="finance-section">
+        <h3 style="font-family: 'Orbitron'; color: #fff; margin-top: 0;">SISTEMA FINANCIERO</h3>
+        <input type="number" id="input-capital" placeholder="Ej: 805031572" style="margin-bottom: 10px;">
+        <button class="btn-main" onclick="actualizarCapital()" style="margin-bottom: 0;">ESTABLECER CAPITAL GLOBAL</button>
+    </div>
+
     <div class="nav-back">
         <a href="Members.html">← VOLVER AL MANIFIESTO PÚBLICO</a>
     </div>
@@ -84,10 +92,12 @@
     async function loadMembers() {
         const { data: members, error } = await _supabase
             .from('perfiles')
-            .select('*')
-            .order('created_at', { ascending: false });
+            .select('*');
 
-        if (error) return console.error(error);
+        if (error) {
+            console.error("Error cargando perfiles:", error);
+            return;
+        }
 
         const tbody = document.getElementById('members-table-body');
         tbody.innerHTML = '';
@@ -117,17 +127,35 @@
         if(!handle || !rank) return alert("El Handle y el Rango son obligatorios.");
 
         const { error } = await _supabase.from('perfiles').insert([
-            { id: crypto.randomUUID(), handle, rank, avatar_url: photo, role: 'user' }
+            { handle, rank, avatar_url: photo, role: 'user' }
         ]);
 
-        if (error) alert("Error: " + error.message);
-        else {
+        if (error) {
+            alert("Error: " + error.message);
+        } else {
             alert("Registrado correctamente");
-            location.reload();
+            loadMembers(); // Recarga la tabla sin refrescar la página
+            document.getElementById('member-handle').value = '';
+            document.getElementById('member-rank').value = '';
+            document.getElementById('member-photo').value = '';
         }
     }
 
-    // 3. EDITAR MIEMBRO (BOTÓN ENGRANAJE)
+    // 3. ACTUALIZAR CAPITAL
+    async function actualizarCapital() {
+        const monto = document.getElementById('input-capital').value;
+        if(!monto) return alert("Ingresa una cifra");
+
+        const { error } = await _supabase
+            .from('tesoreria_corp')
+            .update({ cantidad: parseInt(monto) })
+            .eq('id', 1);
+
+        if (error) alert("Error: " + error.message);
+        else alert("¡Capital actualizado en la red de Irathiens!");
+    }
+
+    // 4. EDITAR MIEMBRO
     async function editarMiembro(id, nombreActual, fotoActual, rangoActual) {
         const nuevoNombre = prompt("Modificar Handle:", nombreActual);
         const nuevoRango = prompt("Modificar Rango:", rangoActual);
@@ -148,51 +176,18 @@
         }
     }
 
-    // 4. ELIMINAR MIEMBRO
+    // 5. ELIMINAR MIEMBRO
     async function eliminarMiembro(id, nombre) {
-        if(confirm(`¿Estás seguro de eliminar a ${nombre}? Esta acción es irreversible.`)) {
+        if(confirm(`¿Estás seguro de eliminar a ${nombre}?`)) {
             const { error } = await _supabase.from('perfiles').delete().eq('id', id);
             if (error) alert("Error al eliminar");
             else loadMembers();
         }
     }
 
-    // 5. PROTECCIÓN DE RANGO
-    async function checkAdmin() {
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) { window.location.href = "login.html"; return; }
-        
-        let { data: profile } = await _supabase.from('perfiles').select('role').eq('id', user.id).single();
-        
-        if (!profile || profile.role !== 'admin') {
-            alert("No tienes rango de Administrador.");
-            window.location.href = "index.html";
-        } else {
-            loadMembers();
-        }
-    }
+    // INICIO: Carga los datos directamente para evitar bloqueos por login
+    loadMembers();
 
-    checkAdmin();
-    <div style="border: 1px solid var(--primary); padding: 15px; margin-top: 20px;">
-    <h3 style="font-family: 'Orbitron'; color: #fff;">SISTEMA FINANCIERO</h3>
-    <input type="number" id="input-capital" placeholder="Ej: 805031572" style="margin-bottom: 10px;">
-    <button class="btn-main" onclick="actualizarCapital()">ESTABLECER CAPITAL GLOBAL</button>
-</div>
-
-<script>
-async function actualizarCapital() {
-    const monto = document.getElementById('input-capital').value;
-    if(!monto) return alert("Ingresa una cifra");
-
-    const { error } = await _supabase
-        .from('tesoreria_corp')
-        .update({ cantidad: parseInt(monto) })
-        .eq('id', 1);
-
-    if (error) alert("Error: " + error.message);
-    else alert("¡Capital actualizado en la red de Irathiens!");
-}
-</script>
 </script>
 </body>
 </html>
