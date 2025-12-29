@@ -314,6 +314,52 @@
         loadMarketItems();
     }
 }
+    async function loadMarketItems() {
+    const grid = document.getElementById('market-items');
+    grid.innerHTML = '<p style="font-family:JetBrains Mono">ESCANEANDO_FRECUENCIAS...</p>';
+
+    // Consultamos la tabla marketplace_items y traemos el rsi_handle del vendedor
+    const { data: items, error } = await _supabase
+        .from('marketplace_items')
+        .select(`
+            *,
+            profiles:seller_id (rsi_handle, is_verified)
+        `)
+        .eq('status', 'available')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        grid.innerHTML = '<p style="color:var(--danger)">ERROR_RADAR: No se pudo conectar con la base de datos.</p>';
+        return;
+    }
+
+    grid.innerHTML = ''; // Limpiar cargando
+
+    items.forEach(item => {
+        const isVerified = item.profiles?.is_verified;
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `
+            <div class="item-img" style="background-image: url('https://via.placeholder.com/300x160/060b14/ff9a1f?text=${item.item_name}');"></div>
+            <div style="padding: 15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.6rem; color:var(--primary); font-family:'JetBrains Mono';">${item.category.toUpperCase()}</span>
+                    ${isVerified ? '<span class="verified-badge"><i class="fas fa-check"></i> VERIFICADO</span>' : ''}
+                </div>
+                <h3 style="font-family: var(--font-hud); font-size: 1rem; margin: 10px 0;">${item.item_name}</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="color: var(--accent); font-family: var(--font-hud); font-size: 1.1rem;">${item.price_auec.toLocaleString()} aUEC</div>
+                    <span style="font-size:0.6rem; color:var(--muted);"><i class="fas fa-user"></i> ${item.profiles?.rsi_handle || 'Anon'}</span>
+                </div>
+                <button class="btn-primary" style="margin-top: 15px;" onclick="iniciarEscrow(${item.id})">NEGOCIAR_ESCROW</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Llamar a esta función al cargar la página
+window.addEventListener('load', loadMarketItems);
 
     window.onload = init;
 </script>
