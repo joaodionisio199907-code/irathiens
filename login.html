@@ -269,10 +269,19 @@
     // 3. Deshabilitar arrastre de imágenes y selección de texto
     document.onselectstart = function() { return false; }; // No permite seleccionar texto
     document.ondragstart = function() { return false; };   // No permite arrastrar imágenes
+        // Limpiador de URL para mantener el estándar Irathiens
+(function() {
+    let path = window.location.pathname;
+    if (path.endsWith('.html')) {
+        let newPath = path.replace('.html', '');
+        window.history.replaceState(null, '', newPath);
+    }
+})();
 </script>
 
 </body>
 </html>
+
 
 
 
