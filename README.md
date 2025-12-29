@@ -1,6 +1,7 @@
 # 🚀 IRATHIENS - Star Citizen Organization Hub
 
 Bienvenido al repositorio oficial de la infraestructura web de **Irathiens**. Este sistema gestiona la interfaz pública, el Centro de Mando (CCNC) y el Sistema de Gestión de Flota (GITI) de nuestra organización en Star Citizen.
+<img width="1536" height="747" alt="bnnç" src="https://github.com/user-attachments/assets/9cb15747-3f50-4f62-af7a-a48b450a73e8" />
 
 ## 🛡️ Aviso de Propiedad Intelectual
 **Copyright (c) 2025 Irathiens Organization. Todos los derechos reservados.**
