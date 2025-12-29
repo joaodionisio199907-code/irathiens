@@ -141,19 +141,29 @@
         }
     }
 
-    // 3. ACTUALIZAR CAPITAL
-    async function actualizarCapital() {
-        const monto = document.getElementById('input-capital').value;
-        if(!monto) return alert("Ingresa una cifra");
+   async function actualizarCapital() {
+    const montoInput = document.getElementById('input-capital').value;
+    if(!montoInput) return alert("Por favor, ingresa una cifra.");
 
-        const { error } = await _supabase
-            .from('tesoreria_corp')
-            .update({ cantidad: parseInt(monto) })
-            .eq('id', 1);
+    const nuevoMonto = parseInt(montoInput);
+    console.log("Intentando actualizar a:", nuevoMonto);
 
-        if (error) alert("Error: " + error.message);
-        else alert("¡Capital actualizado en la red de Irathiens!");
+    const { data, error } = await _supabase
+        .from('tesoreria_corp')
+        .update({ cantidad: nuevoMonto })
+        .eq('id', 1)
+        .select(); // El select ayuda a confirmar si se hizo el cambio
+
+    if (error) {
+        console.error("Error completo:", error);
+        alert("Error de Supabase: " + error.message);
+    } else if (data && data.length === 0) {
+        alert("Error: No se encontró la fila con ID 1 en la tabla tesoreria_corp.");
+    } else {
+        alert("¡ÉXITO! Capital actualizado a: " + nuevoMonto + " aUEC");
+        document.getElementById('input-capital').value = ''; // Limpiar input
     }
+}
 
     // 4. EDITAR MIEMBRO
     async function editarMiembro(id, nombreActual, fotoActual, rangoActual) {
