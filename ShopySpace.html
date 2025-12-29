@@ -254,10 +254,66 @@
         }, 2000);
     }
 
-    async function publicarItem() {
-        // Lógica para insertar en marketplace_items
-        alert("SISTEMA: Debes estar verificado para listar items.");
+   async function publicarItem() {
+    const btn = event.currentTarget;
+    const msg = document.getElementById('msg-overlay'); // Reutilizamos para feedback
+    
+    // 1. Obtener valores del formulario
+    const name = document.getElementById('item-name').value;
+    const cat = document.getElementById('item-cat').value;
+    const price = document.getElementById('item-price').value;
+    const location = "Area18"; // Puedes añadir un input para esto luego
+
+    // 2. Validaciones básicas
+    if (!name || !price) {
+        alert("ERROR: Debes rellenar nombre y precio.");
+        return;
     }
+
+    // 3. Obtener sesión del usuario (Supabase Auth)
+    const { data: { user } } = await _supabase.auth.getUser();
+
+    if (!user) {
+        alert("ERROR_ACCESO: Debes iniciar sesión para vender.");
+        return;
+    }
+
+    // Cambiar estado del botón
+    btn.innerText = "PROCESANDO_TRANSMISIÓN...";
+    btn.disabled = true;
+
+    // 4. Insertar en la base de datos
+    const { data, error } = await _supabase
+        .from('marketplace_items')
+        .insert([
+            { 
+                seller_id: user.id, 
+                item_name: name, 
+                category: cat, 
+                price_auec: parseInt(price),
+                location: location,
+                status: 'available'
+            }
+        ]);
+
+    if (error) {
+        console.error(error);
+        alert("ERROR_DB: No se pudo subir el item. Revisa la consola.");
+        btn.innerText = "REINTENTAR_SUBIDA";
+        btn.disabled = false;
+    } else {
+        // ÉXITO
+        alert("ÉXITO: Item listado en el Marketplace.");
+        // Limpiar formulario
+        document.getElementById('item-name').value = "";
+        document.getElementById('item-price').value = "";
+        btn.innerText = "SUBIR_OTRO_ITEM";
+        btn.disabled = false;
+        
+        // Opcional: Recargar la pestaña de mercado para ver el nuevo item
+        loadMarketItems();
+    }
+}
 
     window.onload = init;
 </script>
