@@ -26,24 +26,12 @@
         body {
             margin: 0;
             background-color: var(--bg);
-            background-image: 
-                linear-gradient(rgba(255, 154, 31, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 154, 31, 0.05) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(255, 154, 31, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 154, 31, 0.05) 1px, transparent 1px);
             background-size: 50px 50px;
             color: #fff;
             font-family: var(--font-main);
             padding: 40px 20px;
             overflow-x: hidden;
-        }
-
-        body::before {
-            content: " ";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 4px, 3px 100%;
-            z-index: 1000;
-            pointer-events: none;
         }
 
         .container { max-width: 1400px; margin: 0 auto; }
@@ -64,13 +52,6 @@
             letter-spacing: 5px;
             color: var(--primary);
             text-shadow: 0 0 20px var(--primary-dim);
-        }
-
-        .system-status {
-            text-align: right;
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--accent);
         }
 
         .dashboard-grid {
@@ -107,15 +88,6 @@
             color: #fff;
         }
 
-        .asset-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-        }
-
         .division-bar {
             height: 12px;
             background: #111;
@@ -150,26 +122,6 @@
             font-size: 0.8rem;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-
-        .market-ticker {
-            grid-column: span 4;
-            background: #000;
-            padding: 10px;
-            border: 1px solid var(--accent);
-            display: flex;
-            gap: 40px;
-            overflow: hidden;
-        }
-
-        .ticker-item {
-            white-space: nowrap;
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-        }
-
-        .trend-up { color: var(--success); }
-        .trend-down { color: var(--danger); }
-
     </style>
 </head>
 <body>
@@ -182,37 +134,23 @@
         </div>
         <div class="system-status">
             LOCAL_TIME: <span id="clock">00:00:00</span><br>
-            SERVER: MAGNUS_V.4<br>
             STATUS: <span style="color: var(--success);">ONLINE</span>
         </div>
     </header>
 
-    <div class="market-ticker">
-        <div class="ticker-item">QUANTANIUM: <span class="trend-up">88.4 aUEC/unit ▲</span></div>
-        <div class="ticker-item">LATHANITE: <span class="trend-down">32.1 aUEC/unit ▼</span></div>
-        <div class="ticker-item">BEXALITE: <span class="trend-up">112.5 aUEC/unit ▲</span></div>
-        <div class="ticker-item">AGRICIUM: <span class="trend-down">24.0 aUEC/unit ▼</span></div>
-        <div class="ticker-item">FUEL_COST: <span class="trend-up">5.2 aUEC/unit ▲</span></div>
-    </div>
-
-    <br>
-
     <div class="dashboard-grid">
         <div class="card">
             <span class="label">CAPITAL_TOTAL_DISPONIBLE</span>
-            <div class="big-value" id="capital-display" style="color: var(--primary);">0 <small style="font-size: 0.8rem;">aUEC</small></div>
-            <div style="font-size: 0.7rem; color: var(--accent); margin-top: 10px;">LIQUIDEZ: 94.2%</div>
-            <div id="usd-value" style="font-size: 0.7rem; color: #aaa; margin-top: 5px; font-family: var(--font-mono);">
-                VALOR_ESTIMADO: <span style="color: #00ff88;">$0.00 USD</span>
-            </div>
+            <div class="big-value" id="capital-display" style="color: var(--primary);">0 aUEC</div>
+            <div id="usd-value" style="font-size: 0.7rem; color: #aaa; margin-top: 5px; font-family: var(--font-mono);">VALOR_ESTIMADO: $0.00 USD</div>
         </div>
 
         <div class="card" style="grid-column: span 2;">
             <span class="label">DISTRIBUCIÓN_POR_DEPARTAMENTO</span>
             <div class="division-bar">
-                <div class="div-militar" title="Defensa/Seguridad"></div>
-                <div class="div-mineria" title="Industria/Minería"></div>
-                <div class="div-logistica" title="Logística/Transporte"></div>
+                <div class="div-militar"></div>
+                <div class="div-mineria"></div>
+                <div class="div-logistica"></div>
             </div>
             <div style="display:flex; justify-content: space-between; font-size: 0.7rem; font-family: var(--font-mono);">
                 <span>● MILITAR (50%)</span>
@@ -232,15 +170,12 @@
             <canvas id="mainChart"></canvas>
         </div>
 
-        <div class="card assets-list">
-            <span class="label">RESERVAS_DE_FLOTA (BANK_OWNED)</span>
-            <div class="asset-item"><span>RSI Perseus</span> <span>2</span></div>
-            <div class="asset-item"><span>Aegis Idris-P</span> <span>1</span></div>
-            <div class="asset-item"><span>Anvil Carrack</span> <span>3</span></div>
-            <div class="asset-item"><span>MISC Orion</span> <span>2</span></div>
-            <div class="asset-item"><span>Drake Caterpillar</span> <span>5</span></div>
-            <div style="margin-top: 15px; text-align: center;">
-                <button style="background: none; border: 1px solid var(--accent); color: var(--accent); font-family: var(--font-hud); font-size: 0.6rem; padding: 5px 10px;">VER_INVENTARIO_COMPLETO</button>
+        <div class="card">
+            <span class="label">INFO_SISTEMA</span>
+            <div style="font-size: 0.8rem; font-family: var(--font-mono);">
+                SERVER: MAGNUS_V.4<br>
+                Uptime: 99.9%<br>
+                Encrypted: YES
             </div>
         </div>
 
@@ -251,14 +186,12 @@
                     <tr>
                         <th>OP_ID</th>
                         <th>TIMESTAMP</th>
-                        <th>ENTIDAD_ORIGEN</th>
+                        <th>ENTIDAD</th>
                         <th>CONCEPTO</th>
-                        <th>ESTADO</th>
                         <th>VALOR</th>
                     </tr>
                 </thead>
-                <tbody id="audit-table-body">
-                    </tbody>
+                <tbody id="audit-table-body"></tbody>
             </table>
         </div>
     </div>
@@ -266,129 +199,78 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // --- CONEXIÓN ---
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
+    let miGrafico;
 
-    // --- RELOJ ---
     function updateClock() {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toISOString().split('T')[1].split('.')[0];
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
     }
     setInterval(updateClock, 1000);
 
-    // --- LÓGICA DE NEGOCIO ---
-    function actualizarUSD(cantidad) {
-        const precioM = 1.5; 
-        const valorUSD = (cantidad / 1000000) * precioM;
-        document.getElementById('usd-value').innerHTML = `VALOR_ESTIMADO: <span style="color: #00ff88;">$${valorUSD.toFixed(2)} USD</span>`;
+    async function actualizarData() {
+        const { data: capData } = await _supabase.from('tesoreria_corp').select('cantidad').eq('id', 1).single();
+        if (!capData) return;
+
+        const cap = capData.cantidad;
+        document.getElementById('capital-display').innerText = new Intl.NumberFormat('de-DE').format(cap) + " aUEC";
+        document.getElementById('usd-value').innerHTML = `VALOR_ESTIMADO: <span style="color: #00ff88;">$${((cap/1000000)*1.5).toFixed(2)} USD</span>`;
+
+        // Cargar Gastos
+        const inicioMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+        const { data: gastosData } = await _supabase.from('transacciones').select('valor').lt('valor', 0).gte('created_at', inicioMes);
+        const totalGastos = gastosData ? gastosData.reduce((acc, t) => acc + t.valor, 0) : 0;
+        document.getElementById('gastos-display').innerText = new Intl.NumberFormat('de-DE').format(totalGastos);
+
+        // Tabla
+        const { data: trans } = await _supabase.from('transacciones').select('*').order('created_at', { ascending: false }).limit(8);
+        document.getElementById('audit-table-body').innerHTML = trans.map(t => `
+            <tr>
+                <td>#IR-${t.id.toString().slice(-4)}</td>
+                <td>${new Date(t.created_at).toLocaleString()}</td>
+                <td>${t.entidad || 'ADMIN'}</td>
+                <td>${t.concepto || 'S/C'}</td>
+                <td style="color: ${t.valor < 0 ? 'var(--danger)' : 'var(--success)'}">${new Intl.NumberFormat('de-DE').format(t.valor)}</td>
+            </tr>
+        `).join('');
+
+        // Gráfico
+        dibujarGrafico(cap, trans);
     }
 
-    async function calcularGastosMensuales() {
-        const ahora = new Date();
-        const primerDiaMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1).toISOString();
+    function dibujarGrafico(capActual, transacciones) {
+        let saldo = capActual;
+        let saldos = [capActual];
+        let labels = [new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})];
 
-        const { data, error } = await _supabase
-            .from('transacciones')
-            .select('valor')
-            .lt('valor', 0) 
-            .gte('created_at', primerDiaMes);
+        [...transacciones].forEach(t => {
+            saldo -= t.valor;
+            saldos.unshift(saldo);
+            labels.unshift(new Date(t.created_at).toLocaleDateString([], {day:'2-digit', month:'short'}));
+        });
 
-        if (data) {
-            const totalGastos = data.reduce((acc, t) => acc + t.valor, 0);
-            const display = document.getElementById('gastos-display');
-            if (display) {
-                display.innerText = new Intl.NumberFormat('de-DE').format(totalGastos);
-            }
-        }
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        if (miGrafico) miGrafico.destroy();
+        miGrafico = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: saldos,
+                    borderColor: '#ff9a1f',
+                    backgroundColor: 'rgba(255, 154, 31, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
     }
 
-    async function cargarTransacciones() {
-        const { data, error } = await _supabase
-            .from('transacciones')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(10);
-
-        const tbody = document.getElementById('audit-table-body');
-        if (data && tbody) {
-            tbody.innerHTML = data.map(t => `
-                <tr>
-                    <td>#IR-${t.id.toString().slice(-4)}</td>
-                    <td>${new Date(t.created_at).toLocaleString()}</td>
-                    <td>${t.entidad || 'ADMIN_CORE'}</td>
-                    <td>${t.concepto || 'S/C'}</td>
-                    <td style="color: var(--success);">VERIFICADO</td>
-                    <td style="color: ${t.valor < 0 ? 'var(--danger)' : 'var(--success)'}">
-                        ${t.valor > 0 ? '+' : ''}${new Intl.NumberFormat('de-DE').format(t.valor)}
-                    </td>
-                </tr>
-            `).join('');
-        }
-    }
-
-    async function cargarCapitalReal() {
-        const { data, error } = await _supabase
-            .from('tesoreria_corp')
-            .select('cantidad')
-            .eq('id', 1)
-            .single();
-
-        if (data) {
-            const formateado = new Intl.NumberFormat('de-DE').format(data.cantidad);
-            document.getElementById('capital-display').innerHTML = `${formateado} <small style="font-size: 0.8rem;">aUEC</small>`;
-            actualizarUSD(data.cantidad);
-        }
-    }
-
-    // --- REALTIME ---
-    _supabase
-        .channel('global-updates')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'tesoreria_corp' }, () => {
-            cargarCapitalReal();
-        })
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transacciones' }, () => {
-            cargarTransacciones();
-            calcularGastosMensuales();
-        })
-        .subscribe();
-
-    // --- GRÁFICO ---
-    const ctx = document.getElementById('mainChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['SEP', 'OCT', 'NOV', 'DIC-01', 'DIC-15', 'DIC-27'],
-            datasets: [{
-                label: 'Reservas aUEC',
-                data: [5000000, 7200000, 6800000, 9500000, 11000000, 12750400],
-                borderColor: '#ff9a1f',
-                backgroundColor: 'rgba(255, 154, 31, 0.05)',
-                borderWidth: 2,
-                pointBackgroundColor: '#00f2ff',
-                fill: true,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#555' } },
-                x: { grid: { display: false }, ticks: { color: '#555' } }
-            }
-        }
-    });
-
-    // --- INICIO ---
-    document.addEventListener('DOMContentLoaded', () => {
-        cargarCapitalReal();
-        cargarTransacciones();
-        calcularGastosMensuales();
-        updateClock();
-    });
+    _supabase.channel('room1').on('postgres_changes', { event: '*', schema: 'public' }, () => actualizarData()).subscribe();
+    document.addEventListener('DOMContentLoaded', actualizarData);
 </script>
 </body>
 </html>
+
