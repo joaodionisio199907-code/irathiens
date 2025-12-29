@@ -71,7 +71,6 @@
         .logo-text { color: var(--primary); }
         .logo-img { height: 32px; }
 
-        /* Navegación */
         .nav-menu { display: flex; align-items: center; }
 
         .nav-menu a {
@@ -85,13 +84,13 @@
 
         .nav-menu a:hover { color: var(--primary); }
 
-        /* --- DESPLEGABLE USUARIO --- */
+        /* --- DESPLEGABLE USUARIO CORREGIDO --- */
         .user-dropdown {
             position: relative;
             display: inline-block;
             margin-left: 1.5rem;
-            padding-bottom: 10px; /* Área de seguridad para que no se cierre */
-            margin-bottom: -10px;
+            padding-bottom: 15px; /* Puente de seguridad */
+            margin-bottom: -15px;
         }
 
         .nav-user-name {
@@ -125,11 +124,9 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .dropdown-content a:hover { background: rgba(255, 154, 31, 0.1); }
-
         .user-dropdown:hover .dropdown-content { display: block; }
 
-        /* Menu Hamburguesa (oculto en PC) */
+        /* Hamburguesa */
         .menu-toggle {
             display: none;
             flex-direction: column;
@@ -138,13 +135,8 @@
             background: none;
             border: none;
         }
-        .menu-toggle span {
-            width: 25px;
-            height: 2px;
-            background: var(--primary);
-        }
+        .menu-toggle span { width: 25px; height: 2px; background: var(--primary); }
 
-        /* --- SECCIONES --- */
         .hero { max-width: 1200px; margin: 80px auto; padding: 0 20px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; }
         .hero-content h1 { font-family: 'Orbitron'; font-size: 3.5rem; color: #fff; margin: 0; text-shadow: 0 0 20px rgba(255,154,31,0.3); }
         .btn-main { display: inline-block; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #000; padding: 15px 35px; border-radius: 8px; font-family: 'Orbitron'; font-weight: 700; text-decoration: none; margin-top: 20px; }
@@ -154,33 +146,36 @@
         
         footer { padding: 40px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); margin-top: 50px; }
 
-        /* Chat */
-        .chat-bubble { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(255, 154, 31, 0.1); border: 2px solid var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3000; }
+        /* BURBUJAS */
+        .chat-bubble { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(6, 11, 20, 0.8); border: 2px solid var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3000; }
+        
+        /* ESTILO MUSICA CORREGIDO */
+        .music-bubble { 
+            position: fixed; bottom: 20px; left: 95px; width: 60px; height: 60px; 
+            background: rgba(6, 11, 20, 0.8); border: 2px solid var(--primary); 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            cursor: pointer; z-index: 3000; transition: 0.3s;
+        }
+        .music-bubble span { font-family: 'Orbitron'; font-size: 0.65rem; color: var(--primary); font-weight: bold; }
+        .music-playing { animation: pulse 2s infinite; background: rgba(255,154,31,0.15); }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 154, 31, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 154, 31, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 154, 31, 0); }
+        }
+
         .chat-window { position: fixed; bottom: 90px; left: 20px; width: 330px; height: 420px; background: rgba(6, 11, 20, 0.95); border: 1px solid var(--primary); display: none; flex-direction: column; z-index: 2999; border-radius: 8px; overflow: hidden; }
         .chat-window.active { display: flex; }
         .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .msg { font-size: 0.75rem; padding: 8px; border-left: 2px solid var(--accent); background: rgba(255,255,255,0.03); }
 
-        /* --- RESPONSIVE MÓVIL --- */
         @media (max-width: 768px) {
             .menu-toggle { display: flex; }
-            .nav-menu {
-                display: none; /* Se activa con JS */
-                position: absolute;
-                top: 100%; left: 0; width: 100%;
-                background: var(--bg-soft);
-                flex-direction: column;
-                padding: 20px;
-                border-bottom: 1px solid var(--border);
-            }
+            .nav-menu { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--bg-soft); flex-direction: column; padding: 20px; border-bottom: 1px solid var(--border); }
             .nav-menu.mobile-active { display: flex; }
-            .nav-menu a, .user-dropdown { margin: 10px 0; width: 100%; text-align: center; }
-            .dropdown-content { position: static; width: 100%; box-shadow: none; border: none; background: rgba(255,255,255,0.05); }
-            
-            .hero { grid-template-columns: 1fr; text-align: center; margin: 40px auto; }
-            .hero-content h1 { font-size: 2.2rem; }
-            .status-panel { margin-top: 20px; }
-            .chat-window { width: calc(100% - 40px); left: 20px; }
+            .hero { grid-template-columns: 1fr; text-align: center; }
+            .music-bubble { left: auto; right: 20px; } /* En móvil a la derecha */
         }
     </style>
 </head>
@@ -192,19 +187,13 @@
             <img src="logo.png" alt="Logo" class="logo-img"> 
             <span class="logo-text">IRATHIENS</span>
         </a>
-        
         <button class="menu-toggle" onclick="document.querySelector('.nav-menu').classList.toggle('mobile-active')">
             <span></span><span></span><span></span>
         </button>
-
         <nav class="nav-menu">
             <a href="index.html">INICIO</a>
             <a href="Members.html">MIEMBROS</a>
-            
-            <div id="auth-guest">
-                <a href="login.html" style="color: var(--primary); border: 1px solid var(--border); padding: 5px 15px; border-radius: 4px;">LOGIN</a>
-            </div>
-
+            <div id="auth-guest"><a href="login.html" style="color: var(--primary); border: 1px solid var(--border); padding: 5px 15px; border-radius: 4px;">LOGIN</a></div>
             <div id="auth-user" class="user-dropdown" style="display: none;">
                 <span id="nav-username" class="nav-user-name">CIUDADANO</span>
                 <div class="dropdown-content">
@@ -219,25 +208,29 @@
 <section class="hero">
     <div class="hero-content">
         <h1>FORJANDO ALIANZAS EN EL VERSO</h1>
-        <p>Irathiens es una organización de Star Citizen centrada en la cooperación, la estrategia y el crecimiento conjunto.</p>
+        <p>Irathiens es una organización de Star Citizen centrada en la cooperación y estrategia.</p>
         <a class="btn-main" href="https://robertsspaceindustries.com/en/orgs/IRATH" target="_blank">Solicitar Ingreso</a>
     </div>
     <div class="status-panel">
         <h3 style="font-family: 'Orbitron'; color: var(--primary); margin: 0 0 15px 0;">ORGANIZATION_STATUS</h3>
         <div style="display:flex; justify-content:space-between;"><span>OPERACIONES</span><span style="color: #00ff88; font-weight:bold;">✔ ACTIVA</span></div>
-        <div style="display:flex; justify-content:space-between; margin-top:10px;"><span>REGIÓN</span><span>ESPAÑA / EU</span></div>
     </div>
 </section>
 
 <section class="info-grid">
-    <div class="info-card"><h3>EVENTOS</h3><p>Operaciones conjuntas y entrenamientos tácticos organizados.</p></div>
-    <div class="info-card"><h3>DIPLOMACIA</h3><p>Gestión de alianzas estratégicas inter-org.</p></div>
-    <div class="info-card"><h3>MIEMBROS</h3><p>Estructura jerárquica clara definida por méritos.</p></div>
+    <div class="info-card"><h3>EVENTOS</h3><p>Operaciones conjuntas tácticas.</p></div>
+    <div class="info-card"><h3>DIPLOMACIA</h3><p>Gestión de alianzas.</p></div>
+    <div class="info-card"><h3>MIEMBROS</h3><p>Estructura clara.</p></div>
 </section>
 
 <footer>© 2025 IRATHIENS ORGANIZATION</footer>
 
 <div class="chat-bubble" onclick="toggleChat()"><span style="color:var(--primary); font-family:'Orbitron'; font-weight:bold;">>_</span></div>
+
+<div class="music-bubble" id="musicBubble" onclick="toggleMusic()">
+    <span id="musicStatus">OFF</span>
+</div>
+
 <div class="chat-window" id="chatWindow">
     <div class="chat-header" style="background:var(--primary); color:#000; padding:10px; font-family:'Orbitron'; font-size:0.7rem; display:flex; justify-content:space-between;">
         <span>IRATHIENS_COMM_LINK</span><span>[READ_ONLY]</span>
@@ -248,6 +241,10 @@
     </div>
 </div>
 
+<audio id="bg-music" loop>
+    <source src="musicamenu.mp3" type="audio/mpeg">
+</audio>
+
 <script>
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
@@ -255,28 +252,53 @@
 
     function toggleChat() { document.getElementById('chatWindow').classList.toggle('active'); }
 
+    // --- LOGICA DE MUSICA ---
+    const audio = document.getElementById('bg-music');
+    const musicBubble = document.getElementById('musicBubble');
+    const musicStatus = document.getElementById('musicStatus');
+    let isPlaying = false;
+    audio.volume = 0.3;
+
+    function toggleMusic() {
+        if (isPlaying) {
+            audio.pause();
+            musicStatus.innerText = "OFF";
+            musicBubble.classList.remove('music-playing');
+        } else {
+            audio.play();
+            musicStatus.innerText = "ON";
+            musicBubble.classList.add('music-playing');
+        }
+        isPlaying = !isPlaying;
+    }
+
+    document.addEventListener('click', () => {
+        if(!isPlaying) {
+            audio.play().then(() => {
+                musicStatus.innerText = "ON";
+                musicBubble.classList.add('music-playing');
+                isPlaying = true;
+            }).catch(() => {});
+        }
+    }, { once: true });
+
+    // --- SESION Y CHAT ---
     async function checkSession() {
         const { data: { user } } = await _supabase.auth.getUser();
         if (user) {
             document.getElementById('auth-guest').style.display = 'none';
             document.getElementById('auth-user').style.display = 'inline-block';
             let { data: profile } = await _supabase.from('perfiles').select('handle').eq('id', user.id).single();
-            const displayName = profile?.handle || user.email.split('@')[0];
-            document.getElementById('nav-username').innerText = displayName.toUpperCase();
+            document.getElementById('nav-username').innerText = (profile?.handle || user.email.split('@')[0]).toUpperCase();
         }
     }
 
-    async function handleLogout() {
-        await _supabase.auth.signOut();
-        window.location.reload();
-    }
+    async function handleLogout() { await _supabase.auth.signOut(); window.location.reload(); }
 
     async function initIndexChat() {
         let { data: msgs } = await _supabase.from('mensajes').select('*').order('created_at', { ascending: true }).limit(20);
         if (msgs) msgs.forEach(m => renderMsg(m));
-        _supabase.channel('public-chat').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
-            renderMsg(payload.new);
-        }).subscribe();
+        _supabase.channel('public-chat').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => renderMsg(payload.new)).subscribe();
     }
 
     function renderMsg(data) {
@@ -290,44 +312,6 @@
 
     checkSession();
     initIndexChat();
-    const audio = document.getElementById('bg-music');
-const musicBubble = document.getElementById('musicBubble');
-const musicStatus = document.getElementById('musicStatus');
-let isPlaying = false;
-
-// Bajar el volumen por defecto para que no asuste (30%)
-audio.volume = 0.3;
-
-function toggleMusic() {
-    if (isPlaying) {
-        audio.pause();
-        musicStatus.innerText = "OFF";
-        musicBubble.classList.remove('music-playing');
-    } else {
-        audio.play();
-        musicStatus.innerText = "ON";
-        musicBubble.classList.add('music-playing');
-    }
-    isPlaying = !isPlaying;
-}
-
-// Iniciar música al primer clic del usuario en cualquier parte
-document.addEventListener('click', () => {
-    if(!isPlaying) {
-        audio.play().then(() => {
-            musicStatus.innerText = "ON";
-            musicBubble.classList.add('music-playing');
-            isPlaying = true;
-        }).catch(e => console.log("Autoplay bloqueado hasta interacción directa"));
-    }
-}, { once: true });
 </script>
- <audio id="bg-music" loop>
-    <source src="musicamenu.mp3" type="audio/mpeg">
-</audio>
-
-<div class="music-bubble" id="musicBubble" onclick="toggleMusic()">
-    <span class="status-text" id="musicStatus">OFF</span>
-</div>   
 </body>
 </html>
