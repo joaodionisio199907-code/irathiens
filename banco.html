@@ -36,7 +36,6 @@
             overflow-x: hidden;
         }
 
-        /* --- EFECTO SCANLINE --- */
         body::before {
             content: " ";
             position: fixed;
@@ -49,7 +48,6 @@
 
         .container { max-width: 1400px; margin: 0 auto; }
 
-        /* --- HEADER PROFESIONAL --- */
         header {
             display: flex;
             justify-content: space-between;
@@ -75,7 +73,6 @@
             color: var(--accent);
         }
 
-        /* --- GRID PRINCIPAL --- */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -90,7 +87,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* Decoración esquinas */
         .card::after {
             content: ""; position: absolute; top: -1px; right: -1px;
             width: 15px; height: 15px; border-top: 2px solid var(--primary); border-right: 2px solid var(--primary);
@@ -99,7 +95,7 @@
         .label {
             font-family: var(--font-hud);
             font-size: 0.7rem;
-            color: var(--muted);
+            color: #888;
             margin-bottom: 10px;
             display: block;
             letter-spacing: 2px;
@@ -111,11 +107,6 @@
             color: #fff;
         }
 
-        /* --- SECCIÓN DE ACTIVOS / NAVES --- */
-        .assets-list {
-            grid-column: span 1;
-        }
-
         .asset-item {
             display: flex;
             justify-content: space-between;
@@ -125,7 +116,6 @@
             font-size: 0.85rem;
         }
 
-        /* --- DISTRIBUCIÓN POR DIVISIONES --- */
         .division-bar {
             height: 12px;
             background: #111;
@@ -139,7 +129,6 @@
         .div-mineria { width: 30%; background: var(--accent); }
         .div-logistica { width: 20%; background: #fff; }
 
-        /* --- TABLA DE AUDITORÍA --- */
         .audit-table {
             width: 100%;
             border-collapse: collapse;
@@ -162,7 +151,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* --- MARKET STATUS --- */
         .market-ticker {
             grid-column: span 4;
             background: #000;
@@ -212,11 +200,11 @@
     <div class="dashboard-grid">
         <div class="card">
             <span class="label">CAPITAL_TOTAL_DISPONIBLE</span>
-            <div class="big-value" style="color: var(--primary);">805.031.572 <small style="font-size: 0.8rem;">aUEC</small></div>
+            <div class="big-value" id="capital-display" style="color: var(--primary);">0 <small style="font-size: 0.8rem;">aUEC</small></div>
             <div style="font-size: 0.7rem; color: var(--accent); margin-top: 10px;">LIQUIDEZ: 94.2%</div>
             <div id="usd-value" style="font-size: 0.7rem; color: #aaa; margin-top: 5px; font-family: var(--font-mono);">
-    VALOR_ESTIMADO: <span style="color: #00ff88;">$0.00 USD</span>
-</div>
+                VALOR_ESTIMADO: <span style="color: #00ff88;">$0.00 USD</span>
+            </div>
         </div>
 
         <div class="card" style="grid-column: span 2;">
@@ -270,31 +258,7 @@
                     </tr>
                 </thead>
                 <tbody id="audit-table-body">
-                    <tr>
-                        <td>#IR-991</td>
-                        <td>2025-12-27 01:22</td>
-                        <td>DIVISION_MILITAR</td>
-                        <td>RE-ARMAMENTO_OPERACIÓN_XENO</td>
-                        <td style="color: var(--success);">APROBADO</td>
-                        <td style="color: var(--danger);">-450.000</td>
-                    </tr>
-                    <tr>
-                        <td>#IR-990</td>
-                        <td>2025-12-26 23:15</td>
-                        <td>MINING_TEAM_01</td>
-                        <td>VENTA_BRUTA_QUANTANIUM</td>
-                        <td style="color: var(--success);">VERIFICADO</td>
-                        <td style="color: var(--success);">+890.200</td>
-                    </tr>
-                    <tr>
-                        <td>#IR-989</td>
-                        <td>2025-12-26 18:05</td>
-                        <td>LOGISTICS_HQ</td>
-                        <td>COMPRA_COMBUSTIBLE_ORION</td>
-                        <td style="color: var(--success);">APROBADO</td>
-                        <td style="color: var(--danger);">-120.000</td>
-                    </tr>
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
@@ -302,60 +266,74 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // --- CONFIGURACIÓN DE CONEXIÓN ---
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    // --- RELOJ EN TIEMPO REAL ---
     function updateClock() {
         const now = new Date();
         document.getElementById('clock').innerText = now.toISOString().split('T')[1].split('.')[0];
     }
     setInterval(updateClock, 1000);
 
-    // --- CARGAR CAPITAL DESDE SUPABASE ---
+    // --- NUEVO: CONVERSOR USD ---
+    function actualizarUSD(cantidad) {
+        const precioM = 1.5; // $1.5 por cada 1M aUEC
+        const valorUSD = (cantidad / 1000000) * precioM;
+        document.getElementById('usd-value').innerHTML = `VALOR_ESTIMADO: <span style="color: #00ff88;">$${valorUSD.toFixed(2)} USD</span>`;
+    }
+
+    // --- NUEVO: CARGAR HISTORIAL ---
+    async function cargarTransacciones() {
+        const { data, error } = await _supabase
+            .from('transacciones')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(6);
+
+        const tbody = document.getElementById('audit-table-body');
+        if (data && tbody) {
+            tbody.innerHTML = data.map(t => `
+                <tr>
+                    <td>#IR-${t.id.toString().slice(-4)}</td>
+                    <td>${new Date(t.created_at).toLocaleString()}</td>
+                    <td>${t.entidad || 'S/N'}</td>
+                    <td>${t.concepto || 'Transferencia'}</td>
+                    <td style="color: var(--success);">VERIFICADO</td>
+                    <td style="color: ${t.valor < 0 ? 'var(--danger)' : 'var(--success)'}">
+                        ${t.valor > 0 ? '+' : ''}${new Intl.NumberFormat('de-DE').format(t.valor)}
+                    </td>
+                </tr>
+            `).join('');
+        }
+    }
+
     async function cargarCapitalReal() {
-        console.log("Consultando tesorería...");
         const { data, error } = await _supabase
             .from('tesoreria_corp')
             .select('cantidad')
             .eq('id', 1)
             .single();
 
-        if (error) {
-            console.error("Error cargando capital:", error.message);
-            return;
-        }
-
         if (data) {
             const formateado = new Intl.NumberFormat('de-DE').format(data.cantidad);
-            const display = document.querySelector('.big-value');
-            if (display) {
-                display.innerHTML = `${formateado} <small style="font-size: 0.8rem;">aUEC</small>`;
-            }
+            document.getElementById('capital-display').innerHTML = `${formateado} <small style="font-size: 0.8rem;">aUEC</small>`;
+            actualizarUSD(data.cantidad);
         }
     }
 
-    // --- SISTEMA DE TIEMPO REAL (REALTIME) ---
-    const canalFinanzas = _supabase
-        .channel('cambios-finanzas')
-        .on('postgres_changes', { 
-            event: 'UPDATE', 
-            schema: 'public', 
-            table: 'tesoreria_corp' 
-        }, (payload) => {
-            console.log("Cambio detectado en tiempo real:", payload);
-            const nuevoMonto = payload.new.cantidad;
-            const formateado = new Intl.NumberFormat('de-DE').format(nuevoMonto);
-            const display = document.querySelector('.big-value');
-            if (display) {
-                display.innerHTML = `${formateado} <small style="font-size: 0.8rem;">aUEC</small>`;
-            }
+    // --- REALTIME MEJORADO ---
+    _supabase
+        .channel('db-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tesoreria_corp' }, (payload) => {
+            cargarCapitalReal();
+        })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transacciones' }, (payload) => {
+            cargarTransacciones(); // Actualiza la tabla automáticamente al insertar
         })
         .subscribe();
 
-    // --- GRÁFICO PROFESIONAL (CHART.JS) ---
+    // --- GRÁFICO ---
     const ctx = document.getElementById('mainChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
@@ -383,13 +361,14 @@
         }
     });
 
-    // Ejecutar carga inicial al abrir
-    document.addEventListener('DOMContentLoaded', cargarCapitalReal);
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarCapitalReal();
+        cargarTransacciones();
+    });
 </script>
-
 </body>
-
 </html>
+
 
 
 
