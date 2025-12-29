@@ -42,21 +42,6 @@
             z-index: -2;
         }
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.6;
-            z-index: -1;
-            animation: moveStars 150s linear infinite;
-        }
-
-        @keyframes moveStars {
-            from { background-position: 0 0; }
-            to { background-position: 1000px 1000px; }
-        }
-
         header {
             position: sticky;
             top: 0;
@@ -80,12 +65,13 @@
             align-items: center;
             gap: 0.8rem;
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
             text-decoration: none;
         }
 
-        .logo-text { color: var(--primary); text-shadow: 0 0 10px var(--shadow); }
-        .logo-img { height: 32px; width: auto; filter: drop-shadow(0 0 5px var(--primary)); }
+        .logo-text { color: var(--primary); }
+        .logo-img { height: 32px; }
+
+        nav { display: flex; align-items: center; }
 
         nav a {
             margin-left: 1.5rem;
@@ -94,228 +80,124 @@
             font-weight: 500;
             font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         nav a:hover { color: var(--primary); }
 
-        .btn-login {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-family: 'Orbitron';
-            font-size: 0.7rem;
-            cursor: pointer;
-            margin-left: 15px;
-        }
-
-        .hero {
-            max-width: 1200px;
-            margin: 80px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .hero-content h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3.5rem;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            color: #fff;
-            text-shadow: 0 0 20px rgba(255, 154, 31, 0.5);
-        }
-
-        .hero-content p {
-            font-size: 1.1rem;
-            color: var(--text);
-            line-height: 1.7;
-            margin-bottom: 30px;
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 8px;
-            backdrop-filter: blur(5px);
-        }
-
-        .btn-main {
+        /* --- ESTILOS DEL DESPLEGABLE (AÑADIDOS) --- */
+        .user-dropdown {
+            position: relative;
             display: inline-block;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: #000;
-            padding: 15px 35px;
-            border-radius: 8px;
-            font-family: 'Orbitron';
+            margin-left: 1.5rem;
+        }
+
+        .nav-user-name {
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
             font-weight: 700;
-            text-decoration: none;
+            cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
-        .status-panel {
-            background: var(--glass);
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: var(--bg-soft);
+            min-width: 160px;
             border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-radius: 4px;
+            margin-top: 10px;
         }
 
-        .status-line {
-            margin: 15px 0;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            justify-content: space-between;
+        .dropdown-content a {
+            color: var(--text) !important;
+            padding: 12px 16px;
+            margin: 0;
+            display: block;
+            font-size: 0.75rem;
         }
 
-        .info-grid {
-            max-width: 1200px;
-            margin: 80px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+        .dropdown-content a:hover {
+            background: rgba(255, 154, 31, 0.1);
         }
 
-        .info-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 30px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
+        .user-dropdown:hover .dropdown-content {
+            display: block;
         }
 
-        footer {
-            margin-top: 100px;
-            padding: 40px 20px;
-            text-align: center;
-            background: rgba(6, 11, 20, 0.9);
-            border-top: 1px solid var(--border);
-            color: var(--muted);
-        }
+        /* --- RESTO DE TU CSS --- */
+        .hero { max-width: 1200px; margin: 80px auto; padding: 0 20px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; }
+        .hero-content h1 { font-family: 'Orbitron'; font-size: 3.5rem; color: #fff; }
+        .btn-main { display: inline-block; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #000; padding: 15px 35px; border-radius: 8px; font-family: 'Orbitron'; font-weight: 700; text-decoration: none; }
+        .status-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 30px; }
+        .info-grid { max-width: 1200px; margin: 80px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; padding: 0 20px; }
+        .info-card { background: var(--glass); border: 1px solid var(--border); padding: 30px; border-radius: 12px; }
+        footer { margin-top: 100px; padding: 40px; text-align: center; background: rgba(6, 11, 20, 0.9); color: var(--muted); }
 
-        /* --- ESTILOS DEL NUEVO CHAT (SOLO LECTURA) --- */
-        .chat-bubble {
-            position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px;
-            background: rgba(255, 154, 31, 0.1); border: 2px solid var(--primary);
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; z-index: 3000; box-shadow: 0 0 15px var(--primary);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .chat-bubble:hover { transform: scale(1.1) rotate(90deg); }
-        
-        .chat-window {
-            position: fixed; bottom: 90px; left: 20px; width: 330px; height: 420px;
-            background: rgba(6, 11, 20, 0.95); border: 1px solid var(--primary);
-            backdrop-filter: blur(15px); display: none; flex-direction: column;
-            z-index: 2999; box-shadow: 0 0 30px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden;
-        }
+        .chat-bubble { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(255, 154, 31, 0.1); border: 2px solid var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3000; }
+        .chat-window { position: fixed; bottom: 90px; left: 20px; width: 330px; height: 420px; background: rgba(6, 11, 20, 0.95); border: 1px solid var(--primary); display: none; flex-direction: column; z-index: 2999; border-radius: 8px; overflow: hidden; }
         .chat-window.active { display: flex; }
-        .chat-header { background: var(--primary); color: #000; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold; display: flex; justify-content: space-between; }
-        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: linear-gradient(rgba(255,154,31,0.03) 1px, transparent 1px); background-size: 100% 20px; }
+        .chat-header { background: var(--primary); color: #000; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; display: flex; justify-content: space-between; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .msg { font-size: 0.75rem; padding: 8px; border-left: 2px solid var(--accent); background: rgba(255,255,255,0.03); }
-        .msg-user { color: var(--primary); font-weight: bold; font-size: 0.65rem; display: block; }
-        .msg-time { color: #555; font-size: 0.6rem; float: right; }
-        .chat-footer-lock { padding: 15px; border-top: 1px solid var(--border); background: rgba(255, 154, 31, 0.05); text-align: center; cursor: pointer; }
-        .chat-footer-lock:hover { background: rgba(255, 154, 31, 0.15); }
-        .chat-footer-lock span { font-family: 'Orbitron'; color: var(--primary); font-size: 0.65rem; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
 <header>
     <div class="nav">
-        <a href="#" class="logo">
+        <a href="index.html" class="logo">
             <img src="logo.png" alt="Logo" class="logo-img"> 
             <span class="logo-text">IRATHIENS</span>
         </a>
         <nav>
-    <a href="index.html">INICIO</a>
-    <a href="Members.html">MIEMBROS</a>
-    
-    <div id="auth-guest" style="display: inline;">
-        <a href="login.html" style="color: var(--primary); border: 1px solid var(--border); padding: 5px 15px; border-radius: 4px;">LOGIN</a>
-    </div>
+            <a href="index.html">INICIO</a>
+            <a href="Members.html">MIEMBROS</a>
+            
+            <div id="auth-guest" style="display: inline;">
+                <a href="login.html" style="color: var(--primary); border: 1px solid var(--border); padding: 5px 15px; border-radius: 4px;">LOGIN</a>
+            </div>
 
-    <div id="auth-user" class="user-dropdown" style="display: none;">
-        <span id="nav-username" class="nav-user-name">CIUDADANO</span>
-        <div class="dropdown-content">
-            <a href="perfil.html">MI PERFIL</a>
-            <a href="#" onclick="handleLogout()" style="color: #ff4444 !important;">CERRAR SESIÓN</a>
-        </div>
-    </div>
-</nav>
+            <div id="auth-user" class="user-dropdown" style="display: none;">
+                <span id="nav-username" class="nav-user-name">CIUDADANO</span>
+                <div class="dropdown-content">
+                    <a href="perfil.html">MI PERFIL</a>
+                    <a href="#" onclick="handleLogout()" style="color: #ff4444 !important;">CERRAR SESIÓN</a>
+                </div>
+            </div>
+        </nav>
     </div>
 </header>
 
 <section class="hero">
     <div class="hero-content">
         <h1>FORJANDO ALIANZAS EN EL VERSO</h1>
-        <p>
-            Irathiens es una organización de Star Citizen centrada en la cooperación,
-            la estrategia y el crecimiento conjunto. Operamos con visión a largo plazo,
-            disciplina y compromiso con nuestros aliados.
-        </p>
+        <p>Irathiens es una organización de Star Citizen centrada en la cooperación, la estrategia y el crecimiento conjunto.</p>
         <a class="btn-main" href="https://robertsspaceindustries.com/en/orgs/IRATH" target="_blank">Solicitar Ingreso</a>
     </div>
-
     <div class="status-panel">
-        <h3 style="font-family: 'Orbitron'; color: var(--primary); margin-top:0;">ORGANIZATION_STATUS</h3>
-        <div class="status-line">
-            <span>OPERACIONES</span>
-            <span style="color: #00ff88; font-weight: bold;">✔ ACTIVA</span>
-        </div>
-        <div class="status-line">
-            <span>COORDINACIÓN</span>
-            <span>SISTEMA INTEGRADO</span>
-        </div>
-        <div class="status-line">
-            <span>REGIÓN</span>
-            <span>ESPAÑA / EU</span>
-        </div>
+        <h3 style="font-family: 'Orbitron'; color: var(--primary);">ORGANIZATION_STATUS</h3>
+        <div style="display:flex; justify-content:space-between; margin-top:15px;"><span>OPERACIONES</span><span style="color: #00ff88;">✔ ACTIVA</span></div>
     </div>
 </section>
 
 <section class="info-grid">
-    <div class="info-card">
-        <h3 style="font-family: 'Orbitron'; color: var(--primary);">EVENTOS</h3>
-        <p>Operaciones conjuntas, entrenamientos tácticos y eventos multitudinarios organizados de forma regular para todos nuestros miembros.</p>
-    </div>
-    <div class="info-card">
-        <h3 style="font-family: 'Orbitron'; color: var(--primary);">DIPLOMACIA</h3>
-        <p>Sistema avanzado de embajada para la gestión de alianzas estratégicas, pactos de no agresión y cooperación inter-org.</p>
-    </div>
-    <div class="info-card">
-        <h3 style="font-family: 'Orbitron'; color: var(--primary);">MIEMBROS</h3>
-        <p>Estructura jerárquica clara, rangos definidos por méritos y comunicación constante a través de nuestros canales oficiales.</p>
-    </div>
+    <div class="info-card"><h3>EVENTOS</h3><p>Operaciones conjuntas y entrenamientos tácticos.</p></div>
+    <div class="info-card"><h3>DIPLOMACIA</h3><p>Gestión de alianzas estratégicas.</p></div>
+    <div class="info-card"><h3>MIEMBROS</h3><p>Estructura jerárquica clara y méritos.</p></div>
 </section>
 
-<footer>
-    <div>© 2025 IRATHIENS ORGANIZATION</div>
-    <div style="font-family: 'Orbitron'; color: var(--primary); font-size: 0.8rem; margin-top: 10px;">
-        ✨ IRATHIEN NO ES SOLO UNA ORGANIZACIÓN... ES UNA HERMANDAD ENTRE LAS ESTRELLAS.
-    </div>
-</footer>
+<footer>© 2025 IRATHIENS ORGANIZATION</footer>
 
-<div class="chat-bubble" onclick="toggleChat()">
-    <span style="color:var(--primary); font-family:'Orbitron'; font-weight:bold;">>_</span>
-</div>
-
+<div class="chat-bubble" onclick="toggleChat()"><span style="color:var(--primary); font-family:'Orbitron'; font-weight:bold;">>_</span></div>
 <div class="chat-window" id="chatWindow">
-    <div class="chat-header">
-        <span>IRATHIENS_COMM_LINK</span>
-        <span style="color: rgba(0,0,0,0.5)">[READ_ONLY]</span>
-    </div>
-    
-    <div class="chat-messages" id="chatMessages">
-        </div>
-
-    <div class="chat-footer-lock" onclick="window.location.href='login.html'">
-        <span>ACCEDER PARA TRANSMITIR</span>
+    <div class="chat-header"><span>IRATHIENS_COMM_LINK</span><span>[READ_ONLY]</span></div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-footer-lock" onclick="window.location.href='login.html'" style="padding:15px; text-align:center; cursor:pointer; background:rgba(255,154,31,0.1)">
+        <span style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">ACCEDER PARA TRANSMITIR</span>
     </div>
 </div>
 
@@ -324,16 +206,27 @@
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    function toggleChat() {
-        document.getElementById('chatWindow').classList.toggle('active');
+    function toggleChat() { document.getElementById('chatWindow').classList.toggle('active'); }
+
+    async function checkSession() {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            document.getElementById('auth-guest').style.display = 'none';
+            document.getElementById('auth-user').style.display = 'inline-block';
+            let { data: profile } = await _supabase.from('perfiles').select('handle').eq('id', user.id).single();
+            const displayName = profile?.handle || user.email.split('@')[0];
+            document.getElementById('nav-username').innerText = displayName.toUpperCase();
+        }
+    }
+
+    async function handleLogout() {
+        await _supabase.auth.signOut();
+        window.location.reload();
     }
 
     async function initIndexChat() {
-        // 1. Cargar historial existente
         let { data: msgs } = await _supabase.from('mensajes').select('*').order('created_at', { ascending: true });
         if (msgs) msgs.forEach(m => renderMsg(m));
-
-        // 2. Suscribirse a nuevos mensajes en tiempo real
         _supabase.channel('public-chat').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
             renderMsg(payload.new);
         }).subscribe();
@@ -341,57 +234,16 @@
 
     function renderMsg(data) {
         const container = document.getElementById('chatMessages');
-        const time = new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        
-        const isAdmin = data.user_name === 'JOAO_DIONISIO' || data.user_name === 'ADMIN';
-
         const div = document.createElement('div');
         div.className = 'msg';
-        if (isAdmin) {
-            div.style.borderLeftColor = '#00ffff';
-            div.style.background = 'rgba(0, 255, 255, 0.05)';
-        }
-
-        div.innerHTML = `
-            <span class="msg-time">${time}</span>
-            <span class="msg-user" style="color: ${isAdmin ? '#00ffff' : 'var(--primary)'}">
-                ${data.user_name} ${isAdmin ? '[ADMIN]' : ''}
-            </span>
-            <span style="color: #fff; opacity: 0.9;">${data.content}</span>
-        `;
+        div.innerHTML = `<span style="color:var(--primary); font-weight:bold; font-size:0.6rem;">${data.user_name}</span><br><span style="color:#fff">${data.content}</span>`;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
     }
 
-    // Iniciar el sistema de escucha
+    // Ejecución inicial
+    checkSession();
     initIndexChat();
-    async function checkSession() {
-    const { data: { user } } = await _supabase.auth.getUser();
-
-    if (user) {
-        // 1. Ocultar botón Login y mostrar área de usuario
-        document.getElementById('auth-guest').style.display = 'none';
-        document.getElementById('auth-user').style.display = 'inline-block';
-
-        // 2. Intentar sacar el nombre del perfil en Supabase
-        let { data: profile } = await _supabase
-            .from('perfiles')
-            .select('handle')
-            .eq('id', user.id)
-            .single();
-
-        const displayName = profile?.handle || user.email.split('@')[0];
-        document.getElementById('nav-username').innerText = displayName.toUpperCase();
-    } else {
-        // Si no hay usuario, nos aseguramos de mostrar el Login
-        document.getElementById('auth-guest').style.display = 'inline';
-        document.getElementById('auth-user').style.display = 'none';
-    }
-}
-
-// Ejecutar al cargar la página
-checkSession();
 </script>
-
 </body>
 </html>
