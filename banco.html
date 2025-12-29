@@ -223,7 +223,7 @@
 
         <div class="card">
             <span class="label">GASTOS_OPERATIVOS_MES</span>
-            <div class="big-value" style="color: var(--danger);">-1.200.000</div>
+            <div class="big-value" id="gastos-display" style="color: var(--danger);">-0</div>
             <span style="font-size: 0.6rem; color: #777;">MANTENIMIENTO_FLOTA_INCLUIDO</span>
         </div>
 
@@ -266,30 +266,50 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+    // --- CONEXIÓN ---
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
+    // --- RELOJ ---
     function updateClock() {
         const now = new Date();
         document.getElementById('clock').innerText = now.toISOString().split('T')[1].split('.')[0];
     }
     setInterval(updateClock, 1000);
 
-    // --- NUEVO: CONVERSOR USD ---
+    // --- LÓGICA DE NEGOCIO ---
     function actualizarUSD(cantidad) {
-        const precioM = 1.5; // $1.5 por cada 1M aUEC
+        const precioM = 1.5; 
         const valorUSD = (cantidad / 1000000) * precioM;
         document.getElementById('usd-value').innerHTML = `VALOR_ESTIMADO: <span style="color: #00ff88;">$${valorUSD.toFixed(2)} USD</span>`;
     }
 
-    // --- NUEVO: CARGAR HISTORIAL ---
+    async function calcularGastosMensuales() {
+        const ahora = new Date();
+        const primerDiaMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1).toISOString();
+
+        const { data, error } = await _supabase
+            .from('transacciones')
+            .select('valor')
+            .lt('valor', 0) 
+            .gte('created_at', primerDiaMes);
+
+        if (data) {
+            const totalGastos = data.reduce((acc, t) => acc + t.valor, 0);
+            const display = document.getElementById('gastos-display');
+            if (display) {
+                display.innerText = new Intl.NumberFormat('de-DE').format(totalGastos);
+            }
+        }
+    }
+
     async function cargarTransacciones() {
         const { data, error } = await _supabase
             .from('transacciones')
             .select('*')
             .order('created_at', { ascending: false })
-            .limit(6);
+            .limit(10);
 
         const tbody = document.getElementById('audit-table-body');
         if (data && tbody) {
@@ -297,8 +317,8 @@
                 <tr>
                     <td>#IR-${t.id.toString().slice(-4)}</td>
                     <td>${new Date(t.created_at).toLocaleString()}</td>
-                    <td>${t.entidad || 'S/N'}</td>
-                    <td>${t.concepto || 'Transferencia'}</td>
+                    <td>${t.entidad || 'ADMIN_CORE'}</td>
+                    <td>${t.concepto || 'S/C'}</td>
                     <td style="color: var(--success);">VERIFICADO</td>
                     <td style="color: ${t.valor < 0 ? 'var(--danger)' : 'var(--success)'}">
                         ${t.valor > 0 ? '+' : ''}${new Intl.NumberFormat('de-DE').format(t.valor)}
@@ -322,14 +342,15 @@
         }
     }
 
-    // --- REALTIME MEJORADO ---
+    // --- REALTIME ---
     _supabase
-        .channel('db-changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'tesoreria_corp' }, (payload) => {
+        .channel('global-updates')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tesoreria_corp' }, () => {
             cargarCapitalReal();
         })
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transacciones' }, (payload) => {
-            cargarTransacciones(); // Actualiza la tabla automáticamente al insertar
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transacciones' }, () => {
+            cargarTransacciones();
+            calcularGastosMensuales();
         })
         .subscribe();
 
@@ -361,16 +382,13 @@
         }
     });
 
+    // --- INICIO ---
     document.addEventListener('DOMContentLoaded', () => {
         cargarCapitalReal();
         cargarTransacciones();
+        calcularGastosMensuales();
+        updateClock();
     });
 </script>
 </body>
 </html>
-
-
-
-
-
-
