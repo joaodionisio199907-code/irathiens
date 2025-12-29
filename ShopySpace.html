@@ -1,9 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopySpace | Irathiens Marketplace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg: #04080f;
+            --primary: #ff9a1f;
+            --primary-dim: rgba(255, 154, 31, 0.1);
+            --accent: #00f2ff;
+            --text: #e6f1ff;
+            --muted: #9fb3c8;
+            --border: rgba(255, 154, 31, 0.2);
+            --glass: rgba(11, 18, 32, 0.85);
+            --card-bg: rgba(6, 11, 20, 0.95);
+            --font-hud: 'Orbitron', sans-serif;
+            --success: #00ff88;
+            --danger: #ff4444;
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s ease; }
+
+        body {
+            margin: 0; font-family: 'Inter', sans-serif;
+            background-color: var(--bg); color: var(--text);
+            min-height: 100vh; overflow-x: hidden;
+        }
+
+        nav {
+            background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--primary);
+            padding: 15px 20px; display: flex; justify-content: space-between;
+            align-items: center; position: sticky; top: 0; z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a {
+            color: #fff; text-decoration: none; font-family: var(--font-hud);
+            font-size: 0.75rem; letter-spacing: 1px; cursor: pointer;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        .main-container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .profile-grid { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
+
+        .card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            padding: 25px; position: relative;
+        }
+
+        .card::after {
+            content: ""; position: absolute; top: -1px; right: -1px;
+            width: 15px; height: 15px; border-top: 2px solid var(--primary); border-right: 2px solid var(--primary);
+        }
+
+        .token-box {
+            background: #000; border: 1px dashed var(--accent); padding: 15px;
+            font-family: 'JetBrains Mono'; color: var(--accent); text-align: center;
+            margin: 15px 0; cursor: pointer;
+        }
+
+        input, select {
+            width: 100%; padding: 12px; background: #000; border: 1px solid var(--border);
+            color: #fff; font-family: 'JetBrains Mono'; margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            width: 100%; background: var(--primary-dim); border: 1px solid var(--primary);
+            color: var(--primary); padding: 12px; font-family: var(--font-hud);
+            cursor: pointer; font-weight: bold;
+        }
+        .btn-primary:hover { background: var(--primary); color: #000; }
+
+        #suggestions {
+            position: absolute; width: 100%; background: #060b14; 
+            border: 1px solid var(--primary); z-index: 100; 
+            display: none; max-height: 200px; overflow-y: auto;
+            margin-top: -15px;
+        }
+        .suggestion-item {
+            padding: 10px; cursor: pointer; border-bottom: 1px solid #1a2230;
+            font-size: 0.8rem; font-family: 'JetBrains Mono';
+        }
+        .suggestion-item:hover { background: var(--primary); color: #000; }
+
+        .products-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+        }
+
+        .item-card { background: var(--card-bg); border: 1px solid var(--border); position: relative; overflow: hidden; }
+        .item-img { height: 160px; background-size: cover; background-position: center; border-bottom: 1px solid var(--border); }
+        .verified-badge { font-size: 0.6rem; color: var(--success); border: 1px solid var(--success); padding: 2px 5px; font-family: var(--font-hud); }
+
+        #msg-overlay { font-family: 'JetBrains Mono'; font-size: 0.8rem; margin-top: 10px; border-left: 2px solid var(--primary); padding-left: 10px;}
+    </style>
+</head>
+<body>
+
+<nav>
+    <div style="font-family: var(--font-hud); color: var(--primary); font-weight: bold; font-size: 0.9rem;">IRATHIENS_OS</div>
+    <div class="nav-links">
+        <a onclick="showTab('market')" id="link-market" class="active">MERCADO</a>
+        <a onclick="showTab('sell')">VENDER</a>
+        <a onclick="showTab('profile')" id="link-profile">MI_PERFIL</a>
+    </div>
+</nav>
+
+<div class="main-container">
+
+    <section id="market" class="tab-content active">
+        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px; border-left: 5px solid var(--primary); padding-left: 20px;">
+            <h2 style="font-family: var(--font-hud); letter-spacing: 2px;">CENTRAL_SUMINISTROS</h2>
+        </div>
+        <div class="products-grid" id="market-items"></div>
+    </section>
+
+    <section id="sell" class="tab-content">
+        <div class="card" style="max-width: 600px; margin: auto;">
+            <h3 style="font-family: var(--font-hud); color: var(--primary);">LISTAR_NUEVO_ITEM</h3>
+            <label style="font-size: 0.7rem;">NOMBRE_DEL_OBJETO (AUTO-SCAN)</label>
+            <div style="position: relative;">
+                <input type="text" id="item-name" placeholder="Escribe para buscar nave..." oninput="buscarEnCatalogo(this.value)" autocomplete="off">
+                <div id="suggestions"></div>
+            </div>
+            
+            <label style="font-size: 0.7rem;">CATEGORÍA</label>
+            <select id="item-cat">
+                <option value="ships">NAVES</option>
+                <option value="weapons">ARMAS_FPS</option>
+                <option value="items">COMPONENTES</option>
+            </select>
+            
+            <label style="font-size: 0.7rem;">PRECIO_AUEC</label>
+            <input type="number" id="item-price" placeholder="000000">
+            
+            <button class="btn-primary" onclick="publicarItem()">SUBIR_AL_MERCADO</button>
+        </div>
+    </section>
+
+    <section id="profile" class="tab-content">
+        <div class="profile-grid">
+            <div class="card">
+                <h3 id="profile-handle" style="font-family: var(--font-hud); margin: 0;">SIN_IDENTIFICAR</h3>
+                <div id="status-tag" style="font-size: 0.6rem; color: var(--danger); margin-top: 5px;">ESTADO: NO_VERIFICADO</div>
+                <div style="margin-top: 30px;">
+                    <span style="font-size: 0.6rem; color: var(--primary); font-family: var(--font-hud);">KARMA_EXPERIENCIA</span>
+                    <div style="font-size: 2rem; font-family: var(--font-hud);" id="karma-val">0</div>
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="font-family: var(--font-hud); color: var(--primary);">VERIFICACIÓN_RSI</h3>
+                <p style="font-size: 0.8rem;">1. COPIA EL CÓDIGO Y PÉGALO EN TU BIO DE RSI:</p>
+                <div class="token-box" id="bio-token" onclick="copyToken()">GENERANDO...</div>
+                <p style="font-size: 0.8rem;">2. PEGA TU NOMBRE O URL DE RSI:</p>
+                <input type="text" id="rsi-handle-input" placeholder="zLCA37eD o URL completa">
+                <button class="btn-primary" onclick="verificarConRSI()">SINC_BIO_PROTOCOL</button>
+                <div id="msg-overlay">> ESPERANDO_ACCION...</div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     // --- CONFIGURACIÓN ---
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
+    // NAVEGACIÓN
     function showTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
@@ -22,14 +197,10 @@
         const user = session.user;
         const tokenBox = document.getElementById('bio-token');
 
-        // Intentamos obtener el perfil
-        let { data: profile } = await _supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
+        // Intentamos obtener el perfil existente
+        let { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
 
-        // Si no existe o no tiene token, lo creamos/actualizamos
+        // Si no existe o no tiene token, lo creamos/actualizamos inmediatamente
         if (!profile || !profile.bio_token) {
             const generatedToken = "BIO-" + Math.random().toString(36).substring(2, 10).toUpperCase();
             const { data: newProfile, error: upsertError } = await _supabase
@@ -38,13 +209,13 @@
                 .select().single();
             
             if (upsertError) {
-                tokenBox.innerText = "ERROR_PERMISOS_SQL";
+                tokenBox.innerText = "ERROR_DB_RLS";
                 return;
             }
             profile = newProfile;
         }
 
-        // Mostrar datos en pantalla
+        // Pintamos los datos en la interfaz
         if (profile) {
             tokenBox.innerText = profile.bio_token;
             document.getElementById('profile-handle').innerText = profile.rsi_handle || "CADETE_SIN_ID";
@@ -57,23 +228,23 @@
         }
     }
 
-    // 2. VERIFICACIÓN CON LIMPIEZA DE URL
+    // 2. VERIFICACIÓN CON LIMPIEZA DE URL (SOLUCIÓN HANDLE)
     async function verificarConRSI() {
         let handle = document.getElementById('rsi-handle-input').value.trim();
         const msg = document.getElementById('msg-overlay');
         
-        if (!handle) return alert("Ingresa tu Handle RSI o URL");
+        if (!handle) return alert("Ingresa tu Handle RSI");
 
-        // SI EL USUARIO PEGA LA URL, EXTRAEMOS EL NOMBRE:
+        // Lógica: Si pegan la URL, extraemos solo el nombre final
         if (handle.includes("citizens/")) {
             handle = handle.split("citizens/")[1].split("/")[0].split("?")[0];
         }
 
         const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) return alert("Sesión expirada");
+        if (!user) return alert("Inicia sesión primero");
 
         msg.style.color = 'var(--accent)';
-        msg.innerText = "> SINCRONIZANDO CON RSI...";
+        msg.innerText = "> ACCEDIENDO A RSI SPECTRUM...";
 
         const { error } = await _supabase
             .from('profiles')
@@ -83,12 +254,45 @@
         if (error) {
             msg.innerHTML = `<span style="color:var(--danger)">> ERROR: ${error.message}</span>`;
         } else {
-            msg.innerHTML = `<span style="color:var(--success)">> SINC_EXITOSA: PILOTO ${handle}</span>`;
+            msg.innerHTML = `<span style="color:var(--success)">> SINC_EXITOSA: PILOTO IDENTIFICADO</span>`;
             setTimeout(() => location.reload(), 1500);
         }
     }
 
-    // 3. AUTO-SCAN CATÁLOGO
+    // 3. CARGAR MERCADO
+    async function loadMarketItems() {
+        const grid = document.getElementById('market-items');
+        grid.innerHTML = '<p style="font-family:JetBrains Mono; padding: 20px;">> ESCANEANDO_FRECUENCIAS...</p>';
+
+        const { data: items, error } = await _supabase
+            .from('marketplace_items')
+            .select('*, profiles:seller_id(rsi_handle, is_verified)')
+            .eq('status', 'available')
+            .order('created_at', { ascending: false });
+
+        if (error) return grid.innerHTML = '<p>ERROR_RADAR</p>';
+
+        grid.innerHTML = '';
+        if(items) items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.innerHTML = `
+                <div class="item-img" style="background-image: url('https://via.placeholder.com/400x200/060b14/ff9a1f?text=${item.item_name}');"></div>
+                <div style="padding: 15px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.6rem; color:var(--primary); font-family:'JetBrains Mono';">${item.category.toUpperCase()}</span>
+                        ${item.profiles?.is_verified ? '<span class="verified-badge">VERIFICADO</span>' : ''}
+                    </div>
+                    <h3 style="font-family:var(--font-hud); font-size:1rem; margin:10px 0;">${item.item_name}</h3>
+                    <div style="color:var(--accent); font-family:var(--font-hud); font-size:1.1rem;">${item.price_auec.toLocaleString()} aUEC</div>
+                    <div style="font-size:0.7rem; margin-top:10px; color:var(--muted)">Vendedor: ${item.profiles?.rsi_handle || 'Piloto_Anon'}</div>
+                    <button class="btn-primary" style="margin-top:15px;">INICIAR_ESCROW</button>
+                </div>`;
+            grid.appendChild(card);
+        });
+    }
+
+    // 4. AUTO-SCAN CATÁLOGO
     async function buscarEnCatalogo(query) {
         const suggestionsDiv = document.getElementById('suggestions');
         if (query.length < 2) { suggestionsDiv.style.display = 'none'; return; }
@@ -106,38 +310,35 @@
         } else { suggestionsDiv.style.display = 'none'; }
     }
 
-    // 4. CARGAR MERCADO
-    async function loadMarketItems() {
-        const grid = document.getElementById('market-items');
-        const { data: items } = await _supabase.from('marketplace_items').select('*, profiles:seller_id(rsi_handle, is_verified)').eq('status', 'available').order('created_at', { ascending: false });
-        if (!items) return;
-        grid.innerHTML = '';
-        items.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.innerHTML = `<div class="item-img" style="background-image: url('https://via.placeholder.com/400x200/060b14/ff9a1f?text=${item.item_name}');"></div><div style="padding: 15px;"><div style="display:flex; justify-content:space-between;"><span>${item.category.toUpperCase()}</span>${item.profiles?.is_verified ? '<span class="verified-badge">VERIFICADO</span>' : ''}</div><h3 style="font-size:1rem;">${item.item_name}</h3><div style="color:var(--accent)">${item.price_auec.toLocaleString()} aUEC</div><div style="font-size:0.7rem; color:var(--muted)">Vendedor: ${item.profiles?.rsi_handle || 'Anon'}</div><button class="btn-primary" style="margin-top:10px;">COMPRAR</button></div>`;
-            grid.appendChild(card);
-        });
-    }
-
-    // 5. PUBLICAR
+    // 5. PUBLICAR ITEM
     async function publicarItem() {
         const { data: { user } } = await _supabase.auth.getUser();
+        if (!user) return alert("Inicia sesión.");
         const name = document.getElementById('item-name').value;
         const price = document.getElementById('item-price').value;
         const cat = document.getElementById('item-cat').value;
         if(!name || !price) return alert("Faltan datos.");
         const { error } = await _supabase.from('marketplace_items').insert([{ seller_id: user.id, item_name: name, price_auec: parseInt(price), status: 'available', category: cat }]);
-        if (!error) location.reload();
+        if (!error) { alert("Ítem en órbita."); location.reload(); }
     }
 
+    // UTILIDADES
     function copyToken() {
-        const t = document.getElementById('bio-token').innerText;
-        if(t.includes("BIO-")) { navigator.clipboard.writeText(t); alert("TOKEN COPIADO: Pégalo en tu perfil de RSI"); }
+        const token = document.getElementById('bio-token').innerText;
+        if(token.includes("BIO-")) {
+            navigator.clipboard.writeText(token);
+            alert("TOKEN COPIADO: Pégalo en tu BIO de la web de RSI");
+        }
     }
+
+    document.addEventListener('click', (e) => {
+        if (e.target.id !== 'item-name') document.getElementById('suggestions').style.display = 'none';
+    });
 
     window.onload = () => {
         checkUserSession();
         loadMarketItems();
     };
 </script>
+</body>
+</html>
