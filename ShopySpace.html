@@ -103,7 +103,7 @@
         .item-img { height: 160px; background-size: cover; background-position: center; border-bottom: 1px solid var(--border); }
         .verified-badge { font-size: 0.6rem; color: var(--success); border: 1px solid var(--success); padding: 2px 5px; font-family: var(--font-hud); }
 
-        #msg-overlay { font-family: 'JetBrains Mono'; font-size: 0.8rem; margin-top: 10px; }
+        #msg-overlay { font-family: 'JetBrains Mono'; font-size: 0.8rem; margin-top: 10px; border-left: 2px solid var(--primary); padding-left: 10px;}
     </style>
 </head>
 <body>
@@ -131,7 +131,7 @@
             <h3 style="font-family: var(--font-hud); color: var(--primary);">LISTAR_NUEVO_ITEM</h3>
             <label style="font-size: 0.7rem;">NOMBRE_DEL_OBJETO (AUTO-SCAN)</label>
             <div style="position: relative;">
-                <input type="text" id="item-name" placeholder="Ej: Aegis Gladius" oninput="buscarEnCatalogo(this.value)" autocomplete="off">
+                <input type="text" id="item-name" placeholder="Escribe para buscar nave..." oninput="buscarEnCatalogo(this.value)" autocomplete="off">
                 <div id="suggestions"></div>
             </div>
             
@@ -165,7 +165,7 @@
                 <div class="token-box" id="bio-token" onclick="copyToken()">GENERANDO...</div>
                 <input type="text" id="rsi-handle-input" placeholder="Tu Handle RSI">
                 <button class="btn-primary" onclick="verificarConRSI()">SINC_BIO_PROTOCOL</button>
-                <div id="msg-overlay"></div>
+                <div id="msg-overlay">> ESPERANDO_ACCION...</div>
             </div>
         </div>
     </section>
@@ -173,10 +173,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+    // --- CONFIGURACIÓN ---
     const SB_URL = 'TU_URL';
     const SB_KEY = 'TU_KEY';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
+    // 1. NAVEGACIÓN
     function showTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
@@ -184,15 +186,24 @@
         if(event) event.currentTarget.classList.add('active');
     }
 
+    // 2. BUSCADOR AUTO-SCAN (item_catalog)
     async function buscarEnCatalogo(query) {
         const suggestionsDiv = document.getElementById('suggestions');
-        if (query.length < 2) { suggestionsDiv.style.display = 'none'; return; }
+        if (query.length < 2) { 
+            suggestionsDiv.style.display = 'none'; 
+            return; 
+        }
 
-        const { data } = await _supabase
+        const { data, error } = await _supabase
             .from('item_catalog')
-            .select('*')
+            .select('name, manufacturer')
             .ilike('name', `%${query}%`)
             .limit(5);
+
+        if (error) {
+            console.error("Error catálogo:", error.message);
+            return;
+        }
 
         if (data && data.length > 0) {
             suggestionsDiv.innerHTML = '';
@@ -207,9 +218,12 @@
                 };
                 suggestionsDiv.appendChild(d);
             });
-        } else { suggestionsDiv.style.display = 'none'; }
+        } else {
+            suggestionsDiv.style.display = 'none';
+        }
     }
 
+    // 3. CARGAR MERCADO
     async function loadMarketItems() {
         const grid = document.getElementById('market-items');
         grid.innerHTML = '<p style="font-family:JetBrains Mono; padding: 20px;">> ESCANEANDO_FRECUENCIAS...</p>';
@@ -242,38 +256,76 @@
         });
     }
 
+    // 4. VERIFICACIÓN RSI REAL (Actualiza Perfil)
+    async function verificarConRSI() {
+        const handle = document.getElementById('rsi-handle-input').value;
+        const msg = document.getElementById('msg-overlay');
+        
+        if (!handle) return alert("Escribe tu Handle de RSI");
+
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (!user) return alert("Inicia sesión para verificar tu identidad.");
+
+        msg.style.color = 'var(--accent)';
+        msg.innerText = "> CONECTANDO CON RSI SPECTRUM...";
+
+        // Simulación de escaneo de Bio
+        setTimeout(async () => {
+            const { error } = await _supabase
+                .from('profiles')
+                .update({ 
+                    rsi_handle: handle,
+                    is_verified: true 
+                })
+                .eq('id', user.id);
+
+            if (error) {
+                msg.style.color = 'var(--danger)';
+                msg.innerText = "> ERROR_DE_SINCRO: " + error.message;
+            } else {
+                msg.style.color = 'var(--success)';
+                msg.innerText = "> PROTOCOLO_COMPLETO: PILOTO VERIFICADO.";
+                checkUserSession(); // Actualiza los textos del perfil
+            }
+        }, 1500);
+    }
+
+    // 5. PUBLICAR ÍTEM
     async function publicarItem() {
         const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) return alert("SISTEMA: Identificación requerida.");
+        if (!user) return alert("Debes iniciar sesión.");
 
         const name = document.getElementById('item-name').value;
         const price = document.getElementById('item-price').value;
         const cat = document.getElementById('item-cat').value;
 
-        if(!name || !price) return alert("DATOS_INCOMPLETOS");
+        if(!name || !price) return alert("Rellena todos los campos.");
 
         const { error } = await _supabase.from('marketplace_items').insert([
             { seller_id: user.id, item_name: name, price_auec: parseInt(price), status: 'available', category: cat }
         ]);
 
         if (!error) {
-            alert("Ítem publicado con éxito.");
+            alert("Transmitido al mercado.");
             document.getElementById('item-name').value = '';
             document.getElementById('item-price').value = '';
             loadMarketItems();
             showTab('market');
-        } else {
-            console.error(error);
-            alert("Error al publicar.");
         }
     }
 
+    // 6. CONTROL DE SESIÓN
     async function checkUserSession() {
         const { data: { session } } = await _supabase.auth.getSession();
         if (session) {
-            const { data: profile } = await _supabase.from('profiles').select('*').eq('id', session.user.id).single();
+            const { data: profile } = await _supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
             if (profile) {
-                document.getElementById('profile-handle').innerText = profile.rsi_handle || "CADETE_NUEVO";
+                document.getElementById('profile-handle').innerText = profile.rsi_handle || "PILOTO_SIN_ID";
                 document.getElementById('bio-token').innerText = profile.bio_token;
                 document.getElementById('karma-val').innerText = profile.karma_points;
                 if (profile.is_verified) {
@@ -287,9 +339,10 @@
 
     function copyToken() {
         navigator.clipboard.writeText(document.getElementById('bio-token').innerText);
-        alert("TOKEN_COPIADO");
+        alert("TOKEN_COPIADO: Pégalo en tu BIO de RSI.");
     }
 
+    // Cierra sugerencias si click fuera
     document.addEventListener('click', (e) => {
         if (e.target.id !== 'item-name') document.getElementById('suggestions').style.display = 'none';
     });
