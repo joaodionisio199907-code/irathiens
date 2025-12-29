@@ -225,17 +225,25 @@ function toggleChat() {
 async function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const content = input.value.trim();
-    const userName = document.getElementById('display-name').innerText;
+    
+    // Obtenemos el nombre directamente del perfil cargado en la sesión, no solo del HTML
+    const userName = document.getElementById('display-name').innerText || "Recluta";
 
-    if (content !== "") {
+    if (content !== "" && currentUser) {
         const { error } = await _supabase
             .from('mensajes')
             .insert([{ 
                 user_name: userName, 
                 content: content,
-                user_id: currentUser.id 
+                user_id: currentUser.id // Este ID está blindado por la política RLS que pusiste
             }]);
-        if (!error) input.value = "";
+
+        if (error) {
+            console.error("Error de seguridad:", error.message);
+            alert("No tienes permiso para realizar esta acción.");
+        } else {
+            input.value = "";
+    }
     }
 }
 
