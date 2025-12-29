@@ -1,0 +1,8 @@
+# Seguridad
+.env
+config.js
+
+# Basura del sistema
+node_modules/
+.DS_Store
+Thumbs.db
