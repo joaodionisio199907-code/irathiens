@@ -124,6 +124,31 @@
         .ship-img { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; }
 
         footer { margin-top: 60px; padding: 30px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); }
+
+        .chat-bubble {
+            position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px;
+            background: rgba(255, 154, 31, 0.1); border: 2px solid #ff9a1f;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 3000; box-shadow: 0 0 15px #ff9a1f;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .chat-bubble:hover { transform: scale(1.1) rotate(90deg); }
+        
+        .chat-window {
+            position: fixed; bottom: 90px; left: 20px; width: 320px; height: 400px;
+            background: rgba(6, 11, 20, 0.95); border: 1px solid #ff9a1f;
+            backdrop-filter: blur(15px); display: none; flex-direction: column;
+            z-index: 2999; box-shadow: 0 0 30px rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden;
+        }
+        .chat-window.active { display: flex; }
+        .chat-header { background: #ff9a1f; color: #000; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold; display: flex; justify-content: space-between; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(rgba(255,154,31,0.02) 1px, transparent 1px); background-size: 100% 20px; }
+        .msg { font-size: 0.75rem; padding: 5px 8px; border-left: 2px solid #ffb347; background: rgba(255,255,255,0.03); color: #e6f1ff; }
+        .msg-user { color: #ff9a1f; font-weight: bold; font-size: 0.65rem; display: block; }
+        .msg-time { color: #555; font-size: 0.6rem; float: right; }
+        .chat-input-area { padding: 10px; border-top: 1px solid rgba(255,154,31,0.2); display: flex; gap: 5px; }
+        .chat-input { flex: 1; background: #000; border: 1px solid #ff9a1f; color: #fff; padding: 8px; font-size: 0.8rem; }
+        .btn-send { background: #ff9a1f; border: none; padding: 0 10px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -186,20 +211,29 @@
 
 <footer>© 2025 Irathiens Command · Seguridad Encriptada</footer>
 
+<div class="chat-bubble" onclick="toggleChat()"><span style="color:#ff9a1f; font-weight:bold;">COMM</span></div>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header"><span>IRATHIENS_COMM_LINK</span><span id="chat-status">●</span></div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Escribir...">
+        <button class="btn-send" onclick="sendChatMessage()">ENVIAR</button>
+    </div>
+</div>
+
 <script>
-   const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
+const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
 const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'; 
 const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
 let currentUser = null;
 
-// --- INICIO DE LA APLICACIÓN ---
 async function init() {
     const { data: { user } } = await _supabase.auth.getUser();
     if (!user) { window.location.href = "login.html"; return; }
     currentUser = user;
 
-    // Cargar Perfil y Naves
     let { data: profile } = await _supabase.from('perfiles').select('*').eq('id', user.id).single();
     
     if (profile) {
@@ -207,17 +241,14 @@ async function init() {
         document.getElementById('display-rank').innerText = profile.rank || "Cadete de Flota";
         if (profile.role === 'admin') document.getElementById('admin-link').style.display = 'inline';
         if (profile.ships) {
-            document.getElementById('fleet-grid').innerHTML = ''; // Limpiar antes de cargar
+            document.getElementById('fleet-grid').innerHTML = '';
             profile.ships.forEach(s => renderShipCard(s));
         }
     }
     updateShipCount();
-
-    // Iniciar Chat
     initChat();
 }
 
-// --- LÓGICA DEL CHAT ---
 function toggleChat() {
     document.getElementById('chatWindow').classList.toggle('active');
 }
@@ -225,8 +256,6 @@ function toggleChat() {
 async function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const content = input.value.trim();
-    
-    // Obtenemos el nombre directamente del perfil cargado en la sesión, no solo del HTML
     const userName = document.getElementById('display-name').innerText || "Recluta";
 
     if (content !== "" && currentUser) {
@@ -235,7 +264,7 @@ async function sendChatMessage() {
             .insert([{ 
                 user_name: userName, 
                 content: content,
-                user_id: currentUser.id // Este ID está blindado por la política RLS que pusiste
+                user_id: currentUser.id 
             }]);
 
         if (error) {
@@ -243,16 +272,14 @@ async function sendChatMessage() {
             alert("No tienes permiso para realizar esta acción.");
         } else {
             input.value = "";
+        }
     }
-    }
-}
+} // <--- LLAVE AÑADIDA AQUÍ
 
 async function initChat() {
-    // 1. Cargar mensajes de la base de datos
     let { data: msgs } = await _supabase.from('mensajes').select('*').order('created_at', { ascending: true });
     if (msgs) msgs.forEach(m => renderMsg(m));
 
-    // 2. Escuchar mensajes nuevos en tiempo real
     _supabase.channel('chat-room').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
         renderMsg(payload.new);
     }).subscribe();
@@ -261,8 +288,6 @@ async function initChat() {
 function renderMsg(data) {
     const container = document.getElementById('chatMessages');
     const time = new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    // NOMBRES QUE TENDRÁN COLOR CYAN [ADMIN]
     const isAdmin = data.user_name === 'JOAO_DIONISIO' || data.user_name === 'ADMIN';
 
     const div = document.createElement('div');
@@ -283,7 +308,6 @@ function renderMsg(data) {
     container.scrollTop = container.scrollHeight;
 }
 
-// --- GESTIÓN DE NAVES (SISTEMA DE ANTES) ---
 function renderShipCard(name) {
     const grid = document.getElementById('fleet-grid');
     const card = document.createElement('div');
@@ -319,7 +343,6 @@ function updateShipCount() {
     document.getElementById('ship-count').innerText = count;
 }
 
-// --- UTILIDADES ---
 async function saveHandle() {
     const val = document.getElementById('handle-input').value;
     if (!val) return;
@@ -332,14 +355,12 @@ async function handleLogout() {
     window.location.href = "login.html";
 }
 
-// Tecla Enter para el chat
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && document.activeElement.id === 'chatInput') {
         sendChatMessage();
     }
 });
 
-// Efecto Parallax del fondo
 window.addEventListener('mousemove', (e) => {
     const x = (e.clientX / window.innerWidth - 0.5) * -20;
     const y = (e.clientY / window.innerHeight - 0.5) * -20;
@@ -349,42 +370,5 @@ window.addEventListener('mousemove', (e) => {
 
 init();
 </script>
-    <style>
-    .chat-bubble {
-        position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px;
-        background: rgba(255, 154, 31, 0.1); border: 2px solid #ff9a1f;
-        border-radius: 50%; display: flex; justify-content: center; align-items: center;
-        cursor: pointer; z-index: 3000; box-shadow: 0 0 15px #ff9a1f;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .chat-bubble:hover { transform: scale(1.1) rotate(90deg); }
-    
-    .chat-window {
-        position: fixed; bottom: 90px; left: 20px; width: 320px; height: 400px;
-        background: rgba(6, 11, 20, 0.95); border: 1px solid #ff9a1f;
-        backdrop-filter: blur(15px); display: none; flex-direction: column;
-        z-index: 2999; box-shadow: 0 0 30px rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden;
-    }
-    .chat-window.active { display: flex; }
-    .chat-header { background: #ff9a1f; color: #000; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold; display: flex; justify-content: space-between; }
-    .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(rgba(255,154,31,0.02) 1px, transparent 1px); background-size: 100% 20px; }
-    .msg { font-size: 0.75rem; padding: 5px 8px; border-left: 2px solid #ffb347; background: rgba(255,255,255,0.03); color: #e6f1ff; }
-    .msg-user { color: #ff9a1f; font-weight: bold; font-size: 0.65rem; display: block; }
-    .msg-time { color: #555; font-size: 0.6rem; float: right; }
-    .chat-input-area { padding: 10px; border-top: 1px solid rgba(255,154,31,0.2); display: flex; gap: 5px; }
-    .chat-input { flex: 1; background: #000; border: 1px solid #ff9a1f; color: #fff; padding: 8px; font-size: 0.8rem; }
-    .btn-send { background: #ff9a1f; border: none; padding: 0 10px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem; }
-</style>
-
-<div class="chat-bubble" onclick="toggleChat()"><span style="color:#ff9a1f; font-weight:bold;">COMM</span></div>
-
-<div class="chat-window" id="chatWindow">
-    <div class="chat-header"><span>IRATHIENS_COMM_LINK</span><span id="chat-status">●</span></div>
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-input-area">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Escribir...">
-        <button class="btn-send" onclick="sendChatMessage()">ENVIAR</button>
-    </div>
-</div>
 </body>
 </html>
