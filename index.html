@@ -365,6 +365,32 @@
 
     // Iniciar el sistema de escucha
     initIndexChat();
+    async function checkSession() {
+    const { data: { user } } = await _supabase.auth.getUser();
+
+    if (user) {
+        // 1. Ocultar botón Login y mostrar área de usuario
+        document.getElementById('auth-guest').style.display = 'none';
+        document.getElementById('auth-user').style.display = 'inline-block';
+
+        // 2. Intentar sacar el nombre del perfil en Supabase
+        let { data: profile } = await _supabase
+            .from('perfiles')
+            .select('handle')
+            .eq('id', user.id)
+            .single();
+
+        const displayName = profile?.handle || user.email.split('@')[0];
+        document.getElementById('nav-username').innerText = displayName.toUpperCase();
+    } else {
+        // Si no hay usuario, nos aseguramos de mostrar el Login
+        document.getElementById('auth-guest').style.display = 'inline';
+        document.getElementById('auth-user').style.display = 'none';
+    }
+}
+
+// Ejecutar al cargar la página
+checkSession();
 </script>
 
 </body>
