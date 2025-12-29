@@ -343,6 +343,61 @@
         checkUserSession();
         loadMarketItems();
     };
+    // --- FUNCIÓN DE SESIÓN CORREGIDA PARA GENERAR TOKEN SIEMPRE ---
+async function checkUserSession() {
+    const { data: { session } } = await _supabase.auth.getSession();
+    
+    if (!session) {
+        document.getElementById('bio-token').innerText = "INICIA_SESIÓN_PRIMERO";
+        return;
+    }
+
+    const user = session.user;
+    const tokenBox = document.getElementById('bio-token');
+
+    // 1. Intentamos obtener el perfil existente
+    let { data: profile, error } = await _supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+    // 2. Si no existe o no tiene token, lo creamos/actualizamos inmediatamente
+    if (!profile || !profile.bio_token) {
+        const generatedToken = "BIO-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+        
+        const { data: newProfile, error: upsertError } = await _supabase
+            .from('profiles')
+            .upsert({ 
+                id: user.id, 
+                bio_token: generatedToken, 
+                karma_points: 0, 
+                is_verified: false 
+            })
+            .select()
+            .single();
+
+        if (upsertError) {
+            console.error("Error al generar token:", upsertError);
+            tokenBox.innerText = "ERROR_DB_PERMISOS";
+            return;
+        }
+        profile = newProfile;
+    }
+
+    // 3. Pintamos los datos en la interfaz
+    if (profile) {
+        tokenBox.innerText = profile.bio_token;
+        document.getElementById('profile-handle').innerText = profile.rsi_handle || "CADETE_SIN_ID";
+        document.getElementById('karma-val').innerText = profile.karma_points || 0;
+        
+        if (profile.is_verified) {
+            const tag = document.getElementById('status-tag');
+            tag.innerText = "ESTADO: VERIFICADO";
+            tag.style.color = "var(--success)";
+        }
+    }
+}
 </script>
 </body>
 </html>
