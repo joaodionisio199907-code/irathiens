@@ -29,6 +29,7 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
+            user-select: none; /* Evita selección de texto básica */
         }
 
         body::after {
@@ -84,12 +85,11 @@
 
         .nav-menu a:hover { color: var(--primary); }
 
-        /* --- DESPLEGABLE USUARIO CORREGIDO --- */
         .user-dropdown {
             position: relative;
             display: inline-block;
             margin-left: 1.5rem;
-            padding-bottom: 15px; /* Puente de seguridad */
+            padding-bottom: 15px;
             margin-bottom: -15px;
         }
 
@@ -126,7 +126,6 @@
 
         .user-dropdown:hover .dropdown-content { display: block; }
 
-        /* Hamburguesa */
         .menu-toggle {
             display: none;
             flex-direction: column;
@@ -146,10 +145,8 @@
         
         footer { padding: 40px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); margin-top: 50px; }
 
-        /* BURBUJAS */
         .chat-bubble { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(6, 11, 20, 0.8); border: 2px solid var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3000; }
         
-        /* ESTILO MUSICA CORREGIDO */
         .music-bubble { 
             position: fixed; bottom: 20px; left: 95px; width: 60px; height: 60px; 
             background: rgba(6, 11, 20, 0.8); border: 2px solid var(--primary); 
@@ -175,13 +172,11 @@
             .nav-menu { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--bg-soft); flex-direction: column; padding: 20px; border-bottom: 1px solid var(--border); }
             .nav-menu.mobile-active { display: flex; }
             .hero { grid-template-columns: 1fr; text-align: center; }
-            .music-bubble { left: auto; right: 20px; } /* En móvil a la derecha */
+            .music-bubble { left: auto; right: 20px; }
         }
     </style>
 </head>
-<body>
-
-<header>
+<body oncontextmenu="return false;"> <header>
     <div class="nav-container">
         <a href="/" class="logo">
             <img src="logo.png" alt="Logo" class="logo-img"> 
@@ -191,13 +186,13 @@
             <span></span><span></span><span></span>
         </button>
         <nav class="nav-menu">
-            <a href="index.html">INICIO</a>
-            <a href="Members.html">MIEMBROS</a>
-            <div id="auth-guest"><a href="login.html" style="color: var(--primary); border: 1px solid var(--border); padding: 5px 15px; border-radius: 4px;">LOGIN</a></div>
+            <a href="/">INICIO</a>
+            <a href="Members">MIEMBROS</a>
+            <div id="auth-guest"><a href="login" style="color: var(--primary); border: 1px solid var(--border); padding: 5px 15px; border-radius: 4px;">LOGIN</a></div>
             <div id="auth-user" class="user-dropdown" style="display: none;">
                 <span id="nav-username" class="nav-user-name">CIUDADANO</span>
                 <div class="dropdown-content">
-                    <a href="perfil.html">MI PERFIL</a>
+                    <a href="perfil">MI PERFIL</a>
                     <a href="#" onclick="handleLogout()" style="color: #ff4444 !important;">CERRAR SESIÓN</a>
                 </div>
             </div>
@@ -226,24 +221,19 @@
 <footer>© 2025 IRATHIENS ORGANIZATION</footer>
 
 <div class="chat-bubble" onclick="toggleChat()"><span style="color:var(--primary); font-family:'Orbitron'; font-weight:bold;">>_</span></div>
-
-<div class="music-bubble" id="musicBubble" onclick="toggleMusic()">
-    <span id="musicStatus">OFF</span>
-</div>
+<div class="music-bubble" id="musicBubble" onclick="toggleMusic()"><span id="musicStatus">OFF</span></div>
 
 <div class="chat-window" id="chatWindow">
     <div class="chat-header" style="background:var(--primary); color:#000; padding:10px; font-family:'Orbitron'; font-size:0.7rem; display:flex; justify-content:space-between;">
         <span>IRATHIENS_COMM_LINK</span><span>[READ_ONLY]</span>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-footer-lock" onclick="window.location.href='login.html'" style="padding:15px; text-align:center; cursor:pointer; background:rgba(255,154,31,0.1)">
+    <div class="chat-footer-lock" onclick="window.location.href='login'" style="padding:15px; text-align:center; cursor:pointer; background:rgba(255,154,31,0.1)">
         <span style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">ACCEDER PARA TRANSMITIR</span>
     </div>
 </div>
 
-<audio id="bg-music" loop>
-    <source src="musicamenu.mp3" type="audio/mpeg">
-</audio>
+<audio id="bg-music" loop><source src="musicamenu.mp3" type="audio/mpeg"></audio>
 
 <script>
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
@@ -260,25 +250,14 @@
     audio.volume = 0.3;
 
     function toggleMusic() {
-        if (isPlaying) {
-            audio.pause();
-            musicStatus.innerText = "OFF";
-            musicBubble.classList.remove('music-playing');
-        } else {
-            audio.play();
-            musicStatus.innerText = "ON";
-            musicBubble.classList.add('music-playing');
-        }
+        if (isPlaying) { audio.pause(); musicStatus.innerText = "OFF"; musicBubble.classList.remove('music-playing'); }
+        else { audio.play(); musicStatus.innerText = "ON"; musicBubble.classList.add('music-playing'); }
         isPlaying = !isPlaying;
     }
 
     document.addEventListener('click', () => {
         if(!isPlaying) {
-            audio.play().then(() => {
-                musicStatus.innerText = "ON";
-                musicBubble.classList.add('music-playing');
-                isPlaying = true;
-            }).catch(() => {});
+            audio.play().then(() => { musicStatus.innerText = "ON"; musicBubble.classList.add('music-playing'); isPlaying = true; }).catch(() => {});
         }
     }, { once: true });
 
@@ -309,6 +288,26 @@
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
     }
+
+    // --- PROTOCOLOS DE SEGURIDAD (BLOQUEO F12 Y CLIC DERECHO) ---
+    document.addEventListener('keydown', function(e) {
+        if (e.keyCode == 123 || // F12
+            (e.ctrlKey && e.shiftKey && e.keyCode == 73) || // Ctrl+Shift+I
+            (e.ctrlKey && e.shiftKey && e.keyCode == 74) || // Ctrl+Shift+J
+            (e.ctrlKey && e.keyCode == 85)) { // Ctrl+U
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // --- LIMPIADOR DE URL ---
+    (function() {
+        let path = window.location.pathname;
+        if (path.endsWith('.html') || path.endsWith('/index')) {
+            let newPath = path.replace(/\.html$/, '').replace(/\/index$/, '/');
+            window.history.replaceState(null, '', newPath + window.location.search + window.location.hash);
+        }
+    })();
 
     checkSession();
     initIndexChat();
