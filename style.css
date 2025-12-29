@@ -228,4 +228,55 @@ nav a.admin-btn:hover {
 .user-dropdown:hover .dropdown-content {
     display: block;
 }
+/* Contenedor del nombre */
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-left: 1.5rem;
+}
 
+/* Estilo del nombre del usuario */
+.nav-user-name {
+    color: var(--primary);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    padding: 10px 0;
+}
+
+/* Caja que contiene Perfil y Cerrar Sesión */
+.dropdown-content {
+    display: none; /* Escondido por defecto */
+    position: absolute;
+    right: 0;
+    background: rgba(11, 18, 32, 0.95);
+    backdrop-filter: blur(10px);
+    min-width: 160px;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    z-index: 1000;
+    border-radius: 4px;
+}
+
+/* Enlaces dentro del desplegable */
+.dropdown-content a {
+    color: var(--text) !important;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 0.8rem;
+    margin-left: 0 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+.dropdown-content a:hover {
+    background: rgba(255, 154, 31, 0.15);
+    color: var(--primary) !important;
+}
+
+/* Mostrar al pasar el ratón */
+.user-dropdown:hover .dropdown-content {
+    display: block;
+}
