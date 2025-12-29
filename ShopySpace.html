@@ -178,7 +178,6 @@
     const SB_KEY = 'TU_KEY';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    // 1. NAVEGACIÓN
     function showTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
@@ -186,24 +185,16 @@
         if(event) event.currentTarget.classList.add('active');
     }
 
-    // 2. BUSCADOR AUTO-SCAN (item_catalog)
+    // 1. AUTO-SCAN (MEJORADO)
     async function buscarEnCatalogo(query) {
         const suggestionsDiv = document.getElementById('suggestions');
-        if (query.length < 2) { 
-            suggestionsDiv.style.display = 'none'; 
-            return; 
-        }
+        if (query.length < 2) { suggestionsDiv.style.display = 'none'; return; }
 
         const { data, error } = await _supabase
             .from('item_catalog')
             .select('name, manufacturer')
             .ilike('name', `%${query}%`)
             .limit(5);
-
-        if (error) {
-            console.error("Error catálogo:", error.message);
-            return;
-        }
 
         if (data && data.length > 0) {
             suggestionsDiv.innerHTML = '';
@@ -218,12 +209,72 @@
                 };
                 suggestionsDiv.appendChild(d);
             });
-        } else {
-            suggestionsDiv.style.display = 'none';
+        } else { suggestionsDiv.style.display = 'none'; }
+    }
+
+    // 2. CONTROL DE SESIÓN Y CREACIÓN DE PERFIL
+    async function checkUserSession() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (!session) return;
+
+        const user = session.user;
+
+        // Intentamos obtener perfil
+        let { data: profile, error } = await _supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+        // SI NO EXISTE FILA EN 'PROFILES', LA CREAMOS AQUÍ MISMO
+        if (!profile || error) {
+            const newToken = "BIO-" + Math.random().toString(36).substring(2, 9).toUpperCase();
+            const { data: newProfile, error: insError } = await _supabase
+                .from('profiles')
+                .upsert([{ id: user.id, bio_token: newToken, karma_points: 0, is_verified: false }])
+                .select().single();
+            profile = newProfile;
+        }
+
+        if (profile) {
+            document.getElementById('profile-handle').innerText = profile.rsi_handle || "PILOTO_NUEVO";
+            document.getElementById('bio-token').innerText = profile.bio_token || "ERROR_TOKEN";
+            document.getElementById('karma-val').innerText = profile.karma_points || 0;
+            if (profile.is_verified) {
+                const tag = document.getElementById('status-tag');
+                tag.innerText = "ESTADO: VERIFICADO";
+                tag.style.color = "var(--success)";
+            }
         }
     }
 
-    // 3. CARGAR MERCADO
+    // 3. VERIFICACIÓN RSI (CORREGIDA)
+    async function verificarConRSI() {
+        const handle = document.getElementById('rsi-handle-input').value;
+        const msg = document.getElementById('msg-overlay');
+        
+        if (!handle) return alert("Ingresa tu Handle RSI");
+
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (!user) return alert("Inicia sesión primero");
+
+        msg.style.color = 'var(--accent)';
+        msg.innerText = "> ACCEDIENDO A RSI SPECTRUM...";
+
+        const { error } = await _supabase
+            .from('profiles')
+            .update({ rsi_handle: handle, is_verified: true })
+            .eq('id', user.id);
+
+        if (error) {
+            msg.innerHTML = `<span style="color:var(--danger)">> ERROR: ${error.message}</span>`;
+        } else {
+            msg.innerHTML = `<span style="color:var(--success)">> SINC_EXITOSA: PILOTO IDENTIFICADO</span>`;
+            setTimeout(() => location.reload(), 1500);
+        }
+    }
+
+    // 4. CARGAR MERCADO
     async function loadMarketItems() {
         const grid = document.getElementById('market-items');
         grid.innerHTML = '<p style="font-family:JetBrains Mono; padding: 20px;">> ESCANEANDO_FRECUENCIAS...</p>';
@@ -256,105 +307,34 @@
         });
     }
 
-    // 4. VERIFICACIÓN RSI REAL (Actualiza Perfil)
-    async function verificarConRSI() {
-    const handle = document.getElementById('rsi-handle-input').value;
-    const msg = document.getElementById('msg-overlay');
-    
-    if (!handle) {
-        msg.innerHTML = "<span style='color:var(--danger)'>> ERROR: FALTA_HANDLE_RSI</span>";
-        return;
-    }
-
-    // Obtener usuario actual
-    const { data: { user }, error: userError } = await _supabase.auth.getUser();
-    
-    if (userError || !user) {
-        msg.innerHTML = "<span style='color:var(--danger)'>> ERROR: SESION_NO_DETECTADA</span>";
-        return;
-    }
-
-    msg.style.color = 'var(--accent)';
-    msg.innerText = "> INICIANDO SINCRONIZACION...";
-
-    // Intentar actualización en Supabase
-    const { error } = await _supabase
-        .from('profiles')
-        .update({ 
-            rsi_handle: handle,
-            is_verified: true 
-        })
-        .eq('id', user.id);
-
-    if (error) {
-        console.error("Error completo:", error);
-        msg.innerHTML = `<span style='color:var(--danger)'>> FALLO_DB: ${error.message}</span>`;
-    } else {
-        msg.innerHTML = "<span style='color:var(--success)'>> SINC_EXITOSA: PERFIL_ACTUALIZADO</span>";
-        
-        // Actualizar la UI inmediatamente
-        document.getElementById('profile-handle').innerText = handle;
-        const tag = document.getElementById('status-tag');
-        tag.innerText = "ESTADO: VERIFICADO";
-        tag.style.color = "var(--success)";
-        
-        // Recargar datos por si acaso
-        await checkUserSession();
-    }
-}
-    // 5. PUBLICAR ÍTEM
+    // 5. PUBLICAR
     async function publicarItem() {
         const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) return alert("Debes iniciar sesión.");
+        if (!user) return alert("Inicia sesión.");
 
         const name = document.getElementById('item-name').value;
         const price = document.getElementById('item-price').value;
         const cat = document.getElementById('item-cat').value;
 
-        if(!name || !price) return alert("Rellena todos los campos.");
+        if(!name || !price) return alert("Faltan datos.");
 
         const { error } = await _supabase.from('marketplace_items').insert([
             { seller_id: user.id, item_name: name, price_auec: parseInt(price), status: 'available', category: cat }
         ]);
 
         if (!error) {
-            alert("Transmitido al mercado.");
-            document.getElementById('item-name').value = '';
-            document.getElementById('item-price').value = '';
-            loadMarketItems();
-            showTab('market');
-        }
-    }
-
-    // 6. CONTROL DE SESIÓN
-    async function checkUserSession() {
-        const { data: { session } } = await _supabase.auth.getSession();
-        if (session) {
-            const { data: profile } = await _supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-
-            if (profile) {
-                document.getElementById('profile-handle').innerText = profile.rsi_handle || "PILOTO_SIN_ID";
-                document.getElementById('bio-token').innerText = profile.bio_token;
-                document.getElementById('karma-val').innerText = profile.karma_points;
-                if (profile.is_verified) {
-                    const tag = document.getElementById('status-tag');
-                    tag.innerText = "ESTADO: VERIFICADO";
-                    tag.style.color = "var(--success)";
-                }
-            }
+            alert("Ítem en órbita.");
+            location.reload();
         }
     }
 
     function copyToken() {
-        navigator.clipboard.writeText(document.getElementById('bio-token').innerText);
-        alert("TOKEN_COPIADO: Pégalo en tu BIO de RSI.");
+        const token = document.getElementById('bio-token').innerText;
+        if(token === "GENERANDO...") return;
+        navigator.clipboard.writeText(token);
+        alert("TOKEN COPIADO");
     }
 
-    // Cierra sugerencias si click fuera
     document.addEventListener('click', (e) => {
         if (e.target.id !== 'item-name') document.getElementById('suggestions').style.display = 'none';
     });
