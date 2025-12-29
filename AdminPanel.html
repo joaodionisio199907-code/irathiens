@@ -173,6 +173,26 @@
     }
 
     checkAdmin();
+    <div style="border: 1px solid var(--primary); padding: 15px; margin-top: 20px;">
+    <h3 style="font-family: 'Orbitron'; color: #fff;">SISTEMA FINANCIERO</h3>
+    <input type="number" id="input-capital" placeholder="Ej: 805031572" style="margin-bottom: 10px;">
+    <button class="btn-main" onclick="actualizarCapital()">ESTABLECER CAPITAL GLOBAL</button>
+</div>
+
+<script>
+async function actualizarCapital() {
+    const monto = document.getElementById('input-capital').value;
+    if(!monto) return alert("Ingresa una cifra");
+
+    const { error } = await _supabase
+        .from('tesoreria_corp')
+        .update({ cantidad: parseInt(monto) })
+        .eq('id', 1);
+
+    if (error) alert("Error: " + error.message);
+    else alert("¡Capital actualizado en la red de Irathiens!");
+}
+</script>
 </script>
 </body>
 </html>
