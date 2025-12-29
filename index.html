@@ -290,6 +290,44 @@
 
     checkSession();
     initIndexChat();
+    const audio = document.getElementById('bg-music');
+const musicBubble = document.getElementById('musicBubble');
+const musicStatus = document.getElementById('musicStatus');
+let isPlaying = false;
+
+// Bajar el volumen por defecto para que no asuste (30%)
+audio.volume = 0.3;
+
+function toggleMusic() {
+    if (isPlaying) {
+        audio.pause();
+        musicStatus.innerText = "OFF";
+        musicBubble.classList.remove('music-playing');
+    } else {
+        audio.play();
+        musicStatus.innerText = "ON";
+        musicBubble.classList.add('music-playing');
+    }
+    isPlaying = !isPlaying;
+}
+
+// Iniciar música al primer clic del usuario en cualquier parte
+document.addEventListener('click', () => {
+    if(!isPlaying) {
+        audio.play().then(() => {
+            musicStatus.innerText = "ON";
+            musicBubble.classList.add('music-playing');
+            isPlaying = true;
+        }).catch(e => console.log("Autoplay bloqueado hasta interacción directa"));
+    }
+}, { once: true });
 </script>
+ <audio id="bg-music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" type="audio/mpeg">
+</audio>
+
+<div class="music-bubble" id="musicBubble" onclick="toggleMusic()">
+    <span class="status-text" id="musicStatus">OFF</span>
+</div>   
 </body>
 </html>
