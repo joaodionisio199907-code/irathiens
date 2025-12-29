@@ -78,13 +78,30 @@
     </div>
 
     <div class="finance-section">
-        <h3 style="font-family: 'Orbitron'; color: #fff; margin-top: 0;">REGISTRAR TRANSACCIÓN (HISTORIAL)</h3>
+        <h3 id="trans-title" style="font-family: 'Orbitron'; color: #fff; margin-top: 0;">REGISTRAR TRANSACCIÓN</h3>
+        <input type="hidden" id="trans-edit-id">
         <div class="input-row">
             <input type="text" id="trans-entidad" placeholder="Entidad (Ej: MINING_TEAM_01)">
             <input type="text" id="trans-concepto" placeholder="Concepto (Ej: Venta de Ore)">
         </div>
         <input type="number" id="trans-valor" placeholder="Valor (Ej: 500000 o -100000)" style="margin-bottom: 10px;">
-        <button class="btn-main" onclick="registrarTransaccion()" style="background: var(--accent); margin-bottom: 0;">SUBIR A LA BLOCKCHAIN</button>
+        <button id="btn-trans-exec" class="btn-main" onclick="registrarTransaccion()" style="background: var(--accent); margin-bottom: 10px;">SUBIR A LA BLOCKCHAIN</button>
+        <button id="btn-trans-cancel" class="btn-main" onclick="cancelarEdicionTrans()" style="background: #444; display: none; margin-bottom: 0;">CANCELAR EDICIÓN</button>
+        
+        <h4 style="font-family: 'Orbitron'; color: var(--primary); margin: 20px 0 10px 0; border-top: 1px solid rgba(255,154,31,0.3); padding-top: 15px;">HISTORIAL DE TRANSACCIONES</h4>
+        <div style="overflow-y: auto; max-height: 300px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ENTIDAD</th>
+                        <th>CONCEPTO</th>
+                        <th>VALOR</th>
+                        <th>GESTIÓN</th>
+                    </tr>
+                </thead>
+                <tbody id="trans-table-body"></tbody>
+            </table>
+        </div>
     </div>
 
     <div class="nav-back">
@@ -141,28 +158,82 @@
         else alert("¡Capital Global actualizado!");
     }
 
-    // 4. REGISTRAR TRANSACCIÓN (Para el historial del Banco)
+    // --- SECCIÓN DE TRANSACCIONES ---
+
+    async function loadTransactions() {
+        const { data: trans, error } = await _supabase.from('transacciones').select('*').order('created_at', { ascending: false });
+        const tbody = document.getElementById('trans-table-body');
+        tbody.innerHTML = '';
+        if(trans) {
+            trans.forEach(t => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${t.entidad}</td>
+                    <td>${t.concepto}</td>
+                    <td style="color: ${t.valor < 0 ? '#ff4444' : '#00ff88'}">${t.valor.toLocaleString()}</td>
+                    <td>
+                        <button class="btn-edit" onclick="prepararEdicionTrans('${t.id}', '${t.entidad}', '${t.concepto}', ${t.valor})">⚙️</button>
+                        <button class="btn-delete" onclick="eliminarTransaccion('${t.id}')">✖</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    }
+
     async function registrarTransaccion() {
+        const id = document.getElementById('trans-edit-id').value;
         const entidad = document.getElementById('trans-entidad').value;
         const concepto = document.getElementById('trans-concepto').value;
         const valor = document.getElementById('trans-valor').value;
 
-        if(!entidad || !concepto || !valor) return alert("Completa los datos de la transacción");
+        if(!entidad || !concepto || !valor) return alert("Completa los datos");
 
-        const { error } = await _supabase.from('transacciones').insert([
-            { entidad, concepto, valor: parseInt(valor) }
-        ]);
+        let error;
+        if(id) {
+            const { error: err } = await _supabase.from('transacciones').update({ entidad, concepto, valor: parseInt(valor) }).eq('id', id);
+            error = err;
+        } else {
+            const { error: err } = await _supabase.from('transacciones').insert([{ entidad, concepto, valor: parseInt(valor) }]);
+            error = err;
+        }
 
         if (error) alert("Error: " + error.message);
         else {
-            alert("Transacción grabada en el historial.");
-            document.getElementById('trans-entidad').value = '';
-            document.getElementById('trans-concepto').value = '';
-            document.getElementById('trans-valor').value = '';
+            alert(id ? "Transacción actualizada" : "Transacción grabada");
+            cancelarEdicionTrans();
+            loadTransactions();
         }
     }
 
-    // Funciones de Editar y Eliminar
+    function prepararEdicionTrans(id, entidad, concepto, valor) {
+        document.getElementById('trans-title').innerText = "EDITANDO TRANSACCIÓN";
+        document.getElementById('trans-edit-id').value = id;
+        document.getElementById('trans-entidad').value = entidad;
+        document.getElementById('trans-concepto').value = concepto;
+        document.getElementById('trans-valor').value = valor;
+        document.getElementById('btn-trans-exec').innerText = "GUARDAR CAMBIOS";
+        document.getElementById('btn-trans-cancel').style.display = "block";
+    }
+
+    function cancelarEdicionTrans() {
+        document.getElementById('trans-title').innerText = "REGISTRAR TRANSACCIÓN (HISTORIAL)";
+        document.getElementById('trans-edit-id').value = '';
+        document.getElementById('trans-entidad').value = '';
+        document.getElementById('trans-concepto').value = '';
+        document.getElementById('trans-valor').value = '';
+        document.getElementById('btn-trans-exec').innerText = "SUBIR A LA BLOCKCHAIN";
+        document.getElementById('btn-trans-cancel').style.display = "none";
+    }
+
+    async function eliminarTransaccion(id) {
+        if(confirm("¿Borrar transacción?")) {
+            await _supabase.from('transacciones').delete().eq('id', id);
+            loadTransactions();
+        }
+    }
+
+    // Funciones de Editar y Eliminar Miembros (Sin cambios)
     async function editarMiembro(id, nombre, foto, rango) {
         const nHandle = prompt("Nuevo Handle:", nombre);
         const nRank = prompt("Nuevo Rango:", rango);
@@ -179,7 +250,9 @@
         }
     }
 
+    // Carga inicial
     loadMembers();
+    loadTransactions();
 </script>
 </body>
 </html>
