@@ -233,12 +233,21 @@
             <span class="logo-text">IRATHIENS</span>
         </a>
         <nav>
-            <a href="index.html">Inicio</a>
-            <a href="ShopySpace.html">ShopySpace</a>
-            <a href="Members.html">Miembros</a>
-            <a href="https://discord.gg/Bu7sWDyHkc" target="_blank">Discord</a>
-            <button class="btn-login" onclick="window.location.href='login.html'">LOGIN</button>
-        </nav>
+    <a href="index.html">Inicio</a>
+    <a href="Members.html">Miembros</a>
+    
+    <div id="auth-guest" style="display: inline;">
+        <a href="login.html" class="btn-login">LOGIN</a>
+    </div>
+
+    <div id="auth-user" class="user-dropdown" style="display: none;">
+        <span id="nav-username" class="nav-user-name">CARGANDO...</span>
+        <div class="dropdown-content">
+            <a href="perfil.html">PERFIL</a>
+            <a href="#" onclick="handleLogout()">CERRAR SESIÓN</a>
+        </div>
+    </div>
+</nav>
     </div>
 </header>
 
