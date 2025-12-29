@@ -332,8 +332,30 @@
             }
         }
     });
+    async function cargarCapitalReal() {
+    const { data, error } = await _supabase
+        .from('tesoreria_corp')
+        .select('cantidad')
+        .eq('id', 1)
+        .single();
+
+    if (data) {
+        // Formateamos el número para que tenga puntos (805.031.572)
+        const formateado = new Intl.NumberFormat('de-DE').format(data.cantidad);
+        
+        // Buscamos el div con la clase 'big-value' y actualizamos el texto
+        const display = document.querySelector('.big-value');
+        if (display) {
+            display.innerHTML = `${formateado} <small style="font-size: 0.8rem;">aUEC</small>`;
+        }
+    }
+}
+
+// Ejecutar cuando se abre la página
+document.addEventListener('DOMContentLoaded', cargarCapitalReal);
 </script>
 
 </body>
 
 </html>
+
