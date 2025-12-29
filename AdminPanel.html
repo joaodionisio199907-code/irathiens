@@ -57,7 +57,7 @@
     <input type="text" id="member-photo" placeholder="URL DE LA FOTO (GitHub o Discord)" style="margin-bottom:15px;">
     <button class="btn-main" onclick="crearMiembro()">REGISTRAR EN EL MANIFIESTO</button>
 
-    <div style="overflow-x: auto;">
+    <div style="overflow-x: auto; margin-bottom: 40px;">
         <table>
             <thead>
                 <tr>
@@ -67,15 +67,24 @@
                     <th>GESTIÓN</th>
                 </tr>
             </thead>
-            <tbody id="members-table-body">
-                </tbody>
+            <tbody id="members-table-body"></tbody>
         </table>
     </div>
 
     <div class="finance-section">
-        <h3 style="font-family: 'Orbitron'; color: #fff; margin-top: 0;">SISTEMA FINANCIERO</h3>
+        <h3 style="font-family: 'Orbitron'; color: #fff; margin-top: 0;">SISTEMA FINANCIERO: CAPITAL</h3>
         <input type="number" id="input-capital" placeholder="Ej: 805031572" style="margin-bottom: 10px;">
         <button class="btn-main" onclick="actualizarCapital()" style="margin-bottom: 0;">ESTABLECER CAPITAL GLOBAL</button>
+    </div>
+
+    <div class="finance-section">
+        <h3 style="font-family: 'Orbitron'; color: #fff; margin-top: 0;">REGISTRAR TRANSACCIÓN (HISTORIAL)</h3>
+        <div class="input-row">
+            <input type="text" id="trans-entidad" placeholder="Entidad (Ej: MINING_TEAM_01)">
+            <input type="text" id="trans-concepto" placeholder="Concepto (Ej: Venta de Ore)">
+        </div>
+        <input type="number" id="trans-valor" placeholder="Valor (Ej: 500000 o -100000)" style="margin-bottom: 10px;">
+        <button class="btn-main" onclick="registrarTransaccion()" style="background: var(--accent); margin-bottom: 0;">SUBIR A LA BLOCKCHAIN</button>
     </div>
 
     <div class="nav-back">
@@ -90,18 +99,11 @@
 
     // 1. CARGAR MIEMBROS
     async function loadMembers() {
-        const { data: members, error } = await _supabase
-            .from('perfiles')
-            .select('*');
-
-        if (error) {
-            console.error("Error cargando perfiles:", error);
-            return;
-        }
+        const { data: members, error } = await _supabase.from('perfiles').select('*');
+        if (error) return console.error(error);
 
         const tbody = document.getElementById('members-table-body');
         tbody.innerHTML = '';
-
         members.forEach(m => {
             const row = document.createElement('tr');
             const fotoUrl = m.avatar_url || 'https://via.placeholder.com/45/000/ff9a1f?text=?';
@@ -123,81 +125,61 @@
         const handle = document.getElementById('member-handle').value;
         const rank = document.getElementById('member-rank').value;
         const photo = document.getElementById('member-photo').value;
+        if(!handle || !rank) return alert("Faltan datos");
 
-        if(!handle || !rank) return alert("El Handle y el Rango son obligatorios.");
+        const { error } = await _supabase.from('perfiles').insert([{ handle, rank, avatar_url: photo, role: 'user' }]);
+        if (error) alert(error.message);
+        else { alert("Registrado"); loadMembers(); }
+    }
 
-        const { error } = await _supabase.from('perfiles').insert([
-            { handle, rank, avatar_url: photo, role: 'user' }
+    // 3. ACTUALIZAR CAPITAL
+    async function actualizarCapital() {
+        const monto = document.getElementById('input-capital').value;
+        if(!monto) return alert("Ingresa una cifra");
+        const { error } = await _supabase.from('tesoreria_corp').update({ cantidad: parseInt(monto) }).eq('id', 1);
+        if (error) alert(error.message);
+        else alert("¡Capital Global actualizado!");
+    }
+
+    // 4. REGISTRAR TRANSACCIÓN (Para el historial del Banco)
+    async function registrarTransaccion() {
+        const entidad = document.getElementById('trans-entidad').value;
+        const concepto = document.getElementById('trans-concepto').value;
+        const valor = document.getElementById('trans-valor').value;
+
+        if(!entidad || !concepto || !valor) return alert("Completa los datos de la transacción");
+
+        const { error } = await _supabase.from('transacciones').insert([
+            { entidad, concepto, valor: parseInt(valor) }
         ]);
 
-        if (error) {
-            alert("Error: " + error.message);
-        } else {
-            alert("Registrado correctamente");
-            loadMembers(); // Recarga la tabla sin refrescar la página
-            document.getElementById('member-handle').value = '';
-            document.getElementById('member-rank').value = '';
-            document.getElementById('member-photo').value = '';
+        if (error) alert("Error: " + error.message);
+        else {
+            alert("Transacción grabada en el historial.");
+            document.getElementById('trans-entidad').value = '';
+            document.getElementById('trans-concepto').value = '';
+            document.getElementById('trans-valor').value = '';
         }
     }
 
-   async function actualizarCapital() {
-    const montoInput = document.getElementById('input-capital').value;
-    if(!montoInput) return alert("Por favor, ingresa una cifra.");
-
-    const nuevoMonto = parseInt(montoInput);
-    console.log("Intentando actualizar a:", nuevoMonto);
-
-    const { data, error } = await _supabase
-        .from('tesoreria_corp')
-        .update({ cantidad: nuevoMonto })
-        .eq('id', 1)
-        .select(); // El select ayuda a confirmar si se hizo el cambio
-
-    if (error) {
-        console.error("Error completo:", error);
-        alert("Error de Supabase: " + error.message);
-    } else if (data && data.length === 0) {
-        alert("Error: No se encontró la fila con ID 1 en la tabla tesoreria_corp.");
-    } else {
-        alert("¡ÉXITO! Capital actualizado a: " + nuevoMonto + " aUEC");
-        document.getElementById('input-capital').value = ''; // Limpiar input
-    }
-}
-
-    // 4. EDITAR MIEMBRO
-    async function editarMiembro(id, nombreActual, fotoActual, rangoActual) {
-        const nuevoNombre = prompt("Modificar Handle:", nombreActual);
-        const nuevoRango = prompt("Modificar Rango:", rangoActual);
-        const nuevaFoto = prompt("Modificar URL de la foto:", fotoActual);
-
-        if (nuevoNombre && nuevoRango) {
-            const { error } = await _supabase
-                .from('perfiles')
-                .update({ 
-                    handle: nuevoNombre, 
-                    rank: nuevoRango,
-                    avatar_url: nuevaFoto 
-                })
-                .eq('id', id);
-
-            if (error) alert("Error al actualizar datos");
-            else loadMembers();
+    // Funciones de Editar y Eliminar
+    async function editarMiembro(id, nombre, foto, rango) {
+        const nHandle = prompt("Nuevo Handle:", nombre);
+        const nRank = prompt("Nuevo Rango:", rango);
+        if(nHandle && nRank) {
+            await _supabase.from('perfiles').update({ handle: nHandle, rank: nRank }).eq('id', id);
+            loadMembers();
         }
     }
 
-    // 5. ELIMINAR MIEMBRO
     async function eliminarMiembro(id, nombre) {
-        if(confirm(`¿Estás seguro de eliminar a ${nombre}?`)) {
-            const { error } = await _supabase.from('perfiles').delete().eq('id', id);
-            if (error) alert("Error al eliminar");
-            else loadMembers();
+        if(confirm("¿Eliminar a " + nombre + "?")) {
+            await _supabase.from('perfiles').delete().eq('id', id);
+            loadMembers();
         }
     }
 
-    // INICIO: Carga los datos directamente para evitar bloqueos por login
     loadMembers();
-
 </script>
 </body>
 </html>
