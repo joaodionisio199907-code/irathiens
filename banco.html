@@ -30,34 +30,81 @@
             background-size: 50px 50px;
             color: #fff;
             font-family: var(--font-main);
-            padding: 40px 20px;
+            padding: 0; /* Quitamos el padding para el menú */
             overflow-x: hidden;
         }
 
-        .container { max-width: 1400px; margin: 0 auto; }
+        /* --- NAVIGATION BAR --- */
+        nav {
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 2px solid var(--primary);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-family: var(--font-hud);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        /* --- LAYOUT --- */
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             border-left: 5px solid var(--primary);
-            padding-left: 20px;
+            padding-left: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .header-title h1 {
             font-family: var(--font-hud);
-            font-size: 2.2rem;
+            font-size: clamp(1.2rem, 5vw, 2.2rem);
             margin: 0;
-            letter-spacing: 5px;
+            letter-spacing: 3px;
             color: var(--primary);
             text-shadow: 0 0 20px var(--primary-dim);
         }
 
+        /* --- RESPONSIVE GRID --- */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            gap: 15px;
+        }
+
+        /* Tablet (2 columnas) */
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+            .card[style*="grid-column: span 3"],
+            .card[style*="grid-column: span 4"],
+            .card[style*="grid-column: span 2"] { grid-column: span 2 !important; }
+        }
+
+        /* Móvil (1 columna) */
+        @media (max-width: 600px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .card { grid-column: span 1 !important; }
+            .nav-links { gap: 10px; }
+            .nav-links a { font-size: 0.6rem; }
+            header { flex-direction: column; align-items: flex-start; }
+            .system-status { text-align: left; font-size: 0.7rem; }
         }
 
         .card {
@@ -66,6 +113,7 @@
             padding: 20px;
             position: relative;
             backdrop-filter: blur(10px);
+            overflow: hidden;
         }
 
         .card::after {
@@ -75,7 +123,7 @@
 
         .label {
             font-family: var(--font-hud);
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #888;
             margin-bottom: 10px;
             display: block;
@@ -84,8 +132,9 @@
 
         .big-value {
             font-family: var(--font-hud);
-            font-size: 1.8rem;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
             color: #fff;
+            word-break: break-all;
         }
 
         .division-bar {
@@ -101,15 +150,23 @@
         .div-mineria { width: 30%; background: var(--accent); }
         .div-logistica { width: 20%; background: #fff; }
 
+        /* --- TABLE SCROLL FOR MOBILE --- */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+
         .audit-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            min-width: 600px; /* Asegura que la tabla no se colapse y active el scroll */
         }
 
         .audit-table th {
             font-family: var(--font-hud);
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             text-align: left;
             padding: 10px;
             background: var(--primary-dim);
@@ -119,80 +176,99 @@
         .audit-table td {
             padding: 12px 10px;
             font-family: var(--font-mono);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .system-status {
+            text-align: right;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent);
         }
     </style>
 </head>
 <body>
 
+<nav>
+    <div style="font-family: var(--font-hud); color: var(--primary); font-weight: bold; font-size: 0.9rem;">IRATHIENS_OS</div>
+    <div class="nav-links">
+        <a href="index.html">INICIO</a>
+        <a href="Members.html">FLOTA</a>
+        <a href="Banco.html" class="active">FINANZAS</a>
+        <a href="AdminPanel.html">ADMIN</a>
+    </div>
+</nav>
+
 <div class="container">
     <header>
         <div class="header-title">
-            <span style="font-family: var(--font-mono); color: var(--accent); font-size: 0.8rem;">SECURE_PROTOCOL: ENABLED</span>
-            <h1>FINANCIAL_COMMAND_CENTER</h1>
+            <span style="font-family: var(--font-mono); color: var(--accent); font-size: 0.7rem;">SECURE_PROTOCOL: ENABLED</span>
+            <h1>FINANCIAL_HUB</h1>
         </div>
         <div class="system-status">
-            LOCAL_TIME: <span id="clock">00:00:00</span><br>
-            STATUS: <span style="color: var(--success);">ONLINE</span>
+            TIME: <span id="clock">00:00:00</span><br>
+            NET: <span style="color: var(--success);">CONNECTED</span>
         </div>
     </header>
 
     <div class="dashboard-grid">
         <div class="card">
-            <span class="label">CAPITAL_TOTAL_DISPONIBLE</span>
+            <span class="label">CAPITAL_DISPONIBLE</span>
             <div class="big-value" id="capital-display" style="color: var(--primary);">0 aUEC</div>
             <div id="usd-value" style="font-size: 0.7rem; color: #aaa; margin-top: 5px; font-family: var(--font-mono);">VALOR_ESTIMADO: $0.00 USD</div>
         </div>
 
         <div class="card" style="grid-column: span 2;">
-            <span class="label">DISTRIBUCIÓN_POR_DEPARTAMENTO</span>
+            <span class="label">RECURSOS_DEPARTAMENTO</span>
             <div class="division-bar">
                 <div class="div-militar"></div>
                 <div class="div-mineria"></div>
                 <div class="div-logistica"></div>
             </div>
-            <div style="display:flex; justify-content: space-between; font-size: 0.7rem; font-family: var(--font-mono);">
-                <span>● MILITAR (50%)</span>
-                <span>● INDUSTRIAL (30%)</span>
-                <span>● LOGÍSTICA (20%)</span>
+            <div style="display:flex; justify-content: space-between; font-size: 0.6rem; font-family: var(--font-mono); flex-wrap: wrap; gap: 5px;">
+                <span>● MIL (50%)</span>
+                <span>● IND (30%)</span>
+                <span>● LOG (20%)</span>
             </div>
         </div>
 
         <div class="card">
-            <span class="label">GASTOS_OPERATIVOS_MES</span>
+            <span class="label">GASTOS_OPERATIVOS</span>
             <div class="big-value" id="gastos-display" style="color: var(--danger);">-0</div>
-            <span style="font-size: 0.6rem; color: #777;">MANTENIMIENTO_FLOTA_INCLUIDO</span>
+            <span style="font-size: 0.6rem; color: #777;">CICLO_MENSUAL_ACTUAL</span>
         </div>
 
-        <div class="card" style="grid-column: span 3; height: 400px;">
-            <span class="label">HISTORIAL_CRECIMIENTO_DE_RESERVAS</span>
+        <div class="card" style="grid-column: span 3; height: 350px;">
+            <span class="label">HISTORIAL_RESERVAS</span>
             <canvas id="mainChart"></canvas>
         </div>
 
         <div class="card">
-            <span class="label">INFO_SISTEMA</span>
-            <div style="font-size: 0.8rem; font-family: var(--font-mono);">
-                SERVER: MAGNUS_V.4<br>
-                Uptime: 99.9%<br>
-                Encrypted: YES
+            <span class="label">PROYECCIÓN_NETA</span>
+            <div id="profit-status" style="font-size: 0.8rem; font-family: var(--font-mono);">
+                ANÁLISIS_DE_FLUJO...<br>
+                <span style="color: var(--success);">ESTABLE</span><br>
+                <span style="font-size: 0.6rem; color: #555;">UPTIME: 99.9%</span>
             </div>
         </div>
 
         <div class="card" style="grid-column: span 4;">
-            <span class="label">REGISTRO_DE_TRANSACCIONES_RECIENTES</span>
-            <table class="audit-table">
-                <thead>
-                    <tr>
-                        <th>OP_ID</th>
-                        <th>TIMESTAMP</th>
-                        <th>ENTIDAD</th>
-                        <th>CONCEPTO</th>
-                        <th>VALOR</th>
-                    </tr>
-                </thead>
-                <tbody id="audit-table-body"></tbody>
-            </table>
+            <span class="label">REGISTRO_DE_TRANSACCIONES</span>
+            <div class="table-container">
+                <table class="audit-table">
+                    <thead>
+                        <tr>
+                            <th>OP_ID</th>
+                            <th>TIMESTAMP</th>
+                            <th>ENTIDAD</th>
+                            <th>CONCEPTO</th>
+                            <th>VALOR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-table-body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -215,39 +291,38 @@
 
         const cap = capData.cantidad;
         document.getElementById('capital-display').innerText = new Intl.NumberFormat('de-DE').format(cap) + " aUEC";
-        document.getElementById('usd-value').innerHTML = `VALOR_ESTIMADO: <span style="color: #00ff88;">$${((cap/1000000)*1.5).toFixed(2)} USD</span>`;
+        document.getElementById('usd-value').innerHTML = `EST_VAL: <span style="color: #00ff88;">$${((cap/1000000)*1.5).toFixed(2)} USD</span>`;
 
-        // Cargar Gastos
         const inicioMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
         const { data: gastosData } = await _supabase.from('transacciones').select('valor').lt('valor', 0).gte('created_at', inicioMes);
         const totalGastos = gastosData ? gastosData.reduce((acc, t) => acc + t.valor, 0) : 0;
         document.getElementById('gastos-display').innerText = new Intl.NumberFormat('de-DE').format(totalGastos);
 
-        // Tabla
         const { data: trans } = await _supabase.from('transacciones').select('*').order('created_at', { ascending: false }).limit(8);
         document.getElementById('audit-table-body').innerHTML = trans.map(t => `
             <tr>
-                <td>#IR-${t.id.toString().slice(-4)}</td>
-                <td>${new Date(t.created_at).toLocaleString()}</td>
-                <td>${t.entidad || 'ADMIN'}</td>
+                <td>#${t.id.toString().slice(-4)}</td>
+                <td>${new Date(t.created_at).toLocaleDateString()}</td>
+                <td>${t.entidad || 'ADM'}</td>
                 <td>${t.concepto || 'S/C'}</td>
                 <td style="color: ${t.valor < 0 ? 'var(--danger)' : 'var(--success)'}">${new Intl.NumberFormat('de-DE').format(t.valor)}</td>
             </tr>
         `).join('');
 
-        // Gráfico
         dibujarGrafico(cap, trans);
     }
 
     function dibujarGrafico(capActual, transacciones) {
         let saldo = capActual;
         let saldos = [capActual];
-        let labels = [new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})];
+        let labels = ['AHORA'];
 
-        [...transacciones].forEach(t => {
-            saldo -= t.valor;
-            saldos.unshift(saldo);
-            labels.unshift(new Date(t.created_at).toLocaleDateString([], {day:'2-digit', month:'short'}));
+        [...transacciones].forEach((t, i) => {
+            if(i < 6) {
+                saldo -= t.valor;
+                saldos.unshift(saldo);
+                labels.unshift(new Date(t.created_at).toLocaleDateString([], {day:'2-digit', month:'short'}));
+            }
         });
 
         const ctx = document.getElementById('mainChart').getContext('2d');
@@ -261,10 +336,19 @@
                     borderColor: '#ff9a1f',
                     backgroundColor: 'rgba(255, 154, 31, 0.1)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointRadius: 2
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { font: { size: 9 }, color: '#666' } },
+                    y: { ticks: { font: { size: 9 }, color: '#666' } }
+                }
+            }
         });
     }
 
@@ -273,4 +357,3 @@
 </script>
 </body>
 </html>
-
