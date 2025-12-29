@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShopySpace | Irathiens Marketplace & Security</title>
+    <title>ShopySpace | Irathiens Marketplace</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -26,25 +26,15 @@
         * { box-sizing: border-box; transition: all 0.3s ease; }
 
         body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
+            margin: 0; font-family: 'Inter', sans-serif;
+            background-color: var(--bg); color: var(--text);
+            min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- NAVBAR --- */
         nav {
-            background: rgba(0, 0, 0, 0.9);
-            border-bottom: 2px solid var(--primary);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--primary);
+            padding: 15px 20px; display: flex; justify-content: space-between;
+            align-items: center; position: sticky; top: 0; z-index: 1000;
             backdrop-filter: blur(10px);
         }
 
@@ -55,23 +45,18 @@
         }
         .nav-links a:hover, .nav-links a.active { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
         .main-container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
 
-        /* --- SISTEMA DE TABS --- */
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.5s ease; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- PERFIL / SEGURIDAD --- */
         .profile-grid { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
 
         .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 25px;
-            position: relative;
+            background: var(--card-bg); border: 1px solid var(--border);
+            padding: 25px; position: relative;
         }
 
         .card::after {
@@ -85,7 +70,6 @@
             margin: 15px 0; cursor: pointer;
         }
 
-        /* --- FORMULARIOS --- */
         input, select {
             width: 100%; padding: 12px; background: #000; border: 1px solid var(--border);
             color: #fff; font-family: 'JetBrains Mono'; margin-bottom: 15px;
@@ -98,26 +82,15 @@
         }
         .btn-primary:hover { background: var(--primary); color: #000; }
 
-        /* --- MARKETPLACE GRID --- */
         .products-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
         }
 
-        .item-card {
-            background: var(--card-bg); border: 1px solid var(--border); position: relative;
-        }
-
+        .item-card { background: var(--card-bg); border: 1px solid var(--border); position: relative; overflow: hidden; }
         .item-img { height: 160px; background-size: cover; background-position: center; border-bottom: 1px solid var(--border); }
-        
         .verified-badge { font-size: 0.6rem; color: var(--success); border: 1px solid var(--success); padding: 2px 5px; font-family: var(--font-hud); }
 
-        /* MODAL / OVERLAY */
         #msg-overlay { font-family: 'JetBrains Mono'; font-size: 0.8rem; margin-top: 10px; }
-
-        @media (max-width: 900px) {
-            .profile-grid { grid-template-columns: 1fr; }
-            .nav-links a { font-size: 0.6rem; }
-        }
     </style>
 </head>
 <body>
@@ -135,40 +108,25 @@
 
     <section id="market" class="tab-content active">
         <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px; border-left: 5px solid var(--primary); padding-left: 20px;">
-            <img src="https://dfizvgagofsctgwzksgd.supabase.co/storage/v1/object/public/recursos/Adobe%20Express%20-%20file%20(1).jpg" style="width: 40px;">
             <h2 style="font-family: var(--font-hud); letter-spacing: 2px;">CENTRAL_SUMINISTROS</h2>
         </div>
         <div class="products-grid" id="market-items">
-            <div class="item-card">
-                <div class="item-img" style="background-image: url('https://media.robertsspaceindustries.com/ebsk3896z1oet/store_slideshow_large.jpg');"></div>
-                <div style="padding: 15px;">
-                    <span class="verified-badge"><i class="fas fa-check"></i> VENDEDOR_VERIFICADO</span>
-                    <h3 style="font-family: var(--font-hud); font-size: 1rem; margin: 10px 0;">Anvil Hurricane</h3>
-                    <div style="color: var(--accent); font-family: var(--font-hud); font-size: 1.1rem;">4.5M aUEC</div>
-                    <button class="btn-primary" style="margin-top: 15px;">NEGOCIAR_ESCROW</button>
-                </div>
             </div>
-        </div>
     </section>
 
     <section id="sell" class="tab-content">
         <div class="card" style="max-width: 600px; margin: auto;">
             <h3 style="font-family: var(--font-hud); color: var(--primary);">LISTAR_NUEVO_ITEM</h3>
-            <p style="font-size: 0.7rem; color: #888; font-family: 'JetBrains Mono';">El item pasará por el protocolo de seguridad antes de ser público.</p>
-            
-            <label style="font-size: 0.7rem; font-family: var(--font-hud);">NOMBRE_DEL_OBJETO</label>
+            <label>NOMBRE_DEL_OBJETO</label>
             <input type="text" id="item-name" placeholder="Ej: Aegis Gladius LTI">
-            
-            <label style="font-size: 0.7rem; font-family: var(--font-hud);">CATEGORÍA</label>
+            <label>CATEGORÍA</label>
             <select id="item-cat">
                 <option value="ships">NAVES</option>
                 <option value="weapons">ARMAS_FPS</option>
                 <option value="items">COMPONENTES</option>
             </select>
-            
-            <label style="font-size: 0.7rem; font-family: var(--font-hud);">PRECIO_AUEC</label>
+            <label>PRECIO_AUEC</label>
             <input type="number" id="item-price" placeholder="000000">
-
             <button class="btn-primary" onclick="publicarItem()">SUBIR_AL_MERCADO</button>
         </div>
     </section>
@@ -176,225 +134,114 @@
     <section id="profile" class="tab-content">
         <div class="profile-grid">
             <div class="card">
-                <div style="width: 60px; height: 60px; border: 1px solid var(--primary); margin-bottom: 15px;"></div>
                 <h3 id="profile-handle" style="font-family: var(--font-hud); margin: 0;">SIN_IDENTIFICAR</h3>
                 <div id="status-tag" style="font-size: 0.6rem; color: var(--danger); margin-top: 5px;">ESTADO: NO_VERIFICADO</div>
-                
                 <div style="margin-top: 30px;">
                     <span style="font-size: 0.6rem; color: var(--primary); font-family: var(--font-hud);">KARMA_EXPERIENCIA</span>
                     <div style="font-size: 2rem; font-family: var(--font-hud);" id="karma-val">0</div>
                 </div>
             </div>
-
             <div class="card">
-                <h3 style="font-family: var(--font-hud); color: var(--primary);">SISTEMA_DE_VERIFICACIÓN_RSI</h3>
-                <div style="font-size: 0.8rem; line-height: 1.6; color: #aaa;">
-                    Para vender, debes demostrar que eres el dueño de la cuenta de RSI.
-                    <br><br>
-                    <strong>1. CÓDIGO_ÚNICO:</strong>
-                    <div class="token-box" id="bio-token" onclick="copyToken()">CARGANDO_TOKEN...</div>
-                    <small>Haz clic para copiar. Pégalo en tu Bio de RSI.</small>
-                    
-                    <br><br>
-                    <strong>2. TU_HANDLE_RSI:</strong>
-                    <input type="text" id="rsi-handle-input" placeholder="Nombre en RSI">
-                    
-                    <button class="btn-primary" onclick="verificarConRSI()">SINC_BIO_PROTOCOL</button>
-                    <div id="msg-overlay"></div>
-                </div>
+                <h3 style="font-family: var(--font-hud); color: var(--primary);">VERIFICACIÓN_RSI</h3>
+                <p>1. CÓDIGO_BIO:</p>
+                <div class="token-box" id="bio-token" onclick="copyToken()">GENERANDO...</div>
+                <input type="text" id="rsi-handle-input" placeholder="Tu Handle RSI">
+                <button class="btn-primary" onclick="verificarConRSI()">SINC_BIO_PROTOCOL</button>
+                <div id="msg-overlay"></div>
             </div>
         </div>
     </section>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // CONFIGURACIÓN SUPABASE
     const SB_URL = 'TU_URL';
     const SB_KEY = 'TU_KEY';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    // NAVEGACIÓN ENTRE TABS
+    // 1. GESTIÓN DE PESTAÑAS
     function showTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        if(event) event.currentTarget.classList.add('active');
     }
 
-    // CARGAR DATOS INICIALES
-    async function init() {
-        // Aquí deberías obtener el usuario logueado con Supabase Auth
-        // Por ahora simulamos la carga de un perfil
-        const { data: profile } = await _supabase.from('profiles').select('*').limit(1).single();
-        if(profile) {
-            document.getElementById('bio-token').innerText = profile.bio_token;
-            document.getElementById('profile-handle').innerText = profile.rsi_handle || 'NUEVO_PILOTO';
-            document.getElementById('karma-val').innerText = profile.karma_points;
+    // 2. CARGAR MERCADO (DINÁMICO)
+    async function loadMarketItems() {
+        const grid = document.getElementById('market-items');
+        grid.innerHTML = '<p>ESCANEANDO...</p>';
+
+        const { data: items, error } = await _supabase
+            .from('marketplace_items')
+            .select('*, profiles:seller_id(rsi_handle, is_verified)')
+            .eq('status', 'available');
+
+        if (error) return grid.innerHTML = '<p>ERROR_RADAR</p>';
+
+        grid.innerHTML = '';
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.innerHTML = `
+                <div class="item-img" style="background-image: url('https://via.placeholder.com/300x160/060b14/ff9a1f?text=${item.item_name}');"></div>
+                <div style="padding: 15px;">
+                    ${item.profiles?.is_verified ? '<span class="verified-badge">VERIFICADO</span>' : ''}
+                    <h3 style="font-family:var(--font-hud); font-size:1rem;">${item.item_name}</h3>
+                    <div style="color:var(--accent); font-family:var(--font-hud);">${item.price_auec.toLocaleString()} aUEC</div>
+                    <div style="font-size:0.7rem; margin-top:10px; color:var(--muted)">Vendedor: ${item.profiles?.rsi_handle || 'Anon'}</div>
+                </div>`;
+            grid.appendChild(card);
+        });
+    }
+
+    // 3. PUBLICAR ITEM
+    async function publicarItem() {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (!user) return alert("Inicia sesión primero");
+
+        const name = document.getElementById('item-name').value;
+        const price = document.getElementById('item-price').value;
+
+        const { error } = await _supabase.from('marketplace_items').insert([
+            { seller_id: user.id, item_name: name, price_auec: parseInt(price), status: 'available', category: document.getElementById('item-cat').value }
+        ]);
+
+        if (!error) {
+            alert("Ítem publicado");
+            loadMarketItems();
+            showTab('market');
+        }
+    }
+
+    // 4. VERIFICAR SESIÓN Y PERFIL
+    async function checkUserSession() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session) {
+            const { data: profile } = await _supabase.from('profiles').select('*').eq('id', session.user.id).single();
+            if (profile) {
+                document.getElementById('profile-handle').innerText = profile.rsi_handle || "CADETE_NUEVO";
+                document.getElementById('bio-token').innerText = profile.bio_token;
+                document.getElementById('karma-val').innerText = profile.karma_points;
+                if (profile.is_verified) {
+                    const tag = document.getElementById('status-tag');
+                    tag.innerText = "ESTADO: VERIFICADO";
+                    tag.style.color = "var(--success)";
+                }
+            }
         }
     }
 
     function copyToken() {
-        const t = document.getElementById('bio-token').innerText;
-        navigator.clipboard.writeText(t);
-        alert("TOKEN_COPIADO: Pégalo en tu Short Bio de RSI.");
+        navigator.clipboard.writeText(document.getElementById('bio-token').innerText);
+        alert("Copiado");
     }
 
-    async function verificarConRSI() {
-        const handle = document.getElementById('rsi-handle-input').value;
-        const msg = document.getElementById('msg-overlay');
-        msg.style.color = 'var(--accent)';
-        msg.innerText = "> INICIANDO_RASTREO_EN_ROBERTS_SPACE_INDUSTRIES...";
-        
-        // Simulación de respuesta de servidor
-        setTimeout(() => {
-            msg.style.color = 'var(--danger)';
-            msg.innerText = "> ERROR: TOKEN_NO_DETECTADO. VERIFICA_TU_BIO_PÚBLICA.";
-        }, 2000);
-    }
-
-   async function publicarItem() {
-    const btn = event.currentTarget;
-    const msg = document.getElementById('msg-overlay'); // Reutilizamos para feedback
-    
-    // 1. Obtener valores del formulario
-    const name = document.getElementById('item-name').value;
-    const cat = document.getElementById('item-cat').value;
-    const price = document.getElementById('item-price').value;
-    const location = "Area18"; // Puedes añadir un input para esto luego
-
-    // 2. Validaciones básicas
-    if (!name || !price) {
-        alert("ERROR: Debes rellenar nombre y precio.");
-        return;
-    }
-
-    // 3. Obtener sesión del usuario (Supabase Auth)
-    const { data: { user } } = await _supabase.auth.getUser();
-
-    if (!user) {
-        alert("ERROR_ACCESO: Debes iniciar sesión para vender.");
-        return;
-    }
-
-    // Cambiar estado del botón
-    btn.innerText = "PROCESANDO_TRANSMISIÓN...";
-    btn.disabled = true;
-
-    // 4. Insertar en la base de datos
-    const { data, error } = await _supabase
-        .from('marketplace_items')
-        .insert([
-            { 
-                seller_id: user.id, 
-                item_name: name, 
-                category: cat, 
-                price_auec: parseInt(price),
-                location: location,
-                status: 'available'
-            }
-        ]);
-
-    if (error) {
-        console.error(error);
-        alert("ERROR_DB: No se pudo subir el item. Revisa la consola.");
-        btn.innerText = "REINTENTAR_SUBIDA";
-        btn.disabled = false;
-    } else {
-        // ÉXITO
-        alert("ÉXITO: Item listado en el Marketplace.");
-        // Limpiar formulario
-        document.getElementById('item-name').value = "";
-        document.getElementById('item-price').value = "";
-        btn.innerText = "SUBIR_OTRO_ITEM";
-        btn.disabled = false;
-        
-        // Opcional: Recargar la pestaña de mercado para ver el nuevo item
+    // INICIO
+    window.onload = () => {
+        checkUserSession();
         loadMarketItems();
-    }
-}
-    async function loadMarketItems() {
-    const grid = document.getElementById('market-items');
-    grid.innerHTML = '<p style="font-family:JetBrains Mono">ESCANEANDO_FRECUENCIAS...</p>';
-
-    // Consultamos la tabla marketplace_items y traemos el rsi_handle del vendedor
-    const { data: items, error } = await _supabase
-        .from('marketplace_items')
-        .select(`
-            *,
-            profiles:seller_id (rsi_handle, is_verified)
-        `)
-        .eq('status', 'available')
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        grid.innerHTML = '<p style="color:var(--danger)">ERROR_RADAR: No se pudo conectar con la base de datos.</p>';
-        return;
-    }
-
-    grid.innerHTML = ''; // Limpiar cargando
-
-    items.forEach(item => {
-        const isVerified = item.profiles?.is_verified;
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        card.innerHTML = `
-            <div class="item-img" style="background-image: url('https://via.placeholder.com/300x160/060b14/ff9a1f?text=${item.item_name}');"></div>
-            <div style="padding: 15px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:0.6rem; color:var(--primary); font-family:'JetBrains Mono';">${item.category.toUpperCase()}</span>
-                    ${isVerified ? '<span class="verified-badge"><i class="fas fa-check"></i> VERIFICADO</span>' : ''}
-                </div>
-                <h3 style="font-family: var(--font-hud); font-size: 1rem; margin: 10px 0;">${item.item_name}</h3>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="color: var(--accent); font-family: var(--font-hud); font-size: 1.1rem;">${item.price_auec.toLocaleString()} aUEC</div>
-                    <span style="font-size:0.6rem; color:var(--muted);"><i class="fas fa-user"></i> ${item.profiles?.rsi_handle || 'Anon'}</span>
-                </div>
-                <button class="btn-primary" style="margin-top: 15px;" onclick="iniciarEscrow(${item.id})">NEGOCIAR_ESCROW</button>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-}
-
-// Llamar a esta función al cargar la página
-window.addEventListener('load', loadMarketItems);
-
-    window.onload = init;
-    // Función para verificar quién es el piloto actual y cargar su perfil
-async function checkUserSession() {
-    const { data: { session } } = await _supabase.auth.getSession();
-    
-    if (session) {
-        const user = session.user;
-        // Buscamos su perfil automático creado por el Trigger
-        const { data: profile } = await _supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
-
-        if (profile) {
-            // Actualizamos la interfaz con sus datos reales
-            document.getElementById('profile-handle').innerText = profile.rsi_handle || "PILOTO_SIN_NOMBRE";
-            document.getElementById('bio-token').innerText = profile.bio_token;
-            document.getElementById('karma-val').innerText = profile.karma_points;
-            
-            if (profile.is_verified) {
-                const tag = document.getElementById('status-tag');
-                tag.innerText = "ESTADO: VERIFICADO";
-                tag.style.color = "var(--success)";
-            }
-        }
-    } else {
-        console.log("SISTEMA: No hay sesión activa. Por favor, inicia sesión.");
-    }
-}
-
-// Ejecutar al cargar la página
-window.addEventListener('load', checkUserSession);
+    };
 </script>
-
 </body>
 </html>
