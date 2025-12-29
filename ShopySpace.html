@@ -258,38 +258,50 @@
 
     // 4. VERIFICACIÓN RSI REAL (Actualiza Perfil)
     async function verificarConRSI() {
-        const handle = document.getElementById('rsi-handle-input').value;
-        const msg = document.getElementById('msg-overlay');
-        
-        if (!handle) return alert("Escribe tu Handle de RSI");
-
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) return alert("Inicia sesión para verificar tu identidad.");
-
-        msg.style.color = 'var(--accent)';
-        msg.innerText = "> CONECTANDO CON RSI SPECTRUM...";
-
-        // Simulación de escaneo de Bio
-        setTimeout(async () => {
-            const { error } = await _supabase
-                .from('profiles')
-                .update({ 
-                    rsi_handle: handle,
-                    is_verified: true 
-                })
-                .eq('id', user.id);
-
-            if (error) {
-                msg.style.color = 'var(--danger)';
-                msg.innerText = "> ERROR_DE_SINCRO: " + error.message;
-            } else {
-                msg.style.color = 'var(--success)';
-                msg.innerText = "> PROTOCOLO_COMPLETO: PILOTO VERIFICADO.";
-                checkUserSession(); // Actualiza los textos del perfil
-            }
-        }, 1500);
+    const handle = document.getElementById('rsi-handle-input').value;
+    const msg = document.getElementById('msg-overlay');
+    
+    if (!handle) {
+        msg.innerHTML = "<span style='color:var(--danger)'>> ERROR: FALTA_HANDLE_RSI</span>";
+        return;
     }
 
+    // Obtener usuario actual
+    const { data: { user }, error: userError } = await _supabase.auth.getUser();
+    
+    if (userError || !user) {
+        msg.innerHTML = "<span style='color:var(--danger)'>> ERROR: SESION_NO_DETECTADA</span>";
+        return;
+    }
+
+    msg.style.color = 'var(--accent)';
+    msg.innerText = "> INICIANDO SINCRONIZACION...";
+
+    // Intentar actualización en Supabase
+    const { error } = await _supabase
+        .from('profiles')
+        .update({ 
+            rsi_handle: handle,
+            is_verified: true 
+        })
+        .eq('id', user.id);
+
+    if (error) {
+        console.error("Error completo:", error);
+        msg.innerHTML = `<span style='color:var(--danger)'>> FALLO_DB: ${error.message}</span>`;
+    } else {
+        msg.innerHTML = "<span style='color:var(--success)'>> SINC_EXITOSA: PERFIL_ACTUALIZADO</span>";
+        
+        // Actualizar la UI inmediatamente
+        document.getElementById('profile-handle').innerText = handle;
+        const tag = document.getElementById('status-tag');
+        tag.innerText = "ESTADO: VERIFICADO";
+        tag.style.color = "var(--success)";
+        
+        // Recargar datos por si acaso
+        await checkUserSession();
+    }
+}
     // 5. PUBLICAR ÍTEM
     async function publicarItem() {
         const { data: { user } } = await _supabase.auth.getUser();
