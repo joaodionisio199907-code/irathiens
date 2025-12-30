@@ -188,55 +188,71 @@
 </div>
 
 <script type="module">
-    import { supabase } from './api/supabaseClient.js';
+    // 1. Importamos la librería directamente de internet para evitar fallos de rutas
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    // 2. TUS CREDENCIALES (Pon las tuyas aquí)
+    const supabaseUrl = 'https://TU_PROYECTO.supabase.co'
+    const supabaseKey = 'TU_ANON_KEY_DE_SUPABASE'
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
     const listContainer = document.getElementById('list-container');
     const viewer = document.getElementById('viewer');
     const displayName = document.getElementById('display-name');
 
-    // 1. CARGAR NAVES DESDE SUPABASE
+    // 3. CARGAR NAVES DESDE SUPABASE
     async function loadShips() {
-        const { data: ships, error } = await supabase
-            .from('ships_wiki')
-            .select('*')
-            .order('name', { ascending: true });
+        try {
+            const { data: ships, error } = await supabase
+                .from('ships_wiki')
+                .select('*')
+                .order('name', { ascending: true });
 
-        if (error) return console.error(error);
+            if (error) throw error;
 
-        listContainer.innerHTML = '';
-        ships.forEach(ship => {
-            const btn = document.createElement('button');
-            btn.className = 'ship-btn';
-            btn.innerText = ship.name.toUpperCase();
-            btn.onclick = () => {
-                viewer.src = ship.model_path;
-                displayName.innerText = ship.name.toUpperCase();
-                document.getElementById('display-status').innerText = "VINCULADO: ONLINE";
-            };
-            listContainer.appendChild(btn);
-        });
-    }
+            listContainer.innerHTML = '';
+            if (ships.length === 0) {
+                listContainer.innerHTML = '<p style="font-size:10px; color:#444;">No hay naves. Pulsa + para añadir.</p>';
+            }
 
-    // 2. DETECTAR SI ERES ADMIN
-    async function checkAdmin() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            document.getElementById('admin-add-btn').style.display = 'block';
+            ships.forEach(ship => {
+                const btn = document.createElement('button');
+                btn.className = 'ship-btn';
+                btn.innerText = ship.name.toUpperCase();
+                btn.onclick = () => {
+                    viewer.src = ship.model_path;
+                    displayName.innerText = ship.name.toUpperCase();
+                    document.getElementById('display-status').innerText = "VINCULADO: ONLINE";
+                };
+                listContainer.appendChild(btn);
+            });
+        } catch (err) {
+            console.error("Error en la base de datos:", err.message);
         }
     }
 
-    // 3. GUARDAR NUEVA NAVE
+    // 4. DETECTAR SI ERES ADMIN
+    async function checkAdmin() {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            console.log("Sesión detectada para:", session.user.email);
+            document.getElementById('admin-add-btn').style.display = 'block';
+        } else {
+            console.log("No hay sesión iniciada. El botón + permanece oculto.");
+        }
+    }
+
+    // 5. BOTÓN GUARDAR (MODAL)
     document.getElementById('btn-save').onclick = async () => {
         const name = document.getElementById('ship-name-input').value;
         const path = document.getElementById('ship-path-input').value;
-
-        if (!name || !path) return alert("Completa los datos");
 
         const { error } = await supabase
             .from('ships_wiki')
             .insert([{ name: name, model_path: path }]);
 
         if (!error) {
+            alert("Nave añadida!");
             document.getElementById('modal-add-ship').style.display = 'none';
             loadShips();
         } else {
@@ -249,11 +265,12 @@
         document.getElementById('modal-add-ship').style.display = 'block';
     };
 
-    // INICIAR
+    // INICIAR PROCESOS
     checkAdmin();
     loadShips();
 </script>
 
 </body>
 </html>
+
 
