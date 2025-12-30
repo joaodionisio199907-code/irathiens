@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irathiens | Wiki Intel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #ff9a1f;
+            --bg: #04080f;
+            --border: rgba(255, 154, 31, 0.3);
+            --glass: rgba(6, 11, 20, 0.9);
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(var(--primary) 0.5px, transparent 0.5px);
+            background-size: 30px 30px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            padding: 15px 30px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            background: black;
+            font-family: 'Orbitron';
+        }
+
+        .wiki-container {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .panel {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 15px;
+        }
+
+        .ship-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 154, 31, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: 'Orbitron';
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .viewer-box {
+            border: 1px solid var(--border);
+            background: radial-gradient(circle, rgba(255,154,31,0.15) 0%, transparent 70%);
+            position: relative;
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 20px var(--primary));
+        }
+
+        .stat-box {
+            font-family: 'JetBrains Mono';
+            font-size: 0.8rem;
+            border-bottom: 1px solid #333;
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div>IRATHIENS_SYSTEMS</div>
+    <div style="font-size: 0.8rem;">DATABASE // SHIP_WIKI</div>
+</nav>
+
+<div class="wiki-container">
+    <aside class="panel">
+        <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">SHIP_LIST</p>
+        <button class="ship-btn">AEGIS AVENGER</button>
+        <p style="color:#444; font-size:0.6rem; margin-top:20px;">> BUSCANDO MAS NAVES EN EL SECTOR...</p>
+    </aside>
+
+    <main class="viewer-box">
+        <div style="position:absolute; top:20px; left:20px; z-index:5; font-family:'Orbitron'">
+            <h2 style="margin:0; color:var(--primary)">AEGIS AVENGER</h2>
+            <small style="color:#00f2ff">STATUS: ONLINE</small>
+        </div>
+
+        <model-viewer 
+            src="holo/Avenger.glb" 
+            camera-controls 
+            auto-rotate
+            interaction-prompt="none"
+            camera-orbit="45deg 75deg 180%" 
+            min-camera-orbit="auto auto 100%" 
+            max-camera-orbit="auto auto 350%"
+            exposure="1"
+            shadow-intensity="1">
+        </model-viewer>
+    </main>
+
+    <aside class="panel">
+        <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">SPECIFICATIONS</p>
+        <div class="stat-box"><span>MFR</span><span>AEGIS</span></div>
+        <div class="stat-box"><span>ROLE</span><span>TITAN / CARGO</span></div>
+        <div class="stat-box"><span>SCU</span><span>8</span></div>
+        <div class="stat-box"><span>LENGTH</span><span>22.5m</span></div>
+        <div style="margin-top:20px; font-size:0.7rem; color:#aaa; line-height:1.4">
+            NOTAS: La serie Avenger es el estándar de interceptación policial. Este modelo Titan ha sido modificado para logística rápida.
+        </div>
+    </aside>
+</div>
+
+</body>
+</html>
