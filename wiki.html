@@ -67,11 +67,13 @@
             position: relative;
         }
 
-        model-viewer {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 0 20px var(--primary));
-        }
+       /* Busca esto en tu código y cámbialo por esto: */
+model-viewer {
+    width: 100%;
+    height: 100%;
+    /* El 0.3 al final hace que el brillo sea suave */
+    filter: drop-shadow(0 0 10px rgba(255, 154, 31, 0.3));
+}
 
         .stat-box {
             font-family: 'JetBrains Mono';
@@ -129,4 +131,5 @@
 </div>
 
 </body>
+
 </html>
