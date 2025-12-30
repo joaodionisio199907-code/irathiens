@@ -25,6 +25,7 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         nav {
@@ -48,29 +49,38 @@
             background: var(--glass);
             border: 1px solid var(--border);
             padding: 15px;
+            overflow-y: auto;
         }
 
         .ship-btn {
             width: 100%;
             padding: 12px;
-            background: rgba(255, 154, 31, 0.1);
-            border: 1px solid var(--primary);
-            color: var(--primary);
+            background: rgba(255, 154, 31, 0.05);
+            border: 1px solid var(--border);
+            color: white;
             font-family: 'Orbitron';
             cursor: pointer;
             text-align: left;
+            margin-bottom: 8px;
+            transition: 0.3s;
+        }
+
+        .ship-btn:hover {
+            border-color: var(--primary);
+            background: rgba(255, 154, 31, 0.1);
         }
 
         .viewer-box {
             border: 1px solid var(--border);
-            background: radial-gradient(circle, rgba(255,154,31,0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,154,31,0.1) 0%, transparent 70%);
             position: relative;
         }
 
         model-viewer {
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5)); 
+            /* Brillo naranja suave ajustado */
+            filter: drop-shadow(0 0 10px rgba(255, 154, 31, 0.4)); 
         }
 
         .stat-box {
@@ -82,44 +92,39 @@
             justify-content: space-between;
         }
 
-        /* Estilos para el botón de Admin */
+        /* Botón Añadir Admin */
         #admin-add-btn {
             display: none;
             background: transparent;
             border: 1px dashed var(--primary);
             color: var(--primary);
             padding: 2px 8px;
-            font-size: 14px;
             cursor: pointer;
-            border-radius: 3px;
             font-weight: bold;
         }
 
-        #admin-add-btn:hover { background: var(--primary); color: black; }
-
-        /* Modal simple */
+        /* Modal */
         #modal-add-ship {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: black;
+            background: #000;
             border: 2px solid var(--primary);
             padding: 20px;
             z-index: 1000;
-            width: 300px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            width: 320px;
         }
 
-        #modal-add-ship input {
+        input {
             width: 100%;
             margin: 10px 0;
             background: #111;
             border: 1px solid var(--border);
             color: white;
-            padding: 8px;
-            font-family: 'JetBrains Mono';
+            padding: 10px;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -127,29 +132,29 @@
 
 <nav>
     <div>IRATHIENS_SYSTEMS</div>
-    <div style="font-size: 0.8rem;">DATABASE // SHIP_WIKI</div>
+    <div style="font-size: 0.8rem; opacity: 0.6;">WIKI_DATABASE // v2.0</div>
 </nav>
 
 <div class="wiki-container">
     <aside class="panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'; margin:0;">SHIP_LIST</p>
-            <button id="admin-add-btn" title="Añadir nueva nave">+</button>
+            <button id="admin-add-btn">+</button>
         </div>
         <div id="list-container">
-            <button class="ship-btn">AEGIS AVENGER</button>
+            <p style="font-size: 10px; color: #666;">Cargando base de datos...</p>
         </div>
-        <p style="color:#444; font-size:0.6rem; margin-top:20px;">> BUSCANDO MAS NAVES EN EL SECTOR...</p>
     </aside>
 
     <main class="viewer-box">
         <div style="position:absolute; top:20px; left:20px; z-index:5; font-family:'Orbitron'">
-            <h2 style="margin:0; color:var(--primary)">AEGIS AVENGER</h2>
-            <small style="color:#00f2ff">STATUS: ONLINE</small>
+            <h2 id="display-name" style="margin:0; color:var(--primary)">SELECCIONA NAVE</h2>
+            <small id="display-status" style="color:#00f2ff">SISTEMA: LISTO</small>
         </div>
 
         <model-viewer 
-            src="holo/Avenger.glb" 
+            id="viewer"
+            src="" 
             camera-controls 
             auto-rotate
             interaction-prompt="none"
@@ -162,63 +167,93 @@
     </main>
 
     <aside class="panel">
-        <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">SPECIFICATIONS</p>
-        <div class="stat-box"><span>MFR</span><span>AEGIS</span></div>
-        <div class="stat-box"><span>ROLE</span><span>TITAN / CARGO</span></div>
-        <div class="stat-box"><span>SCU</span><span>8</span></div>
-        <div class="stat-box"><span>LENGTH</span><span>22.5m</span></div>
-        <div style="margin-top:20px; font-size:0.7rem; color:#aaa; line-height:1.4">
-            NOTAS: La serie Avenger es el estándar de interceptación policial. Este modelo Titan ha sido modificado para logística rápida.
+        <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">DATA_SPECIFICATIONS</p>
+        <div id="stats-panel">
+            <div class="stat-box"><span>STATUS</span><span style="color:#00f2ff">ACTIVE</span></div>
+            <div class="stat-box"><span>ENCRYPTION</span><span>AES-256</span></div>
+        </div>
+        <div style="margin-top:20px; font-size:0.7rem; color:#aaa; line-height:1.4; font-family: 'JetBrains Mono';">
+            > Accediendo al núcleo de datos de la flota...<br>
+            > Selecciona una unidad para ver su proyección holográfica.
         </div>
     </aside>
 </div>
 
 <div id="modal-add-ship">
-    <p style="color:var(--primary); font-family:'Orbitron'; font-size: 0.7rem;">ADD_NEW_DATA_ENTRY</p>
-    <input type="text" id="ship-name-input" placeholder="Nombre de la Nave">
-    <input type="text" id="ship-path-input" placeholder="Ruta: holo/nave.glb">
-    <button onclick="saveShip()" style="width:100%; padding:10px; background:var(--primary); border:none; color:black; font-family:'Orbitron'; cursor:pointer;">UPLOAD_TO_WIKI</button>
-    <button onclick="document.getElementById('modal-add-ship').style.display='none'" style="width:100%; padding:5px; background:transparent; border:none; color:grey; cursor:pointer; margin-top:5px;">CANCEL</button>
+    <p style="color:var(--primary); font-family:'Orbitron'; font-size: 10px;">ADD_NEW_SHIP_DATA</p>
+    <input type="text" id="ship-name-input" placeholder="Nombre (Ej: Aegis Avenger)">
+    <input type="text" id="ship-path-input" placeholder="Ruta (Ej: holo/Avenger.glb)">
+    <button id="btn-save" style="width:100%; padding:10px; background:var(--primary); border:none; color:black; font-family:'Orbitron'; cursor:pointer;">UPLOAD</button>
+    <button onclick="document.getElementById('modal-add-ship').style.display='none'" style="width:100%; border:none; background:none; color:grey; margin-top:10px; cursor:pointer;">CANCEL</button>
 </div>
 
 <script type="module">
-    // Conexión con Supabase (Usando la lógica de tu carpeta /api)
     import { supabase } from './api/supabaseClient.js';
 
-    async function checkUser() {
+    const listContainer = document.getElementById('list-container');
+    const viewer = document.getElementById('viewer');
+    const displayName = document.getElementById('display-name');
+
+    // 1. CARGAR NAVES DESDE SUPABASE
+    async function loadShips() {
+        const { data: ships, error } = await supabase
+            .from('ships_wiki')
+            .select('*')
+            .order('name', { ascending: true });
+
+        if (error) return console.error(error);
+
+        listContainer.innerHTML = '';
+        ships.forEach(ship => {
+            const btn = document.createElement('button');
+            btn.className = 'ship-btn';
+            btn.innerText = ship.name.toUpperCase();
+            btn.onclick = () => {
+                viewer.src = ship.model_path;
+                displayName.innerText = ship.name.toUpperCase();
+                document.getElementById('display-status').innerText = "VINCULADO: ONLINE";
+            };
+            listContainer.appendChild(btn);
+        });
+    }
+
+    // 2. DETECTAR SI ERES ADMIN
+    async function checkAdmin() {
         const { data: { session } } = await supabase.auth.getSession();
-        // Si hay sesión (estás logeado), mostramos el botón +
         if (session) {
             document.getElementById('admin-add-btn').style.display = 'block';
         }
     }
 
-    // Abrir modal
+    // 3. GUARDAR NUEVA NAVE
+    document.getElementById('btn-save').onclick = async () => {
+        const name = document.getElementById('ship-name-input').value;
+        const path = document.getElementById('ship-path-input').value;
+
+        if (!name || !path) return alert("Completa los datos");
+
+        const { error } = await supabase
+            .from('ships_wiki')
+            .insert([{ name: name, model_path: path }]);
+
+        if (!error) {
+            document.getElementById('modal-add-ship').style.display = 'none';
+            loadShips();
+        } else {
+            alert("Error: " + error.message);
+        }
+    };
+
+    // BOTÓN ABRIR MODAL
     document.getElementById('admin-add-btn').onclick = () => {
         document.getElementById('modal-add-ship').style.display = 'block';
     };
 
-    // Función para guardar (esto enviará la nave a tu tabla 'ships_wiki')
-    window.saveShip = async () => {
-        const name = document.getElementById('ship-name-input').value;
-        const path = document.getElementById('ship-path-input').value;
-
-        if(!name || !path) return alert("Rellena todos los campos");
-
-        const { error } = await supabase
-            .from('ships_wiki') 
-            .insert([{ name: name, model_path: path }]);
-
-        if (!error) {
-            alert("Nave añadida con éxito");
-            location.reload();
-        } else {
-            alert("Error al guardar: " + error.message);
-        }
-    };
-
-    checkUser();
+    // INICIAR
+    checkAdmin();
+    loadShips();
 </script>
 
 </body>
 </html>
+
