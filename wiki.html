@@ -67,14 +67,11 @@
             position: relative;
         }
 
-       /* Busca esto en tu código y cámbialo por esto: */
-model-viewer {
-    width: 100%;
-    height: 100%;
-    /* Cambia los 3 primeros números para el color (R, G, B) */
-    /* El 0.3 es la intensidad que bajamos antes */
-    filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5)); 
-}
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5)); 
+        }
 
         .stat-box {
             font-family: 'JetBrains Mono';
@@ -83,6 +80,46 @@ model-viewer {
             padding: 8px 0;
             display: flex;
             justify-content: space-between;
+        }
+
+        /* Estilos para el botón de Admin */
+        #admin-add-btn {
+            display: none;
+            background: transparent;
+            border: 1px dashed var(--primary);
+            color: var(--primary);
+            padding: 2px 8px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        #admin-add-btn:hover { background: var(--primary); color: black; }
+
+        /* Modal simple */
+        #modal-add-ship {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: black;
+            border: 2px solid var(--primary);
+            padding: 20px;
+            z-index: 1000;
+            width: 300px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+
+        #modal-add-ship input {
+            width: 100%;
+            margin: 10px 0;
+            background: #111;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 8px;
+            font-family: 'JetBrains Mono';
         }
     </style>
 </head>
@@ -95,8 +132,13 @@ model-viewer {
 
 <div class="wiki-container">
     <aside class="panel">
-        <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">SHIP_LIST</p>
-        <button class="ship-btn">AEGIS AVENGER</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'; margin:0;">SHIP_LIST</p>
+            <button id="admin-add-btn" title="Añadir nueva nave">+</button>
+        </div>
+        <div id="list-container">
+            <button class="ship-btn">AEGIS AVENGER</button>
+        </div>
         <p style="color:#444; font-size:0.6rem; margin-top:20px;">> BUSCANDO MAS NAVES EN EL SECTOR...</p>
     </aside>
 
@@ -131,8 +173,52 @@ model-viewer {
     </aside>
 </div>
 
+<div id="modal-add-ship">
+    <p style="color:var(--primary); font-family:'Orbitron'; font-size: 0.7rem;">ADD_NEW_DATA_ENTRY</p>
+    <input type="text" id="ship-name-input" placeholder="Nombre de la Nave">
+    <input type="text" id="ship-path-input" placeholder="Ruta: holo/nave.glb">
+    <button onclick="saveShip()" style="width:100%; padding:10px; background:var(--primary); border:none; color:black; font-family:'Orbitron'; cursor:pointer;">UPLOAD_TO_WIKI</button>
+    <button onclick="document.getElementById('modal-add-ship').style.display='none'" style="width:100%; padding:5px; background:transparent; border:none; color:grey; cursor:pointer; margin-top:5px;">CANCEL</button>
+</div>
+
+<script type="module">
+    // Conexión con Supabase (Usando la lógica de tu carpeta /api)
+    import { supabase } from './api/supabaseClient.js';
+
+    async function checkUser() {
+        const { data: { session } } = await supabase.auth.getSession();
+        // Si hay sesión (estás logeado), mostramos el botón +
+        if (session) {
+            document.getElementById('admin-add-btn').style.display = 'block';
+        }
+    }
+
+    // Abrir modal
+    document.getElementById('admin-add-btn').onclick = () => {
+        document.getElementById('modal-add-ship').style.display = 'block';
+    };
+
+    // Función para guardar (esto enviará la nave a tu tabla 'ships_wiki')
+    window.saveShip = async () => {
+        const name = document.getElementById('ship-name-input').value;
+        const path = document.getElementById('ship-path-input').value;
+
+        if(!name || !path) return alert("Rellena todos los campos");
+
+        const { error } = await supabase
+            .from('ships_wiki') 
+            .insert([{ name: name, model_path: path }]);
+
+        if (!error) {
+            alert("Nave añadida con éxito");
+            location.reload();
+        } else {
+            alert("Error al guardar: " + error.message);
+        }
+    };
+
+    checkUser();
+</script>
+
 </body>
-
 </html>
-
-
