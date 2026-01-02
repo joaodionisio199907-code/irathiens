@@ -28,21 +28,47 @@
             overflow: hidden;
         }
 
+        /* --- NAVBAR MEJORADO --- */
         nav {
-            padding: 15px 30px;
+            padding: 10px 30px;
             border-bottom: 2px solid var(--primary);
             display: flex;
             justify-content: space-between;
+            align-items: center;
             background: black;
             font-family: 'Orbitron';
+            z-index: 100;
         }
 
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: white;
+            text-decoration: none;
+            font-size: 0.7rem;
+            padding: 5px 10px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+        
+        #logout-btn { 
+            display: none; 
+            color: #ff4444; 
+            border-color: rgba(255, 68, 68, 0.3);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
         .wiki-container {
             display: grid;
             grid-template-columns: 250px 1fr 300px;
             gap: 20px;
             padding: 20px;
             flex-grow: 1;
+            height: calc(100vh - 60px);
         }
 
         .panel {
@@ -62,13 +88,10 @@
             cursor: pointer;
             text-align: left;
             margin-bottom: 8px;
-            transition: 0.3s;
+            font-size: 0.75rem;
         }
 
-        .ship-btn:hover {
-            border-color: var(--primary);
-            background: rgba(255, 154, 31, 0.1);
-        }
+        .ship-btn:hover { border-color: var(--primary); background: rgba(255, 154, 31, 0.1); }
 
         .viewer-box {
             border: 1px solid var(--border);
@@ -79,60 +102,40 @@
         model-viewer {
             width: 100%;
             height: 100%;
-            /* Brillo naranja suave ajustado */
             filter: drop-shadow(0 0 10px rgba(255, 154, 31, 0.4)); 
         }
 
-        .stat-box {
-            font-family: 'JetBrains Mono';
-            font-size: 0.8rem;
-            border-bottom: 1px solid #333;
-            padding: 8px 0;
-            display: flex;
-            justify-content: space-between;
+        /* --- MÓVIL (RESPONSIVE) --- */
+        @media (max-width: 900px) {
+            body { overflow-y: auto; height: auto; }
+            .wiki-container {
+                grid-template-columns: 1fr;
+                display: flex;
+                flex-direction: column;
+                height: auto;
+            }
+            .viewer-box { height: 350px; order: -1; }
+            nav { flex-direction: column; gap: 10px; padding: 15px; text-align: center; }
         }
 
-        /* Botón Añadir Admin */
-        #admin-add-btn {
-            display: none;
-            background: transparent;
-            border: 1px dashed var(--primary);
-            color: var(--primary);
-            padding: 2px 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* Modal */
-        #modal-add-ship {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #000;
-            border: 2px solid var(--primary);
-            padding: 20px;
-            z-index: 1000;
-            width: 320px;
-        }
-
-        input {
-            width: 100%;
-            margin: 10px 0;
-            background: #111;
-            border: 1px solid var(--border);
-            color: white;
-            padding: 10px;
-            box-sizing: border-box;
-        }
+        /* Botón Admin e Inputs */
+        #admin-add-btn { display: none; background: none; border: 1px dashed var(--primary); color: var(--primary); cursor: pointer; }
+        #modal-add-ship { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #000; border: 2px solid var(--primary); padding: 20px; z-index: 1000; width: 300px; }
+        input { width: 100%; margin: 10px 0; background: #111; border: 1px solid var(--border); color: white; padding: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div>IRATHIENS_SYSTEMS</div>
-    <div style="font-size: 0.8rem; opacity: 0.6;">WIKI_DATABASE // v2.0</div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="color: var(--primary); font-weight: bold;">IRATHIENS_SYSTEMS</span>
+    </div>
+    
+    <div class="nav-links">
+        <a href="index.html" class="nav-btn">INICIO</a>
+        <a href="AdminPanel.html" class="nav-btn">PANEL</a>
+        <button id="logout-btn" class="nav-btn">CERRAR SESIÓN</button>
+    </div>
 </nav>
 
 <div class="wiki-container">
@@ -141,57 +144,38 @@
             <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'; margin:0;">SHIP_LIST</p>
             <button id="admin-add-btn">+</button>
         </div>
-        <div id="list-container">
-            <p style="font-size: 10px; color: #666;">Cargando base de datos...</p>
-        </div>
+        <div id="list-container"></div>
     </aside>
 
     <main class="viewer-box">
         <div style="position:absolute; top:20px; left:20px; z-index:5; font-family:'Orbitron'">
-            <h2 id="display-name" style="margin:0; color:var(--primary)">SELECCIONA NAVE</h2>
-            <small id="display-status" style="color:#00f2ff">SISTEMA: LISTO</small>
+            <h2 id="display-name" style="margin:0; color:var(--primary); font-size: 1.2rem;">CARGANDO...</h2>
+            <small id="display-status" style="color:#00f2ff">DATABASE: CONNECTING</small>
         </div>
-
-        <model-viewer 
-            id="viewer"
-            src="" 
-            camera-controls 
-            auto-rotate
-            interaction-prompt="none"
-            camera-orbit="45deg 75deg 180%" 
-            min-camera-orbit="auto auto 100%" 
-            max-camera-orbit="auto auto 350%"
-            exposure="1"
-            shadow-intensity="1">
-        </model-viewer>
+        <model-viewer id="viewer" src="" camera-controls auto-rotate camera-orbit="45deg 75deg 180%" min-camera-orbit="auto auto 100%" max-camera-orbit="auto auto 350%" exposure="1"></model-viewer>
     </main>
 
     <aside class="panel">
-        <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">DATA_SPECIFICATIONS</p>
-        <div id="stats-panel">
-            <div class="stat-box"><span>STATUS</span><span style="color:#00f2ff">ACTIVE</span></div>
-            <div class="stat-box"><span>ENCRYPTION</span><span>AES-256</span></div>
-        </div>
-        <div style="margin-top:20px; font-size:0.7rem; color:#aaa; line-height:1.4; font-family: 'JetBrains Mono';">
-            > Accediendo al núcleo de datos de la flota...<br>
-            > Selecciona una unidad para ver su proyección holográfica.
+        <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">SPECIFICATIONS</p>
+        <div id="stats-panel" style="font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+            <div style="border-bottom: 1px solid #222; padding: 10px 0; display: flex; justify-content: space-between;">
+                <span>ENCRYPTION</span><span>ACTIVE</span>
+            </div>
         </div>
     </aside>
 </div>
 
 <div id="modal-add-ship">
-    <p style="color:var(--primary); font-family:'Orbitron'; font-size: 10px;">ADD_NEW_SHIP_DATA</p>
-    <input type="text" id="ship-name-input" placeholder="Nombre (Ej: Aegis Avenger)">
-    <input type="text" id="ship-path-input" placeholder="Ruta (Ej: holo/Avenger.glb)">
+    <p style="color:var(--primary); font-family:'Orbitron'; font-size: 10px;">ADD_NEW_ENTRY</p>
+    <input type="text" id="ship-name-input" placeholder="Nombre (Ej: Sabre)">
+    <input type="text" id="ship-path-input" placeholder="Ruta (Ej: holo/Sabre.glb)">
     <button id="btn-save" style="width:100%; padding:10px; background:var(--primary); border:none; color:black; font-family:'Orbitron'; cursor:pointer;">UPLOAD</button>
     <button onclick="document.getElementById('modal-add-ship').style.display='none'" style="width:100%; border:none; background:none; color:grey; margin-top:10px; cursor:pointer;">CANCEL</button>
 </div>
 
 <script type="module">
-    // 1. Importamos la librería directamente de internet para evitar fallos de rutas
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    // 2. TUS CREDENCIALES (Pon las tuyas aquí)
     const supabaseUrl = 'https://dfizvgagofsctgwzksgd.supabase.co'
     const supabaseKey = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'
     const supabase = createClient(supabaseUrl, supabaseKey)
@@ -200,78 +184,52 @@
     const viewer = document.getElementById('viewer');
     const displayName = document.getElementById('display-name');
 
-    // 3. CARGAR NAVES DESDE SUPABASE
     async function loadShips() {
-        try {
-            const { data: ships, error } = await supabase
-                .from('ships_wiki')
-                .select('*')
-                .order('name', { ascending: true });
-
-            if (error) throw error;
-
-            listContainer.innerHTML = '';
-            if (ships.length === 0) {
-                listContainer.innerHTML = '<p style="font-size:10px; color:#444;">No hay naves. Pulsa + para añadir.</p>';
-            }
-
-            ships.forEach(ship => {
+        const { data: ships } = await supabase.from('ships_wiki').select('*').order('name', { ascending: true });
+        listContainer.innerHTML = '';
+        if (ships && ships.length > 0) {
+            ships.forEach((ship, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'ship-btn';
-                btn.innerText = ship.name.toUpperCase();
+                btn.innerText = `> ${ship.name.toUpperCase()}`;
                 btn.onclick = () => {
                     viewer.src = ship.model_path;
                     displayName.innerText = ship.name.toUpperCase();
                     document.getElementById('display-status').innerText = "VINCULADO: ONLINE";
                 };
                 listContainer.appendChild(btn);
+                if(index === 0) btn.click(); // Carga la primera por defecto
             });
-        } catch (err) {
-            console.error("Error en la base de datos:", err.message);
+        } else {
+            displayName.innerText = "SIN DATOS";
         }
     }
 
-    // 4. DETECTAR SI ERES ADMIN
-    async function checkAdmin() {
+    async function checkAuth() {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-            console.log("Sesión detectada para:", session.user.email);
             document.getElementById('admin-add-btn').style.display = 'block';
-        } else {
-            console.log("No hay sesión iniciada. El botón + permanece oculto.");
+            document.getElementById('logout-btn').style.display = 'block';
         }
     }
 
-    // 5. BOTÓN GUARDAR (MODAL)
+    document.getElementById('logout-btn').onclick = async () => {
+        await supabase.auth.signOut();
+        location.reload();
+    };
+
+    document.getElementById('admin-add-btn').onclick = () => document.getElementById('modal-add-ship').style.display = 'block';
+
     document.getElementById('btn-save').onclick = async () => {
         const name = document.getElementById('ship-name-input').value;
         const path = document.getElementById('ship-path-input').value;
-
-        const { error } = await supabase
-            .from('ships_wiki')
-            .insert([{ name: name, model_path: path }]);
-
-        if (!error) {
-            alert("Nave añadida!");
-            document.getElementById('modal-add-ship').style.display = 'none';
-            loadShips();
-        } else {
-            alert("Error: " + error.message);
-        }
+        const { error } = await supabase.from('ships_wiki').insert([{ name, model_path: path }]);
+        if (!error) { location.reload(); } else { alert(error.message); }
     };
 
-    // BOTÓN ABRIR MODAL
-    document.getElementById('admin-add-btn').onclick = () => {
-        document.getElementById('modal-add-ship').style.display = 'block';
-    };
-
-    // INICIAR PROCESOS
-    checkAdmin();
+    checkAuth();
     loadShips();
 </script>
 
 </body>
 </html>
-
-
-
