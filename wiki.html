@@ -3,306 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Irathiens | Organización Star Citizen</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Irathiens | Wiki Intel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
         :root {
-            --bg: #060b14;
-            --bg-soft: #0b1220;
             --primary: #ff9a1f;
-            --accent: #ffb347;
-            --text: #e6f1ff;
-            --muted: #9fb3c8;
-            --border: #2a1a0a;
-            --shadow: rgba(255, 154, 31, 0.15);
-            --glass: rgba(11, 18, 32, 0.85);
+            --bg: #04080f;
+            --border: rgba(255, 154, 31, 0.3);
+            --glass: rgba(6, 11, 20, 0.9);
+            --accent: #00f2ff;
         }
 
-        /* --- RESET Y BASE --- */
-        * { box-sizing: border-box; transition: all 0.3s ease; }
-
+        /* --- BASE --- */
         body {
             margin: 0;
+            background: var(--bg);
+            color: white;
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top, #0b1630 0%, var(--bg) 60%);
-            color: var(--text);
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* --- NAVEGACIÓN RESPONSIVA --- */
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 0.8rem 1.5rem;
+            background-image: radial-gradient(var(--primary) 0.5px, transparent 0.5px);
+            background-size: 30px 30px;
+            height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            font-family: 'Orbitron', sans-serif;
-            text-decoration: none;
-            z-index: 1001;
-        }
-
-        .logo-text { color: var(--primary); font-weight: 700; font-size: 1.2rem; }
-        .logo-img { height: 32px; width: auto; }
-
-        /* Menú Desktop */
-        .nav-menu { display: flex; align-items: center; }
-        .nav-menu a {
-            margin-left: 1.5rem;
-            color: var(--muted);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-        .nav-menu a:hover { color: var(--primary); }
-
-        /* Hamburguesa para móvil */
-        .menu-toggle {
-            display: none;
             flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-            background: none;
-            border: none;
+            overflow: hidden; /* Evita scroll doble */
         }
-        .menu-toggle span { width: 25px; height: 2px; background: var(--primary); }
 
-        /* --- HERO SECTION FLEXIBLE --- */
-        .hero {
-            max-width: 1200px;
-            margin: auto;
-            padding: 4rem 1.5rem;
+        /* --- NAVBAR RESPONSIVA --- */
+        nav {
+            padding: 10px 20px;
+            border-bottom: 2px solid var(--primary);
             display: flex;
-            flex-wrap: wrap;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            gap: 3rem;
+            background: black;
+            font-family: 'Orbitron';
+            z-index: 1000;
         }
 
-        .hero-content { flex: 1 1 500px; }
-        .hero h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            color: var(--accent);
-            text-shadow: 0 0 20px rgba(255,154,31,0.3);
-            margin: 0 0 1rem 0;
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: white;
+            text-decoration: none;
+            font-size: 0.7rem;
+            padding: 5px 10px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* --- CONTENEDOR PRINCIPAL REESTRUCTURADO --- */
+        .wiki-container {
+            display: grid;
+            /* Cambiamos px por fr y minmax para que sea flexible */
+            grid-template-columns: minmax(200px, 250px) 1fr minmax(250px, 350px);
+            gap: 15px;
+            padding: 15px;
+            flex-grow: 1;
+            height: calc(100vh - 60px);
+            overflow: hidden;
         }
 
-        .status-panel {
-            flex: 1 1 350px;
+        .panel {
             background: var(--glass);
             border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 30px;
+            padding: 15px;
+            overflow-y: auto;
             position: relative;
-            overflow: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
         }
 
-        /* --- GRID DE TARJETAS (WIKI/INFO) --- */
-        .card-grid {
-            max-width: 1200px;
-            margin: 2rem auto 4rem;
-            padding: 0 1.5rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: linear-gradient(180deg, var(--bg-soft), var(--bg));
+        /* --- VISUALIZADOR 3D --- */
+        .viewer-box {
             border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 12px;
-        }
-
-        /* --- AVATAR Y EFECTOS HOLOGRÁFICOS --- */
-        .avatar-container {
-            width: 150px; height: 150px;
-            margin: 0 auto 1.5rem;
-            border: 3px solid var(--primary);
-            border-radius: 50%;
-            overflow: hidden;
+            background: radial-gradient(circle, rgba(255,154,31,0.1) 0%, transparent 70%);
             position: relative;
-            box-shadow: 0 0 20px var(--shadow);
-        }
-        .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-container::after {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(255,154,31,0) 0%, rgba(255,154,31,0.1) 50%, rgba(255,154,31,0) 100%);
-            animation: scan 3s infinite linear;
+            min-height: 300px;
         }
 
-        /* --- BURBUJAS FLOTANTES --- */
-        .floating-controls {
-            position: fixed; bottom: 20px; left: 20px;
-            display: flex; gap: 15px; z-index: 3000;
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 15px rgba(255, 154, 31, 0.4));
         }
 
-        .bubble {
-            width: 60px; height: 60px;
-            background: rgba(6, 11, 20, 0.9);
-            border: 2px solid var(--primary);
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; box-shadow: 0 0 15px var(--shadow);
-        }
-
-        .music-playing { animation: pulse-border 2s infinite; }
-
-        /* --- MEDIA QUERIES --- */
-        @media (max-width: 850px) {
-            .menu-toggle { display: flex; }
-            .nav-menu {
-                display: none; /* Se activa con JS */
-                position: absolute; top: 100%; left: 0; width: 100%;
-                background: var(--bg-soft); flex-direction: column;
-                padding: 20px; border-bottom: 1px solid var(--border);
+        /* --- ADAPTACIÓN PARA MÓVILES (TABLETS Y SMARTPHONES) --- */
+        @media (max-width: 1024px) {
+            .wiki-container {
+                grid-template-columns: 1fr; /* Todo en una columna */
+                grid-template-rows: auto 400px auto; /* Lista, luego Nave, luego Stats */
+                overflow-y: auto; /* Permitir scroll general en móvil */
+                height: auto;
             }
-            .nav-menu.mobile-active { display: flex; }
-            .nav-menu a { margin: 10px 0; font-size: 1rem; }
-            
-            .hero { padding: 2rem 1.5rem; text-align: center; }
-            .floating-controls { left: 50%; transform: translateX(-50%); width: 100%; justify-content: center; }
+
+            body { overflow-y: auto; } /* En móvil el body sí puede tener scroll */
+
+            .panel {
+                height: auto;
+                max-height: 400px; /* Limitar altura de lista y stats */
+            }
+
+            .viewer-box {
+                order: -1; /* Mover la nave arriba del todo en móvil */
+                height: 400px;
+            }
         }
 
-        /* Animaciones */
-        @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(255, 154, 31, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 154, 31, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 154, 31, 0); }
+        /* --- ANIMACIONES HOLOGRÁFICAS (Tus estilos originales) --- */
+        @keyframes holo-appear {
+            0% { opacity: 0; transform: translateY(10px); filter: brightness(2) blur(5px); }
+            100% { opacity: 1; transform: translateY(0); filter: brightness(1) blur(0); }
         }
+
+        .holo-animate {
+            animation: holo-appear 0.5s ease-out forwards;
+        }
+
+        .stat-row {
+            border-bottom: 1px solid #222;
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+        }
+
+        .stat-header {
+            color: var(--primary);
+            font-size: 0.65rem;
+            margin-top: 15px;
+            border-left: 2px solid var(--primary);
+            padding-left: 8px;
+            background: rgba(255,154,31,0.1);
+            font-family: 'Orbitron';
+        }
+
+        .ship-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 154, 31, 0.05);
+            border: 1px solid var(--border);
+            color: white;
+            font-family: 'Orbitron';
+            cursor: pointer;
+            text-align: left;
+            margin-bottom: 8px;
+            font-size: 0.7rem;
+        }
+
+        .ship-btn:hover { border-color: var(--primary); background: rgba(255, 154, 31, 0.1); }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="nav-container">
-        <a href="/" class="logo">
-            <img src="logo.png" alt="Logo" class="logo-img"> 
-            <span class="logo-text">IRATHIENS</span>
-        </a>
-        
-        <button class="menu-toggle" onclick="toggleMenu()">
-            <span></span><span></span><span></span>
-        </button>
-
-        <nav class="nav-menu" id="navMenu">
-            <a href="/">INICIO</a>
-            <a href="wiki">WIKI</a>
-            <a href="banco">FINANZAS</a>
-            <a href="miembros">MIEMBROS</a>
-            <div class="user-dropdown">
-                <span class="nav-user-name" id="userName">CIUDADANO</span>
-                <div class="dropdown-content">
-                    <a href="perfil">MI PERFIL</a>
-                    <a href="#" onclick="logout()">CERRAR SESIÓN</a>
-                </div>
-            </div>
-        </nav>
+<nav>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="color: var(--primary); font-weight: bold; font-size: 0.8rem;">IRATHIENS_INTEL</span>
     </div>
-</header>
-
-<main>
-    <section class="hero">
-        <div class="hero-content">
-            <h1>FORJANDO ALIANZAS EN EL VERSO</h1>
-            <p>Irathiens es una organización de Star Citizen centrada en la cooperación táctica, la industria y la supremacía estratégica.</p>
-            <a href="#" class="btn" style="display:inline-block; padding: 1rem 2rem; background: var(--primary); color: #000; text-decoration:none; font-family:'Orbitron'; font-weight:700; border-radius:5px;">UNIRSE AHORA</a>
-        </div>
-
-        <div class="status-panel holo-animate">
-            <div class="avatar-container">
-                <img src="img/default-avatar.jpg" alt="Avatar">
-            </div>
-            <h3 style="font-family:'Orbitron'; color:var(--primary); text-align:center; margin:0;">ORGANIZATION_STATUS</h3>
-            <div style="margin-top:15px; font-size:0.8rem;">
-                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:5px 0;">
-                    <span>OPERACIONES</span><span style="color: #00ff88;">ACTIVA</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; padding:5px 0;">
-                    <span>SECTOR</span><span style="color: var(--accent);">STANTON</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="card-grid">
-        <div class="card">
-            <h3>EVENTOS</h3>
-            <p>Participa en nuestras incursiones semanales y entrenamientos de vuelo.</p>
-        </div>
-        <div class="card">
-            <h3>DIPLOMACIA</h3>
-            <p>Relaciones exteriores y tratados de no agresión con otras orgs.</p>
-        </div>
-        <div class="card">
-            <h3>RECURSOS</h3>
-            <p>Acceso directo a la base de datos de naves y guías de minería.</p>
-        </div>
-    </section>
-</main>
-
-<div class="floating-controls">
-    <div class="bubble" onclick="toggleChat()">
-        <span style="color:var(--primary); font-family:'Orbitron'; font-weight:bold;">>_</span>
+    <div class="nav-links">
+        <a href="index.html" class="nav-btn">VOLVER</a>
+        <button id="logout-btn" class="nav-btn" style="display:none;">LOGOUT</button>
     </div>
-    <div class="bubble" id="musicBubble" onclick="toggleMusic()">
-        <span id="musicStatus" style="font-family:'Orbitron'; font-size:0.6rem; color:var(--primary);">OFF</span>
-    </div>
+</nav>
+
+<div class="wiki-container">
+    <aside class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin:0;">REGISTRY_FILES</p>
+            <button id="admin-add-btn" style="display:none; background:none; border:1px dashed var(--primary); color:var(--primary);">+</button>
+        </div>
+        <div id="list-container"></div>
+    </aside>
+
+    <main class="viewer-box">
+        <div style="position:absolute; top:20px; left:20px; z-index:5; font-family:'Orbitron'">
+            <h2 id="display-name" style="margin:0; color:var(--primary); font-size: 1rem;">SELECCIONE NAVE</h2>
+            <small id="display-status" style="color:var(--accent); font-size: 0.6rem;">DATABASE: READY</small>
+        </div>
+        <model-viewer id="viewer" src="" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral" exposure="1" camera-orbit="45deg 75deg 150%"></model-viewer>
+    </main>
+
+    <aside class="panel">
+        <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin-bottom: 15px;">SPECIFICATIONS_DATA</p>
+        <div id="stats-panel" style="font-family: 'JetBrains Mono';">
+            <div style="color:#444; font-size: 0.7rem;">ESPERANDO SELECCIÓN DE TRANSMISIÓN...</div>
+        </div>
+    </aside>
 </div>
 
-<audio id="bg-music" loop><source src="musicamenu.mp3" type="audio/mpeg"></audio>
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    const supabaseUrl = 'https://dfizvgagofsctgwzksgd.supabase.co'
+    const supabaseKey = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
-<script>
-    // Toggle Menú Móvil
-    function toggleMenu() {
-        document.getElementById('navMenu').classList.toggle('mobile-active');
+    const listContainer = document.getElementById('list-container');
+    const statsPanel = document.getElementById('stats-panel');
+    const viewer = document.getElementById('viewer');
+    const displayName = document.getElementById('display-name');
+
+    // Función para renderizar estadísticas
+    function renderShipStats(shipName) {
+        statsPanel.classList.remove('holo-animate');
+        void statsPanel.offsetWidth;
+        statsPanel.classList.add('holo-animate');
+
+        // Aquí puedes expandir la lógica de stats según el nombre
+        let content = `<div class="stat-header">INFO_STREAM</div>`;
+        content += `
+            <div class="stat-row"><span class="stat-label">IDENTIFIER</span><span class="stat-value">${shipName}</span></div>
+            <div class="stat-row"><span class="stat-label">ORIGIN</span><span class="stat-value">UEE_DATABASE</span></div>
+            <div class="stat-header">FLIGHT_DATA</div>
+            <div class="stat-row"><span class="stat-label">STATUS</span><span class="stat-value">OPERATIONAL</span></div>
+        `;
+        statsPanel.innerHTML = content;
     }
 
-    // Lógica de Música
-    const audio = document.getElementById('bg-music');
-    const musicBubble = document.getElementById('musicBubble');
-    let isPlaying = false;
-    audio.volume = 0.3;
-
-    function toggleMusic() {
-        if (isPlaying) {
-            audio.pause();
-            document.getElementById('musicStatus').innerText = "OFF";
-            musicBubble.classList.remove('music-playing');
-        } else {
-            audio.play();
-            document.getElementById('musicStatus').innerText = "ON";
-            musicBubble.classList.add('music-playing');
+    async function loadShips() {
+        const { data: ships } = await supabase.from('ships_wiki').select('*').order('name', { ascending: true });
+        listContainer.innerHTML = '';
+        
+        if (ships && ships.length > 0) {
+            ships.forEach((ship, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'ship-btn';
+                btn.innerText = `> ${ship.name.toUpperCase()}`;
+                btn.onclick = () => {
+                    viewer.src = ship.model_path;
+                    displayName.innerText = ship.name.toUpperCase();
+                    renderShipStats(ship.name);
+                    // En móvil, después de elegir nave, hacemos scroll hacia arriba para verla
+                    if(window.innerWidth < 1024) {
+                        window.scrollTo({top: 0, behavior: 'smooth'});
+                    }
+                };
+                listContainer.appendChild(btn);
+                if(index === 0 && window.innerWidth > 1024) btn.click();
+            });
         }
-        isPlaying = !isPlaying;
     }
 
-    // Cerrar sesión (ejemplo)
-    function logout() {
-        console.log("Cerrando sesión...");
-        location.reload();
+    async function checkAuth() {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            document.getElementById('admin-add-btn').style.display = 'block';
+            document.getElementById('logout-btn').style.display = 'block';
+        }
     }
+
+    checkAuth();
+    loadShips();
 </script>
-
 </body>
 </html>
