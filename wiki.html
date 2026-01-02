@@ -182,47 +182,53 @@
     const displayName = document.getElementById('display-name');
 
     // FUNCIÓN DE RENDERIZADO CORREGIDA
-    function renderShipStats(shipName) {
-        const nameUpper = shipName.toUpperCase();
-        
-        // Ahora busca si el nombre CONTIENE "AVENGER"
-        if(nameUpper.includes("AVENGER")) {
-            statsPanel.innerHTML = `
-                <div class="stat-header">FLIGHT_PERFORMANCE</div>
-                <div class="stat-row"><span class="stat-label">SCM Speed</span><span class="stat-value">260 m/s</span></div>
-                <div class="stat-row"><span class="stat-label">Max Speed</span><span class="stat-value">1425 m/s</span></div>
-                <div class="stat-row"><span class="stat-label">Acceleration</span><span class="stat-value">12.8 G</span></div>
-                <div class="stat-row"><span class="stat-label">Pitch Rate</span><span class="stat-value">52.5 °/s</span></div>
-                <div class="stat-row"><span class="stat-label">Roll Rate</span><span class="stat-value">180.0 °/s</span></div>
+   function renderShipStats(shipName) {
+    const nameUpper = shipName.toUpperCase();
+    
+    // Añadimos la clase de animación y un pequeño efecto de carga
+    statsPanel.classList.remove('holo-animate');
+    void statsPanel.offsetWidth; // Truco para reiniciar la animación CSS
+    statsPanel.classList.add('holo-animate');
 
-                <div class="stat-header">HULL_INTEGRITY</div>
-                <div class="stat-row"><span class="stat-label">Total HP</span><span class="stat-value">11,900</span></div>
-                <div class="stat-row"><span class="stat-label">Body Integrity</span><span class="stat-value">2,500 HP</span></div>
-                <div class="stat-row"><span class="stat-label">Canopy Health</span><span class="stat-value">1,500 HP</span></div>
+    let content = `<div class="loading-bar" id="load-bar"></div>`;
 
-                <div class="stat-header">SYSTEM_LOADOUT</div>
-                <div class="stat-row"><span class="stat-label">Cargo Capacity</span><span class="stat-value">0 SCU</span></div>
-                <div class="stat-row"><span class="stat-label">Prisoner Cells</span><span class="stat-value">6 UNITS</span></div>
-                <div class="stat-row"><span class="stat-label">Quantum Fuel</span><span class="stat-value">1,100 L</span></div>
+    if(nameUpper.includes("AVENGER")) {
+        content += `
+            <div class="stat-header">FLIGHT_PERFORMANCE</div>
+            <div class="stat-row"><span class="stat-label">SCM Speed</span><span class="stat-value">260 m/s</span></div>
+            <div class="stat-row"><span class="stat-label">Max Speed</span><span class="stat-value">1425 m/s</span></div>
+            <div class="stat-row"><span class="stat-label">Acceleration</span><span class="stat-value">12.8 G</span></div>
+            
+            <div class="stat-header">HULL_INTEGRITY</div>
+            <div class="stat-row"><span class="stat-label">Total HP</span><span class="stat-value">11,900</span></div>
+            <div class="stat-row"><span class="stat-label">Canopy Health</span><span class="stat-value">1,500 HP</span></div>
 
-                <div class="stat-header">WEAPON_HARDPOINTS</div>
-                <div class="stat-row"><span class="stat-label">Nose Mount</span><span class="stat-value">1x S4</span></div>
-                <div class="stat-row"><span class="stat-label">Wing Mounts</span><span class="stat-value">2x S3</span></div>
-                <div class="stat-row"><span class="stat-label">Missile Racks</span><span class="stat-value">2x S3</span></div>
-            `;
-        } 
-        // Ejemplo para cuando añadas la Vanguard que veo en tu captura
-        else if(nameUpper.includes("VANGUARD")) {
-            statsPanel.innerHTML = `
-                <div class="stat-header">HEAVY_FIGHTER_DATA</div>
-                <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">Dropship / Heavy Combat</span></div>
-                <div style="color:#666; padding:10px 0;">[DATOS ENCRIPTADOS: NECESITA JSON]</div>
-            `;
-        }
-        else {
-            statsPanel.innerHTML = `<div style="color:#666; padding:20px;">SELECCIONE UNA NAVE PARA DESENCRIPTAR DATOS...</div>`;
-        }
+            <div class="stat-header">SYSTEM_LOADOUT</div>
+            <div class="stat-row"><span class="stat-label">Cargo Capacity</span><span class="stat-value">0 SCU</span></div>
+            <div class="stat-row"><span class="stat-label">Prisoner Cells</span><span class="stat-value">6 UNITS</span></div>
+
+            <div class="stat-header">WEAPON_HARDPOINTS</div>
+            <div class="stat-row"><span class="stat-label">Nose Mount</span><span class="stat-value">1x S4</span></div>
+            <div class="stat-row"><span class="stat-label">Wing Mounts</span><span class="stat-value">2x S3</span></div>
+        `;
+    } else if(nameUpper.includes("VANGUARD")) {
+        content += `
+            <div class="stat-header">HEAVY_FIGHTER_DATA</div>
+            <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">Dropship / Heavy Combat</span></div>
+            <div style="color:#666; padding:10px 0; font-size:10px;">[ENCRYPTED_DATA_STREAM_PENDING]</div>
+        `;
+    } else {
+        content += `<div style="color:#666; padding:20px;">ACCESSING DATABASE...</div>`;
     }
+
+    statsPanel.innerHTML = content;
+
+    // Simulación de carga de la barrita
+    setTimeout(() => {
+        const bar = document.getElementById('load-bar');
+        if(bar) bar.style.width = "100%";
+    }, 50);
+}
 
     async function loadShips() {
         const { data: ships } = await supabase.from('ships_wiki').select('*').order('name', { ascending: true });
@@ -258,4 +264,5 @@
 </script>
 </body>
 </html>
+
 
