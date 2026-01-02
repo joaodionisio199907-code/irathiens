@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Irathiens | Wiki Intel</title>
+    <title>Irathiens | Wiki Intel Holo-Terminal</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
@@ -11,58 +11,63 @@
             --primary: #ff9a1f;
             --bg: #04080f;
             --border: rgba(255, 154, 31, 0.3);
-            --glass: rgba(6, 11, 20, 0.9);
+            --glass: rgba(6, 11, 20, 0.85);
             --accent: #00f2ff;
+            --holo-glow: rgba(0, 242, 255, 0.5);
         }
 
-        /* --- BASE --- */
+        /* --- BASE CON EFECTO DE ESCANEO --- */
         body {
             margin: 0;
             background: var(--bg);
             color: white;
             font-family: 'Inter', sans-serif;
-            background-image: radial-gradient(var(--primary) 0.5px, transparent 0.5px);
-            background-size: 30px 30px;
+            background-image: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Evita scroll doble */
+            overflow: hidden;
+            animation: flicker 0.15s infinite;
         }
 
-        /* --- NAVBAR RESPONSIVA --- */
+        /* --- NAVBAR --- */
         nav {
             padding: 10px 20px;
             border-bottom: 2px solid var(--primary);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: black;
+            background: rgba(0,0,0,0.9);
             font-family: 'Orbitron';
             z-index: 1000;
+            box-shadow: 0 0 20px rgba(255, 154, 31, 0.2);
         }
 
         .nav-btn {
             background: transparent;
-            border: 1px solid transparent;
-            color: white;
+            border: 1px solid var(--border);
+            color: var(--primary);
             text-decoration: none;
             font-size: 0.7rem;
-            padding: 5px 10px;
+            padding: 5px 12px;
             transition: 0.3s;
             cursor: pointer;
+            text-transform: uppercase;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
         }
-        .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .nav-btn:hover { background: var(--primary); color: black; box-shadow: 0 0 15px var(--primary); }
 
-        /* --- CONTENEDOR PRINCIPAL REESTRUCTURADO --- */
+        /* --- CONTENEDOR GRID --- */
         .wiki-container {
             display: grid;
-            /* Cambiamos px por fr y minmax para que sea flexible */
-            grid-template-columns: minmax(200px, 250px) 1fr minmax(250px, 350px);
+            grid-template-columns: 280px 1fr 380px;
             gap: 15px;
             padding: 15px;
             flex-grow: 1;
             height: calc(100vh - 60px);
-            overflow: hidden;
         }
 
         .panel {
@@ -71,124 +76,161 @@
             padding: 15px;
             overflow-y: auto;
             position: relative;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) transparent;
+            backdrop-filter: blur(5px);
         }
 
-        /* --- VISUALIZADOR 3D --- */
+        /* --- VISUALIZADOR HOLO-3D --- */
         .viewer-box {
             border: 1px solid var(--border);
-            background: radial-gradient(circle, rgba(255,154,31,0.1) 0%, transparent 70%);
+            background: 
+                radial-gradient(circle at center, rgba(0, 242, 255, 0.05) 0%, transparent 70%),
+                repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 242, 255, 0.03) 1px, rgba(0, 242, 255, 0.03) 2px);
             position: relative;
-            min-height: 300px;
+            overflow: hidden;
+        }
+
+        .viewer-box::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(transparent 0%, rgba(0, 242, 255, 0.1) 50%, transparent 100%);
+            animation: scanline 6s linear infinite;
+            z-index: 2;
+            pointer-events: none;
         }
 
         model-viewer {
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 0 15px rgba(255, 154, 31, 0.4));
+            /* ESTE FILTRO CAMBIA EL COLOR Y RESALTA BORDES */
+            filter: 
+                drop-shadow(0 0 10px var(--accent)) 
+                brightness(1.2) 
+                contrast(1.2) 
+                hue-rotate(180deg); /* Ajusta este valor para cambiar el color de la nave */
+            mix-blend-mode: screen;
+            animation: ship-float 4s ease-in-out infinite;
         }
 
-        /* --- ADAPTACIÓN PARA MÓVILES (TABLETS Y SMARTPHONES) --- */
-        @media (max-width: 1024px) {
-            .wiki-container {
-                grid-template-columns: 1fr; /* Todo en una columna */
-                grid-template-rows: auto 400px auto; /* Lista, luego Nave, luego Stats */
-                overflow-y: auto; /* Permitir scroll general en móvil */
-                height: auto;
-            }
-
-            body { overflow-y: auto; } /* En móvil el body sí puede tener scroll */
-
-            .panel {
-                height: auto;
-                max-height: 400px; /* Limitar altura de lista y stats */
-            }
-
-            .viewer-box {
-                order: -1; /* Mover la nave arriba del todo en móvil */
-                height: 400px;
-            }
-        }
-
-        /* --- ANIMACIONES HOLOGRÁFICAS (Tus estilos originales) --- */
-        @keyframes holo-appear {
-            0% { opacity: 0; transform: translateY(10px); filter: brightness(2) blur(5px); }
-            100% { opacity: 1; transform: translateY(0); filter: brightness(1) blur(0); }
-        }
-
-        .holo-animate {
-            animation: holo-appear 0.5s ease-out forwards;
-        }
-
-        .stat-row {
-            border-bottom: 1px solid #222;
-            padding: 8px 0;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-        }
-
+        /* --- ESTILOS DE DATOS --- */
         .stat-header {
             color: var(--primary);
             font-size: 0.65rem;
             margin-top: 15px;
-            border-left: 2px solid var(--primary);
-            padding-left: 8px;
-            background: rgba(255,154,31,0.1);
+            border-left: 3px solid var(--primary);
+            padding: 4px 8px;
+            background: rgba(255,154,31,0.05);
             font-family: 'Orbitron';
+            text-shadow: 0 0 5px var(--primary);
         }
+
+        .stat-row {
+            border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono';
+        }
+
+        .stat-value { color: var(--accent); text-shadow: 0 0 8px var(--accent); }
 
         .ship-btn {
             width: 100%;
             padding: 12px;
-            background: rgba(255, 154, 31, 0.05);
+            background: rgba(255, 154, 31, 0.03);
             border: 1px solid var(--border);
             color: white;
             font-family: 'Orbitron';
             cursor: pointer;
-            text-align: left;
             margin-bottom: 8px;
             font-size: 0.7rem;
+            position: relative;
+        }
+        .ship-btn:hover { 
+            background: rgba(0, 242, 255, 0.1); 
+            border-color: var(--accent); 
+            color: var(--accent);
         }
 
-        .ship-btn:hover { border-color: var(--primary); background: rgba(255, 154, 31, 0.1); }
+        /* --- ANIMACIONES --- */
+        @keyframes flicker {
+            0% { opacity: 0.98; }
+            5% { opacity: 0.95; }
+            10% { opacity: 0.99; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        @keyframes ship-float {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateY(5deg); }
+        }
+
+        .glitch-text {
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 var(--accent), -2px 0 var(--primary); }
+            2% { text-shadow: -2px 0 var(--accent), 2px 0 var(--primary); }
+            4% { text-shadow: 0 0 0; }
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1100px) {
+            .wiki-container { grid-template-columns: 1fr; overflow-y: auto; height: auto; }
+            body { overflow-y: auto; }
+            .viewer-box { order: -1; height: 350px; }
+        }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="color: var(--primary); font-weight: bold; font-size: 0.8rem;">IRATHIENS_INTEL</span>
+    <div>
+        <span class="glitch-text" style="color: var(--primary); font-weight: bold; letter-spacing: 2px;">IRATHIENS_SYSTEMS // WIKI_INTEL</span>
     </div>
     <div class="nav-links">
-        <a href="index.html" class="nav-btn">VOLVER</a>
-        <button id="logout-btn" class="nav-btn" style="display:none;">LOGOUT</button>
+        <a href="index.html" class="nav-btn">TERMINAL_EXIT</a>
     </div>
 </nav>
 
 <div class="wiki-container">
     <aside class="panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin:0;">REGISTRY_FILES</p>
-            <button id="admin-add-btn" style="display:none; background:none; border:1px dashed var(--primary); color:var(--primary);">+</button>
-        </div>
+        <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin-bottom:15px;">AVAILABLE_SCHEMATICS</p>
         <div id="list-container"></div>
     </aside>
 
     <main class="viewer-box">
         <div style="position:absolute; top:20px; left:20px; z-index:5; font-family:'Orbitron'">
-            <h2 id="display-name" style="margin:0; color:var(--primary); font-size: 1rem;">SELECCIONE NAVE</h2>
-            <small id="display-status" style="color:var(--accent); font-size: 0.6rem;">DATABASE: READY</small>
+            <h2 id="display-name" style="margin:0; color:var(--primary); font-size: 1.2rem;">INITIALIZING...</h2>
+            <small id="display-status" style="color:var(--accent); font-size: 0.6rem;">LINK: ESTABLISHED</small>
         </div>
-        <model-viewer id="viewer" src="" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral" exposure="1" camera-orbit="45deg 75deg 150%"></model-viewer>
+        
+        <model-viewer id="viewer" 
+            src="" 
+            camera-controls 
+            auto-rotate 
+            shadow-intensity="0" 
+            exposure="1.5"
+            interaction-prompt="none"
+            camera-orbit="45deg 75deg 160%">
+        </model-viewer>
+
+        <div style="position:absolute; bottom:10px; right:10px; color:var(--border); font-family:'JetBrains Mono'; font-size:0.5rem;">
+            COORD_X: <span id="valX">0.45</span><br>
+            COORD_Y: <span id="valY">0.12</span>
+        </div>
     </main>
 
     <aside class="panel">
-        <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin-bottom: 15px;">SPECIFICATIONS_DATA</p>
-        <div id="stats-panel" style="font-family: 'JetBrains Mono';">
-            <div style="color:#444; font-size: 0.7rem;">ESPERANDO SELECCIÓN DE TRANSMISIÓN...</div>
-        </div>
+        <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin-bottom: 10px;">TACTICAL_SPECIFICATIONS</p>
+        <div id="stats-panel"></div>
     </aside>
 </div>
 
@@ -203,20 +245,26 @@
     const viewer = document.getElementById('viewer');
     const displayName = document.getElementById('display-name');
 
-    // Función para renderizar estadísticas
     function renderShipStats(shipName) {
-        statsPanel.classList.remove('holo-animate');
-        void statsPanel.offsetWidth;
-        statsPanel.classList.add('holo-animate');
+        const nameUpper = shipName.toUpperCase();
+        let content = `<div class="stat-header">HOLOGRAPHIC_DATA_STREAM</div>`;
 
-        // Aquí puedes expandir la lógica de stats según el nombre
-        let content = `<div class="stat-header">INFO_STREAM</div>`;
-        content += `
-            <div class="stat-row"><span class="stat-label">IDENTIFIER</span><span class="stat-value">${shipName}</span></div>
-            <div class="stat-row"><span class="stat-label">ORIGIN</span><span class="stat-value">UEE_DATABASE</span></div>
-            <div class="stat-header">FLIGHT_DATA</div>
-            <div class="stat-row"><span class="stat-label">STATUS</span><span class="stat-value">OPERATIONAL</span></div>
-        `;
+        if(nameUpper.includes("AVENGER STALKER")) {
+            content += `
+                <div class="stat-row"><span class="stat-label">Model</span><span class="stat-value">Aegis Avenger Stalker</span></div>
+                <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">Interception / Bounty Hunting</span></div>
+                <div class="stat-row"><span class="stat-label">Max Velocity</span><span class="stat-value">1425 m/s</span></div>
+                <div class="stat-row"><span class="stat-label">Acceleration</span><span class="stat-value">12.8 G</span></div>
+                <div class="stat-header">HULL_&_ARMOR</div>
+                <div class="stat-row"><span class="stat-label">Hull HP</span><span class="stat-value">11,900</span></div>
+                <div class="stat-row"><span class="stat-label">Shield Type</span><span class="stat-value">Size 1 Bubble</span></div>
+                <div class="stat-header">SYSTEMS_LOADOUT</div>
+                <div class="stat-row"><span class="stat-label">Quantum Speed</span><span class="stat-value">0.55c</span></div>
+                <div class="stat-row"><span class="stat-label">Cells</span><span class="stat-value">6 Stasis Chambers</span></div>
+            `;
+        } else {
+            content += `<div style="padding:20px; color:#555;">DECRYPTING_FILE...</div>`;
+        }
         statsPanel.innerHTML = content;
     }
 
@@ -228,32 +276,27 @@
             ships.forEach((ship, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'ship-btn';
-                btn.innerText = `> ${ship.name.toUpperCase()}`;
+                btn.innerText = `[ ${ship.name.toUpperCase()} ]`;
                 btn.onclick = () => {
                     viewer.src = ship.model_path;
                     displayName.innerText = ship.name.toUpperCase();
                     renderShipStats(ship.name);
-                    // En móvil, después de elegir nave, hacemos scroll hacia arriba para verla
-                    if(window.innerWidth < 1024) {
-                        window.scrollTo({top: 0, behavior: 'smooth'});
-                    }
+                    if(window.innerWidth < 1100) window.scrollTo({top: 0, behavior: 'smooth'});
                 };
                 listContainer.appendChild(btn);
-                if(index === 0 && window.innerWidth > 1024) btn.click();
+                if(index === 0) btn.click();
             });
         }
     }
 
-    async function checkAuth() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            document.getElementById('admin-add-btn').style.display = 'block';
-            document.getElementById('logout-btn').style.display = 'block';
-        }
-    }
+    // Efecto de coordenadas aleatorias
+    setInterval(() => {
+        document.getElementById('valX').innerText = Math.random().toFixed(3);
+        document.getElementById('valY').innerText = Math.random().toFixed(3);
+    }, 1000);
 
-    checkAuth();
     loadShips();
 </script>
 </body>
 </html>
+
