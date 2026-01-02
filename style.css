@@ -445,3 +445,9 @@ nav a.admin-btn:hover {
     transition: width 0.3s ease;
     box-shadow: 0 0 10px var(--primary);
 }
+model-viewer {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 15px rgba(255, 154, 31, 0.6)) contrast(1.2);
+    animation: flicker 5s infinite;
+}
