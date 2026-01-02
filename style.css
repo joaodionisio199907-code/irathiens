@@ -348,3 +348,44 @@ nav a.admin-btn:hover {
     color: #000;
     box-shadow: 0 0 15px var(--primary);
 }
+/* --- AJUSTES PARA MÓVILES --- */
+        @media (max-width: 850px) {
+            body {
+                overflow-y: auto; /* Permite scroll en móvil */
+                height: auto;
+            }
+
+            .wiki-container {
+                grid-template-columns: 1fr; /* Una sola columna */
+                display: flex;
+                flex-direction: column;
+                padding: 10px;
+                gap: 15px;
+            }
+
+            .viewer-box {
+                height: 350px; /* Altura fija para la nave en móvil */
+                order: -1; /* Mueve la nave arriba del todo */
+            }
+
+            nav {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .panel {
+                height: auto;
+                max-height: none;
+            }
+
+            #modal-add-ship {
+                width: 90%; /* Modal más ancho en móvil */
+            }
+        }
+
+        /* Ajuste para que el brillo (Holo) no ralentice el móvil */
+        @media (pointer: coarse) {
+            model-viewer {
+                filter: drop-shadow(0 0 5px rgba(255, 154, 31, 0.3));
+            }
+        }
