@@ -3,314 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Irathiens | Wiki Intel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-
+    <title>Irathiens | Organización Star Citizen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
+            --bg: #060b14;
+            --bg-soft: #0b1220;
             --primary: #ff9a1f;
-            --bg: #04080f;
-            --border: rgba(255, 154, 31, 0.3);
-            --glass: rgba(6, 11, 20, 0.9);
-            --accent: #00f2ff;
+            --accent: #ffb347;
+            --text: #e6f1ff;
+            --muted: #9fb3c8;
+            --border: #2a1a0a;
+            --shadow: rgba(255, 154, 31, 0.15);
+            --glass: rgba(11, 18, 32, 0.85);
         }
+
+        /* --- RESET Y BASE --- */
+        * { box-sizing: border-box; transition: all 0.3s ease; }
 
         body {
             margin: 0;
-            background: var(--bg);
-            color: white;
             font-family: 'Inter', sans-serif;
-            background-image: radial-gradient(var(--primary) 0.5px, transparent 0.5px);
-            background-size: 30px 30px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            background: radial-gradient(circle at top, #0b1630 0%, var(--bg) 60%);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* --- NAVBAR --- */
-        nav {
-            padding: 10px 30px;
-            border-bottom: 2px solid var(--primary);
+        /* --- NAVEGACIÓN RESPONSIVA --- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0.8rem 1.5rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            background: black;
-            font-family: 'Orbitron';
-            z-index: 100;
+            justify-content: space-between;
         }
 
-        .nav-links { display: flex; gap: 20px; align-items: center; }
-        
-        .nav-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            color: white;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-family: 'Orbitron', sans-serif;
             text-decoration: none;
-            font-size: 0.7rem;
-            padding: 5px 10px;
-            transition: 0.3s;
+            z-index: 1001;
+        }
+
+        .logo-text { color: var(--primary); font-weight: 700; font-size: 1.2rem; }
+        .logo-img { height: 32px; width: auto; }
+
+        /* Menú Desktop */
+        .nav-menu { display: flex; align-items: center; }
+        .nav-menu a {
+            margin-left: 1.5rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .nav-menu a:hover { color: var(--primary); }
+
+        /* Hamburguesa para móvil */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
             cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .menu-toggle span { width: 25px; height: 2px; background: var(--primary); }
+
+        /* --- HERO SECTION FLEXIBLE --- */
+        .hero {
+            max-width: 1200px;
+            margin: auto;
+            padding: 4rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 3rem;
         }
 
-        .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
-        
-        /* --- CONTENEDOR PRINCIPAL --- */
-        .wiki-container {
-            display: grid;
-            grid-template-columns: 250px 1fr 350px;
-            gap: 20px;
-            padding: 20px;
-            flex-grow: 1;
-            height: calc(100vh - 60px);
+        .hero-content { flex: 1 1 500px; }
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--accent);
+            text-shadow: 0 0 20px rgba(255,154,31,0.3);
+            margin: 0 0 1rem 0;
         }
 
-        .panel {
+        .status-panel {
+            flex: 1 1 350px;
             background: var(--glass);
             border: 1px solid var(--border);
-            padding: 15px;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        /* --- ANIMACIONES HOLOGRÁFICAS --- */
-        @keyframes holo-appear {
-            0% { opacity: 0; transform: translateY(10px); filter: brightness(2) blur(5px); }
-            10% { opacity: 0.5; filter: brightness(5); }
-            20% { opacity: 0.2; }
-            100% { opacity: 1; transform: translateY(0); filter: brightness(1) blur(0); }
-        }
-
-        @keyframes scan-line {
-            0% { top: -100%; }
-            100% { top: 100%; }
-        }
-
-        @keyframes flicker {
-            0% { opacity: 0.9; }
-            5% { opacity: 0.7; }
-            10% { opacity: 0.9; }
-            15% { opacity: 1; }
-            80% { opacity: 0.9; }
-            100% { opacity: 1; }
-        }
-
-        .holo-animate {
-            animation: holo-appear 0.5s ease-out forwards, flicker 4s infinite;
+            border-radius: 15px;
+            padding: 30px;
             position: relative;
             overflow: hidden;
         }
 
-        .holo-animate::after {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 20px;
-            background: linear-gradient(to bottom, transparent, var(--primary), transparent);
-            opacity: 0.1;
-            left: 0;
-            animation: scan-line 3s linear infinite;
-            pointer-events: none;
+        /* --- GRID DE TARJETAS (WIKI/INFO) --- */
+        .card-grid {
+            max-width: 1200px;
+            margin: 2rem auto 4rem;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+            gap: 1.5rem;
         }
 
-        .loading-bar {
-            height: 2px;
-            background: var(--primary);
-            width: 0%;
-            margin-bottom: 10px;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px var(--primary);
-        }
-
-        /* Estilo de Stats */
-        .stat-row {
-            border-bottom: 1px solid #222;
-            padding: 8px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stat-label { color: #888; font-size: 0.7rem; text-transform: uppercase; }
-        .stat-value { color: var(--accent); font-weight: bold; }
-        .stat-header { 
-            color: var(--primary); 
-            font-size: 0.65rem; 
-            margin-top: 15px; 
-            border-left: 2px solid var(--primary); 
-            padding-left: 8px;
-            background: rgba(255,154,31,0.1);
-        }
-
-        .ship-btn {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 154, 31, 0.05);
+        .card {
+            background: linear-gradient(180deg, var(--bg-soft), var(--bg));
             border: 1px solid var(--border);
-            color: white;
-            font-family: 'Orbitron';
-            cursor: pointer;
-            text-align: left;
-            margin-bottom: 8px;
-            font-size: 0.75rem;
-            animation: holo-appear 0.4s ease-out;
+            padding: 1.5rem;
+            border-radius: 12px;
         }
 
-        .ship-btn:hover { border-color: var(--primary); background: rgba(255, 154, 31, 0.1); }
-
-        .viewer-box {
-            border: 1px solid var(--border);
-            background: radial-gradient(circle, rgba(255,154,31,0.1) 0%, transparent 70%);
+        /* --- AVATAR Y EFECTOS HOLOGRÁFICOS --- */
+        .avatar-container {
+            width: 150px; height: 150px;
+            margin: 0 auto 1.5rem;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            overflow: hidden;
             position: relative;
+            box-shadow: 0 0 20px var(--shadow);
+        }
+        .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-container::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(255,154,31,0) 0%, rgba(255,154,31,0.1) 50%, rgba(255,154,31,0) 100%);
+            animation: scan 3s infinite linear;
         }
 
-        model-viewer {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 0 15px rgba(255, 154, 31, 0.6)) contrast(1.2);
-            animation: flicker 5s infinite;
+        /* --- BURBUJAS FLOTANTES --- */
+        .floating-controls {
+            position: fixed; bottom: 20px; left: 20px;
+            display: flex; gap: 15px; z-index: 3000;
         }
 
-        #admin-add-btn { display: none; background: none; border: 1px dashed var(--primary); color: var(--primary); cursor: pointer; }
-        #modal-add-ship { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #000; border: 2px solid var(--primary); padding: 20px; z-index: 1000; width: 300px; }
-        input { width: 100%; margin: 10px 0; background: #111; border: 1px solid var(--border); color: white; padding: 10px; box-sizing: border-box; }
+        .bubble {
+            width: 60px; height: 60px;
+            background: rgba(6, 11, 20, 0.9);
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; box-shadow: 0 0 15px var(--shadow);
+        }
+
+        .music-playing { animation: pulse-border 2s infinite; }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 850px) {
+            .menu-toggle { display: flex; }
+            .nav-menu {
+                display: none; /* Se activa con JS */
+                position: absolute; top: 100%; left: 0; width: 100%;
+                background: var(--bg-soft); flex-direction: column;
+                padding: 20px; border-bottom: 1px solid var(--border);
+            }
+            .nav-menu.mobile-active { display: flex; }
+            .nav-menu a { margin: 10px 0; font-size: 1rem; }
+            
+            .hero { padding: 2rem 1.5rem; text-align: center; }
+            .floating-controls { left: 50%; transform: translateX(-50%); width: 100%; justify-content: center; }
+        }
+
+        /* Animaciones */
+        @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(255, 154, 31, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 154, 31, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 154, 31, 0); }
+        }
     </style>
 </head>
 <body>
 
-<nav>
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="color: var(--primary); font-weight: bold;">IRATHIENS_SYSTEMS</span>
-    </div>
-    <div class="nav-links">
-        <a href="index.html" class="nav-btn">INICIO</a>  
-        <button id="logout-btn" class="nav-btn" style="display:none;">CERRAR SESIÓN</button>
-    </div>
-</nav>
-
-<div class="wiki-container">
-    <aside class="panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'; margin:0;">SHIP_LIST</p>
-            <button id="admin-add-btn">+</button>
-        </div>
-        <div id="list-container"></div>
-    </aside>
-
-    <main class="viewer-box">
-        <div style="position:absolute; top:20px; left:20px; z-index:5; font-family:'Orbitron'">
-            <h2 id="display-name" style="margin:0; color:var(--primary); font-size: 1.2rem;">CARGANDO...</h2>
-            <small id="display-status" style="color:var(--accent)">DATABASE: CONNECTING</small>
-        </div>
-        <model-viewer id="viewer" src="" camera-controls auto-rotate camera-orbit="45deg 75deg 180%" min-camera-orbit="auto auto 100%" max-camera-orbit="auto auto 350%" exposure="1"></model-viewer>
-    </main>
-
-    <aside class="panel">
-        <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">DATA_SPECIFICATIONS</p>
-        <div id="stats-panel" style="font-family: 'JetBrains Mono'; font-size: 0.8rem;">
-            </div>
-    </aside>
-</div>
-
-<div id="modal-add-ship">
-    <p style="color:var(--primary); font-family:'Orbitron'; font-size: 10px;">ADD_NEW_ENTRY</p>
-    <input type="text" id="ship-name-input" placeholder="Nombre (Ej: Avenger Stalker)">
-    <input type="text" id="ship-path-input" placeholder="Ruta (Ej: holo/Avenger.glb)">
-    <button id="btn-save" style="width:100%; padding:10px; background:var(--primary); border:none; color:black; font-family:'Orbitron'; cursor:pointer;">UPLOAD</button>
-    <button onclick="document.getElementById('modal-add-ship').style.display='none'" style="width:100%; border:none; background:none; color:grey; margin-top:10px; cursor:pointer;">CANCEL</button>
-</div>
-
-<script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-    const supabaseUrl = 'https://dfizvgagofsctgwzksgd.supabase.co'
-    const supabaseKey = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
-    const listContainer = document.getElementById('list-container');
-    const statsPanel = document.getElementById('stats-panel');
-    const viewer = document.getElementById('viewer');
-    const displayName = document.getElementById('display-name');
-
-    function renderShipStats(shipName) {
-        const nameUpper = shipName.toUpperCase();
+<header>
+    <div class="nav-container">
+        <a href="/" class="logo">
+            <img src="logo.png" alt="Logo" class="logo-img"> 
+            <span class="logo-text">IRATHIENS</span>
+        </a>
         
-        // Reiniciar animación holográfica
-        statsPanel.classList.remove('holo-animate');
-        void statsPanel.offsetWidth; 
-        statsPanel.classList.add('holo-animate');
+        <button class="menu-toggle" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </button>
 
-        let content = `<div class="loading-bar" id="load-bar"></div>`;
+        <nav class="nav-menu" id="navMenu">
+            <a href="/">INICIO</a>
+            <a href="wiki">WIKI</a>
+            <a href="banco">FINANZAS</a>
+            <a href="miembros">MIEMBROS</a>
+            <div class="user-dropdown">
+                <span class="nav-user-name" id="userName">CIUDADANO</span>
+                <div class="dropdown-content">
+                    <a href="perfil">MI PERFIL</a>
+                    <a href="#" onclick="logout()">CERRAR SESIÓN</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
 
-        if(nameUpper.includes("AVENGER")) {
-            content += `
-                <div class="stat-header">FLIGHT_PERFORMANCE</div>
-                <div class="stat-row"><span class="stat-label">SCM Speed</span><span class="stat-value">260 m/s</span></div>
-                <div class="stat-row"><span class="stat-label">Max Speed</span><span class="stat-value">1425 m/s</span></div>
-                <div class="stat-row"><span class="stat-label">Acceleration</span><span class="stat-value">12.8 G</span></div>
-                
-                <div class="stat-header">HULL_INTEGRITY</div>
-                <div class="stat-row"><span class="stat-label">Total HP</span><span class="stat-value">11,900</span></div>
-                <div class="stat-row"><span class="stat-label">Canopy Health</span><span class="stat-value">1,500 HP</span></div>
+<main>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>FORJANDO ALIANZAS EN EL VERSO</h1>
+            <p>Irathiens es una organización de Star Citizen centrada en la cooperación táctica, la industria y la supremacía estratégica.</p>
+            <a href="#" class="btn" style="display:inline-block; padding: 1rem 2rem; background: var(--primary); color: #000; text-decoration:none; font-family:'Orbitron'; font-weight:700; border-radius:5px;">UNIRSE AHORA</a>
+        </div>
 
-                <div class="stat-header">SYSTEM_LOADOUT</div>
-                <div class="stat-row"><span class="stat-label">Cargo Capacity</span><span class="stat-value">0 SCU</span></div>
-                <div class="stat-row"><span class="stat-label">Prisoner Cells</span><span class="stat-value">6 UNITS</span></div>
+        <div class="status-panel holo-animate">
+            <div class="avatar-container">
+                <img src="img/default-avatar.jpg" alt="Avatar">
+            </div>
+            <h3 style="font-family:'Orbitron'; color:var(--primary); text-align:center; margin:0;">ORGANIZATION_STATUS</h3>
+            <div style="margin-top:15px; font-size:0.8rem;">
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:5px 0;">
+                    <span>OPERACIONES</span><span style="color: #00ff88;">ACTIVA</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:5px 0;">
+                    <span>SECTOR</span><span style="color: var(--accent);">STANTON</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                <div class="stat-header">WEAPON_HARDPOINTS</div>
-                <div class="stat-row"><span class="stat-label">Nose Mount</span><span class="stat-value">1x S4</span></div>
-                <div class="stat-row"><span class="stat-label">Wing Mounts</span><span class="stat-value">2x S3</span></div>
-            `;
-        } else if(nameUpper.includes("VANGUARD")) {
-            content += `
-                <div class="stat-header">HEAVY_FIGHTER_DATA</div>
-                <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">Dropship / Heavy Combat</span></div>
-                <div class="stat-row"><span class="stat-label">Status</span><span class="stat-value">ENCRYPTED</span></div>
-                <div style="color:#666; padding:10px 0; font-size:10px; font-family:'JetBrains Mono'">[ENCRYPTED_DATA_STREAM_PENDING]</div>
-            `;
+    <section class="card-grid">
+        <div class="card">
+            <h3>EVENTOS</h3>
+            <p>Participa en nuestras incursiones semanales y entrenamientos de vuelo.</p>
+        </div>
+        <div class="card">
+            <h3>DIPLOMACIA</h3>
+            <p>Relaciones exteriores y tratados de no agresión con otras orgs.</p>
+        </div>
+        <div class="card">
+            <h3>RECURSOS</h3>
+            <p>Acceso directo a la base de datos de naves y guías de minería.</p>
+        </div>
+    </section>
+</main>
+
+<div class="floating-controls">
+    <div class="bubble" onclick="toggleChat()">
+        <span style="color:var(--primary); font-family:'Orbitron'; font-weight:bold;">>_</span>
+    </div>
+    <div class="bubble" id="musicBubble" onclick="toggleMusic()">
+        <span id="musicStatus" style="font-family:'Orbitron'; font-size:0.6rem; color:var(--primary);">OFF</span>
+    </div>
+</div>
+
+<audio id="bg-music" loop><source src="musicamenu.mp3" type="audio/mpeg"></audio>
+
+<script>
+    // Toggle Menú Móvil
+    function toggleMenu() {
+        document.getElementById('navMenu').classList.toggle('mobile-active');
+    }
+
+    // Lógica de Música
+    const audio = document.getElementById('bg-music');
+    const musicBubble = document.getElementById('musicBubble');
+    let isPlaying = false;
+    audio.volume = 0.3;
+
+    function toggleMusic() {
+        if (isPlaying) {
+            audio.pause();
+            document.getElementById('musicStatus').innerText = "OFF";
+            musicBubble.classList.remove('music-playing');
         } else {
-            content += `<div style="color:#666; padding:20px;">ACCESSING DATABASE...</div>`;
+            audio.play();
+            document.getElementById('musicStatus').innerText = "ON";
+            musicBubble.classList.add('music-playing');
         }
-
-        statsPanel.innerHTML = content;
-
-        setTimeout(() => {
-            const bar = document.getElementById('load-bar');
-            if(bar) bar.style.width = "100%";
-        }, 50);
+        isPlaying = !isPlaying;
     }
 
-    async function loadShips() {
-        const { data: ships } = await supabase.from('ships_wiki').select('*').order('name', { ascending: true });
-        listContainer.innerHTML = '';
-        if (ships && ships.length > 0) {
-            ships.forEach((ship, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'ship-btn';
-                btn.innerText = `> ${ship.name.toUpperCase()}`;
-                btn.onclick = () => {
-                    viewer.src = ship.model_path;
-                    displayName.innerText = ship.name.toUpperCase();
-                    document.getElementById('display-status').innerText = "VINCULADO: ONLINE";
-                    renderShipStats(ship.name);
-                };
-                listContainer.appendChild(btn);
-                if(index === 0) btn.click();
-            });
-        }
+    // Cerrar sesión (ejemplo)
+    function logout() {
+        console.log("Cerrando sesión...");
+        location.reload();
     }
-
-    async function checkAuth() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            document.getElementById('admin-add-btn').style.display = 'block';
-            document.getElementById('logout-btn').style.display = 'block';
-        }
-    }
-
-    checkAuth();
-    loadShips();
 </script>
+
 </body>
 </html>
