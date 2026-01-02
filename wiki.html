@@ -181,9 +181,12 @@
     const viewer = document.getElementById('viewer');
     const displayName = document.getElementById('display-name');
 
-    // Función para renderizar los datos técnicos basados en el JSON que extrajimos
+    // FUNCIÓN DE RENDERIZADO CORREGIDA
     function renderShipStats(shipName) {
-        if(shipName.includes("AVENGER STALKER")) {
+        const nameUpper = shipName.toUpperCase();
+        
+        // Ahora busca si el nombre CONTIENE "AVENGER"
+        if(nameUpper.includes("AVENGER")) {
             statsPanel.innerHTML = `
                 <div class="stat-header">FLIGHT_PERFORMANCE</div>
                 <div class="stat-row"><span class="stat-label">SCM Speed</span><span class="stat-value">260 m/s</span></div>
@@ -207,7 +210,16 @@
                 <div class="stat-row"><span class="stat-label">Wing Mounts</span><span class="stat-value">2x S3</span></div>
                 <div class="stat-row"><span class="stat-label">Missile Racks</span><span class="stat-value">2x S3</span></div>
             `;
-        } else {
+        } 
+        // Ejemplo para cuando añadas la Vanguard que veo en tu captura
+        else if(nameUpper.includes("VANGUARD")) {
+            statsPanel.innerHTML = `
+                <div class="stat-header">HEAVY_FIGHTER_DATA</div>
+                <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">Dropship / Heavy Combat</span></div>
+                <div style="color:#666; padding:10px 0;">[DATOS ENCRIPTADOS: NECESITA JSON]</div>
+            `;
+        }
+        else {
             statsPanel.innerHTML = `<div style="color:#666; padding:20px;">SELECCIONE UNA NAVE PARA DESENCRIPTAR DATOS...</div>`;
         }
     }
@@ -224,7 +236,8 @@
                     viewer.src = ship.model_path;
                     displayName.innerText = ship.name.toUpperCase();
                     document.getElementById('display-status').innerText = "VINCULADO: ONLINE";
-                    renderShipStats(ship.name.toUpperCase());
+                    // Pasamos el nombre para que la función lo reconozca
+                    renderShipStats(ship.name);
                 };
                 listContainer.appendChild(btn);
                 if(index === 0) btn.click();
@@ -245,3 +258,4 @@
 </script>
 </body>
 </html>
+
