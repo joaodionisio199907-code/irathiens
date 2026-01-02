@@ -71,6 +71,56 @@
             border: 1px solid var(--border);
             padding: 15px;
             overflow-y: auto;
+            position: relative;
+        }
+
+        /* --- ANIMACIONES HOLOGRÁFICAS --- */
+        @keyframes holo-appear {
+            0% { opacity: 0; transform: translateY(10px); filter: brightness(2) blur(5px); }
+            10% { opacity: 0.5; filter: brightness(5); }
+            20% { opacity: 0.2; }
+            100% { opacity: 1; transform: translateY(0); filter: brightness(1) blur(0); }
+        }
+
+        @keyframes scan-line {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.9; }
+            5% { opacity: 0.7; }
+            10% { opacity: 0.9; }
+            15% { opacity: 1; }
+            80% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
+
+        .holo-animate {
+            animation: holo-appear 0.5s ease-out forwards, flicker 4s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .holo-animate::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, var(--primary), transparent);
+            opacity: 0.1;
+            left: 0;
+            animation: scan-line 3s linear infinite;
+            pointer-events: none;
+        }
+
+        .loading-bar {
+            height: 2px;
+            background: var(--primary);
+            width: 0%;
+            margin-bottom: 10px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--primary);
         }
 
         /* Estilo de Stats */
@@ -104,6 +154,7 @@
             text-align: left;
             margin-bottom: 8px;
             font-size: 0.75rem;
+            animation: holo-appear 0.4s ease-out;
         }
 
         .ship-btn:hover { border-color: var(--primary); background: rgba(255, 154, 31, 0.1); }
@@ -117,7 +168,8 @@
         model-viewer {
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 0 10px rgba(255, 154, 31, 0.4)); 
+            filter: drop-shadow(0 0 15px rgba(255, 154, 31, 0.6)) contrast(1.2);
+            animation: flicker 5s infinite;
         }
 
         #admin-add-btn { display: none; background: none; border: 1px dashed var(--primary); color: var(--primary); cursor: pointer; }
@@ -181,54 +233,53 @@
     const viewer = document.getElementById('viewer');
     const displayName = document.getElementById('display-name');
 
-    // FUNCIÓN DE RENDERIZADO CORREGIDA
-   function renderShipStats(shipName) {
-    const nameUpper = shipName.toUpperCase();
-    
-    // Añadimos la clase de animación y un pequeño efecto de carga
-    statsPanel.classList.remove('holo-animate');
-    void statsPanel.offsetWidth; // Truco para reiniciar la animación CSS
-    statsPanel.classList.add('holo-animate');
+    function renderShipStats(shipName) {
+        const nameUpper = shipName.toUpperCase();
+        
+        // Reiniciar animación holográfica
+        statsPanel.classList.remove('holo-animate');
+        void statsPanel.offsetWidth; 
+        statsPanel.classList.add('holo-animate');
 
-    let content = `<div class="loading-bar" id="load-bar"></div>`;
+        let content = `<div class="loading-bar" id="load-bar"></div>`;
 
-    if(nameUpper.includes("AVENGER")) {
-        content += `
-            <div class="stat-header">FLIGHT_PERFORMANCE</div>
-            <div class="stat-row"><span class="stat-label">SCM Speed</span><span class="stat-value">260 m/s</span></div>
-            <div class="stat-row"><span class="stat-label">Max Speed</span><span class="stat-value">1425 m/s</span></div>
-            <div class="stat-row"><span class="stat-label">Acceleration</span><span class="stat-value">12.8 G</span></div>
-            
-            <div class="stat-header">HULL_INTEGRITY</div>
-            <div class="stat-row"><span class="stat-label">Total HP</span><span class="stat-value">11,900</span></div>
-            <div class="stat-row"><span class="stat-label">Canopy Health</span><span class="stat-value">1,500 HP</span></div>
+        if(nameUpper.includes("AVENGER")) {
+            content += `
+                <div class="stat-header">FLIGHT_PERFORMANCE</div>
+                <div class="stat-row"><span class="stat-label">SCM Speed</span><span class="stat-value">260 m/s</span></div>
+                <div class="stat-row"><span class="stat-label">Max Speed</span><span class="stat-value">1425 m/s</span></div>
+                <div class="stat-row"><span class="stat-label">Acceleration</span><span class="stat-value">12.8 G</span></div>
+                
+                <div class="stat-header">HULL_INTEGRITY</div>
+                <div class="stat-row"><span class="stat-label">Total HP</span><span class="stat-value">11,900</span></div>
+                <div class="stat-row"><span class="stat-label">Canopy Health</span><span class="stat-value">1,500 HP</span></div>
 
-            <div class="stat-header">SYSTEM_LOADOUT</div>
-            <div class="stat-row"><span class="stat-label">Cargo Capacity</span><span class="stat-value">0 SCU</span></div>
-            <div class="stat-row"><span class="stat-label">Prisoner Cells</span><span class="stat-value">6 UNITS</span></div>
+                <div class="stat-header">SYSTEM_LOADOUT</div>
+                <div class="stat-row"><span class="stat-label">Cargo Capacity</span><span class="stat-value">0 SCU</span></div>
+                <div class="stat-row"><span class="stat-label">Prisoner Cells</span><span class="stat-value">6 UNITS</span></div>
 
-            <div class="stat-header">WEAPON_HARDPOINTS</div>
-            <div class="stat-row"><span class="stat-label">Nose Mount</span><span class="stat-value">1x S4</span></div>
-            <div class="stat-row"><span class="stat-label">Wing Mounts</span><span class="stat-value">2x S3</span></div>
-        `;
-    } else if(nameUpper.includes("VANGUARD")) {
-        content += `
-            <div class="stat-header">HEAVY_FIGHTER_DATA</div>
-            <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">Dropship / Heavy Combat</span></div>
-            <div style="color:#666; padding:10px 0; font-size:10px;">[ENCRYPTED_DATA_STREAM_PENDING]</div>
-        `;
-    } else {
-        content += `<div style="color:#666; padding:20px;">ACCESSING DATABASE...</div>`;
+                <div class="stat-header">WEAPON_HARDPOINTS</div>
+                <div class="stat-row"><span class="stat-label">Nose Mount</span><span class="stat-value">1x S4</span></div>
+                <div class="stat-row"><span class="stat-label">Wing Mounts</span><span class="stat-value">2x S3</span></div>
+            `;
+        } else if(nameUpper.includes("VANGUARD")) {
+            content += `
+                <div class="stat-header">HEAVY_FIGHTER_DATA</div>
+                <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">Dropship / Heavy Combat</span></div>
+                <div class="stat-row"><span class="stat-label">Status</span><span class="stat-value">ENCRYPTED</span></div>
+                <div style="color:#666; padding:10px 0; font-size:10px; font-family:'JetBrains Mono'">[ENCRYPTED_DATA_STREAM_PENDING]</div>
+            `;
+        } else {
+            content += `<div style="color:#666; padding:20px;">ACCESSING DATABASE...</div>`;
+        }
+
+        statsPanel.innerHTML = content;
+
+        setTimeout(() => {
+            const bar = document.getElementById('load-bar');
+            if(bar) bar.style.width = "100%";
+        }, 50);
     }
-
-    statsPanel.innerHTML = content;
-
-    // Simulación de carga de la barrita
-    setTimeout(() => {
-        const bar = document.getElementById('load-bar');
-        if(bar) bar.style.width = "100%";
-    }, 50);
-}
 
     async function loadShips() {
         const { data: ships } = await supabase.from('ships_wiki').select('*').order('name', { ascending: true });
@@ -242,7 +293,6 @@
                     viewer.src = ship.model_path;
                     displayName.innerText = ship.name.toUpperCase();
                     document.getElementById('display-status').innerText = "VINCULADO: ONLINE";
-                    // Pasamos el nombre para que la función lo reconozca
                     renderShipStats(ship.name);
                 };
                 listContainer.appendChild(btn);
@@ -264,5 +314,3 @@
 </script>
 </body>
 </html>
-
-
