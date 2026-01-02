@@ -13,6 +13,7 @@
             --bg: #04080f;
             --border: rgba(255, 154, 31, 0.3);
             --glass: rgba(6, 11, 20, 0.9);
+            --accent: #00f2ff;
         }
 
         body {
@@ -28,7 +29,7 @@
             overflow: hidden;
         }
 
-        /* --- NAVBAR MEJORADO --- */
+        /* --- NAVBAR --- */
         nav {
             padding: 10px 30px;
             border-bottom: 2px solid var(--primary);
@@ -55,16 +56,10 @@
 
         .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
         
-        #logout-btn { 
-            display: none; 
-            color: #ff4444; 
-            border-color: rgba(255, 68, 68, 0.3);
-        }
-
         /* --- CONTENEDOR PRINCIPAL --- */
         .wiki-container {
             display: grid;
-            grid-template-columns: 250px 1fr 300px;
+            grid-template-columns: 250px 1fr 350px;
             gap: 20px;
             padding: 20px;
             flex-grow: 1;
@@ -76,6 +71,26 @@
             border: 1px solid var(--border);
             padding: 15px;
             overflow-y: auto;
+        }
+
+        /* Estilo de Stats */
+        .stat-row {
+            border-bottom: 1px solid #222;
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label { color: #888; font-size: 0.7rem; text-transform: uppercase; }
+        .stat-value { color: var(--accent); font-weight: bold; }
+        .stat-header { 
+            color: var(--primary); 
+            font-size: 0.65rem; 
+            margin-top: 15px; 
+            border-left: 2px solid var(--primary); 
+            padding-left: 8px;
+            background: rgba(255,154,31,0.1);
         }
 
         .ship-btn {
@@ -105,20 +120,6 @@
             filter: drop-shadow(0 0 10px rgba(255, 154, 31, 0.4)); 
         }
 
-        /* --- MÓVIL (RESPONSIVE) --- */
-        @media (max-width: 900px) {
-            body { overflow-y: auto; height: auto; }
-            .wiki-container {
-                grid-template-columns: 1fr;
-                display: flex;
-                flex-direction: column;
-                height: auto;
-            }
-            .viewer-box { height: 350px; order: -1; }
-            nav { flex-direction: column; gap: 10px; padding: 15px; text-align: center; }
-        }
-
-        /* Botón Admin e Inputs */
         #admin-add-btn { display: none; background: none; border: 1px dashed var(--primary); color: var(--primary); cursor: pointer; }
         #modal-add-ship { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #000; border: 2px solid var(--primary); padding: 20px; z-index: 1000; width: 300px; }
         input { width: 100%; margin: 10px 0; background: #111; border: 1px solid var(--border); color: white; padding: 10px; box-sizing: border-box; }
@@ -130,10 +131,9 @@
     <div style="display: flex; align-items: center; gap: 15px;">
         <span style="color: var(--primary); font-weight: bold;">IRATHIENS_SYSTEMS</span>
     </div>
-    
     <div class="nav-links">
         <a href="index.html" class="nav-btn">INICIO</a>  
-        <button id="logout-btn" class="nav-btn">CERRAR SESIÓN</button>
+        <button id="logout-btn" class="nav-btn" style="display:none;">CERRAR SESIÓN</button>
     </div>
 </nav>
 
@@ -149,25 +149,22 @@
     <main class="viewer-box">
         <div style="position:absolute; top:20px; left:20px; z-index:5; font-family:'Orbitron'">
             <h2 id="display-name" style="margin:0; color:var(--primary); font-size: 1.2rem;">CARGANDO...</h2>
-            <small id="display-status" style="color:#00f2ff">DATABASE: CONNECTING</small>
+            <small id="display-status" style="color:var(--accent)">DATABASE: CONNECTING</small>
         </div>
         <model-viewer id="viewer" src="" camera-controls auto-rotate camera-orbit="45deg 75deg 180%" min-camera-orbit="auto auto 100%" max-camera-orbit="auto auto 350%" exposure="1"></model-viewer>
     </main>
 
     <aside class="panel">
-        <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">SPECIFICATIONS</p>
+        <p style="color:var(--primary); font-size:0.7rem; font-family:'Orbitron'">DATA_SPECIFICATIONS</p>
         <div id="stats-panel" style="font-family: 'JetBrains Mono'; font-size: 0.8rem;">
-            <div style="border-bottom: 1px solid #222; padding: 10px 0; display: flex; justify-content: space-between;">
-                <span>ENCRYPTION</span><span>ACTIVE</span>
             </div>
-        </div>
     </aside>
 </div>
 
 <div id="modal-add-ship">
     <p style="color:var(--primary); font-family:'Orbitron'; font-size: 10px;">ADD_NEW_ENTRY</p>
-    <input type="text" id="ship-name-input" placeholder="Nombre (Ej: Sabre)">
-    <input type="text" id="ship-path-input" placeholder="Ruta (Ej: holo/Sabre.glb)">
+    <input type="text" id="ship-name-input" placeholder="Nombre (Ej: Avenger Stalker)">
+    <input type="text" id="ship-path-input" placeholder="Ruta (Ej: holo/Avenger.glb)">
     <button id="btn-save" style="width:100%; padding:10px; background:var(--primary); border:none; color:black; font-family:'Orbitron'; cursor:pointer;">UPLOAD</button>
     <button onclick="document.getElementById('modal-add-ship').style.display='none'" style="width:100%; border:none; background:none; color:grey; margin-top:10px; cursor:pointer;">CANCEL</button>
 </div>
@@ -180,8 +177,40 @@
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     const listContainer = document.getElementById('list-container');
+    const statsPanel = document.getElementById('stats-panel');
     const viewer = document.getElementById('viewer');
     const displayName = document.getElementById('display-name');
+
+    // Función para renderizar los datos técnicos basados en el JSON que extrajimos
+    function renderShipStats(shipName) {
+        if(shipName.includes("AVENGER STALKER")) {
+            statsPanel.innerHTML = `
+                <div class="stat-header">FLIGHT_PERFORMANCE</div>
+                <div class="stat-row"><span class="stat-label">SCM Speed</span><span class="stat-value">260 m/s</span></div>
+                <div class="stat-row"><span class="stat-label">Max Speed</span><span class="stat-value">1425 m/s</span></div>
+                <div class="stat-row"><span class="stat-label">Acceleration</span><span class="stat-value">12.8 G</span></div>
+                <div class="stat-row"><span class="stat-label">Pitch Rate</span><span class="stat-value">52.5 °/s</span></div>
+                <div class="stat-row"><span class="stat-label">Roll Rate</span><span class="stat-value">180.0 °/s</span></div>
+
+                <div class="stat-header">HULL_INTEGRITY</div>
+                <div class="stat-row"><span class="stat-label">Total HP</span><span class="stat-value">11,900</span></div>
+                <div class="stat-row"><span class="stat-label">Body Integrity</span><span class="stat-value">2,500 HP</span></div>
+                <div class="stat-row"><span class="stat-label">Canopy Health</span><span class="stat-value">1,500 HP</span></div>
+
+                <div class="stat-header">SYSTEM_LOADOUT</div>
+                <div class="stat-row"><span class="stat-label">Cargo Capacity</span><span class="stat-value">0 SCU</span></div>
+                <div class="stat-row"><span class="stat-label">Prisoner Cells</span><span class="stat-value">6 UNITS</span></div>
+                <div class="stat-row"><span class="stat-label">Quantum Fuel</span><span class="stat-value">1,100 L</span></div>
+
+                <div class="stat-header">WEAPON_HARDPOINTS</div>
+                <div class="stat-row"><span class="stat-label">Nose Mount</span><span class="stat-value">1x S4</span></div>
+                <div class="stat-row"><span class="stat-label">Wing Mounts</span><span class="stat-value">2x S3</span></div>
+                <div class="stat-row"><span class="stat-label">Missile Racks</span><span class="stat-value">2x S3</span></div>
+            `;
+        } else {
+            statsPanel.innerHTML = `<div style="color:#666; padding:20px;">SELECCIONE UNA NAVE PARA DESENCRIPTAR DATOS...</div>`;
+        }
+    }
 
     async function loadShips() {
         const { data: ships } = await supabase.from('ships_wiki').select('*').order('name', { ascending: true });
@@ -195,12 +224,11 @@
                     viewer.src = ship.model_path;
                     displayName.innerText = ship.name.toUpperCase();
                     document.getElementById('display-status').innerText = "VINCULADO: ONLINE";
+                    renderShipStats(ship.name.toUpperCase());
                 };
                 listContainer.appendChild(btn);
-                if(index === 0) btn.click(); // Carga la primera por defecto
+                if(index === 0) btn.click();
             });
-        } else {
-            displayName.innerText = "SIN DATOS";
         }
     }
 
@@ -212,24 +240,8 @@
         }
     }
 
-    document.getElementById('logout-btn').onclick = async () => {
-        await supabase.auth.signOut();
-        location.reload();
-    };
-
-    document.getElementById('admin-add-btn').onclick = () => document.getElementById('modal-add-ship').style.display = 'block';
-
-    document.getElementById('btn-save').onclick = async () => {
-        const name = document.getElementById('ship-name-input').value;
-        const path = document.getElementById('ship-path-input').value;
-        const { error } = await supabase.from('ships_wiki').insert([{ name, model_path: path }]);
-        if (!error) { location.reload(); } else { alert(error.message); }
-    };
-
     checkAuth();
     loadShips();
 </script>
-
 </body>
 </html>
-
