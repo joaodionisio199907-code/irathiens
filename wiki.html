@@ -13,27 +13,24 @@
             --border: rgba(255, 154, 31, 0.3);
             --glass: rgba(6, 11, 20, 0.85);
             --accent: #00f2ff;
-            --holo-glow: rgba(0, 242, 255, 0.5);
         }
 
-        /* --- BASE CON EFECTO DE ESCANEO --- */
+        /* --- ESTÉTICA DE TERMINAL --- */
         body {
             margin: 0;
             background: var(--bg);
             color: white;
             font-family: 'Inter', sans-serif;
-            background-image: 
-                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 3px 100%;
+            /* Líneas de escaneo CRT */
+            background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 2px 100%;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            animation: flicker 0.15s infinite;
+            animation: flicker 0.2s infinite;
         }
 
-        /* --- NAVBAR --- */
         nav {
             padding: 10px 20px;
             border-bottom: 2px solid var(--primary);
@@ -43,7 +40,6 @@
             background: rgba(0,0,0,0.9);
             font-family: 'Orbitron';
             z-index: 1000;
-            box-shadow: 0 0 20px rgba(255, 154, 31, 0.2);
         }
 
         .nav-btn {
@@ -52,13 +48,11 @@
             color: var(--primary);
             text-decoration: none;
             font-size: 0.7rem;
-            padding: 5px 12px;
-            transition: 0.3s;
+            padding: 6px 15px;
             cursor: pointer;
             text-transform: uppercase;
             clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
         }
-        .nav-btn:hover { background: var(--primary); color: black; box-shadow: 0 0 15px var(--primary); }
 
         /* --- CONTENEDOR GRID --- */
         .wiki-container {
@@ -75,65 +69,47 @@
             border: 1px solid var(--border);
             padding: 15px;
             overflow-y: auto;
-            position: relative;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
 
-        /* --- VISUALIZADOR HOLO-3D --- */
+        /* --- VISUALIZADOR CON MEJORA DE BORDES --- */
         .viewer-box {
             border: 1px solid var(--border);
-            background: 
-                radial-gradient(circle at center, rgba(0, 242, 255, 0.05) 0%, transparent 70%),
-                repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 242, 255, 0.03) 1px, rgba(0, 242, 255, 0.03) 2px);
+            background: radial-gradient(circle at center, rgba(255, 154, 31, 0.05) 0%, transparent 85%);
             position: relative;
-            overflow: hidden;
-        }
-
-        .viewer-box::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(transparent 0%, rgba(0, 242, 255, 0.1) 50%, transparent 100%);
-            animation: scanline 6s linear infinite;
-            z-index: 2;
-            pointer-events: none;
         }
 
         model-viewer {
             width: 100%;
             height: 100%;
-            /* ESTE FILTRO CAMBIA EL COLOR Y RESALTA BORDES */
-            filter: 
-                drop-shadow(0 0 10px var(--accent)) 
-                brightness(1.2) 
-                contrast(1.2) 
-                hue-rotate(180deg); /* Ajusta este valor para cambiar el color de la nave */
-            mix-blend-mode: screen;
-            animation: ship-float 4s ease-in-out infinite;
+            /* Resaltamos la nave y sus bordes con filtros */
+            filter: drop-shadow(0 0 8px var(--primary)) contrast(1.1) brightness(1.2);
+            animation: ship-float 6s ease-in-out infinite;
         }
 
-        /* --- ESTILOS DE DATOS --- */
+        /* --- ESTILOS DE DATOS (JSON INTEGRADO) --- */
         .stat-header {
             color: var(--primary);
             font-size: 0.65rem;
             margin-top: 15px;
             border-left: 3px solid var(--primary);
             padding: 4px 8px;
-            background: rgba(255,154,31,0.05);
+            background: rgba(255,154,31,0.08);
             font-family: 'Orbitron';
-            text-shadow: 0 0 5px var(--primary);
+            text-transform: uppercase;
         }
 
         .stat-row {
-            border-bottom: 1px solid rgba(0, 242, 255, 0.1);
-            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 7px 0;
             display: flex;
             justify-content: space-between;
             font-size: 0.75rem;
             font-family: 'JetBrains Mono';
         }
 
-        .stat-value { color: var(--accent); text-shadow: 0 0 8px var(--accent); }
+        .stat-label { color: #aaa; text-transform: uppercase; font-size: 0.65rem; }
+        .stat-value { color: var(--accent); font-weight: bold; }
 
         .ship-btn {
             width: 100%;
@@ -145,43 +121,21 @@
             cursor: pointer;
             margin-bottom: 8px;
             font-size: 0.7rem;
-            position: relative;
+            text-align: left;
+            transition: 0.3s;
         }
-        .ship-btn:hover { 
-            background: rgba(0, 242, 255, 0.1); 
-            border-color: var(--accent); 
-            color: var(--accent);
-        }
+        .ship-btn:hover { background: rgba(255, 154, 31, 0.15); border-color: var(--primary); }
 
         /* --- ANIMACIONES --- */
         @keyframes flicker {
-            0% { opacity: 0.98; }
-            5% { opacity: 0.95; }
-            10% { opacity: 0.99; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
+            0% { opacity: 0.99; } 50% { opacity: 1; } 100% { opacity: 0.99; }
         }
 
         @keyframes ship-float {
-            0%, 100% { transform: translateY(0) rotateY(0deg); }
-            50% { transform: translateY(-10px) rotateY(5deg); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
-        .glitch-text {
-            animation: glitch 2s infinite;
-        }
-
-        @keyframes glitch {
-            0% { text-shadow: 2px 0 var(--accent), -2px 0 var(--primary); }
-            2% { text-shadow: -2px 0 var(--accent), 2px 0 var(--primary); }
-            4% { text-shadow: 0 0 0; }
-        }
-
-        /* --- RESPONSIVE --- */
         @media (max-width: 1100px) {
             .wiki-container { grid-template-columns: 1fr; overflow-y: auto; height: auto; }
             body { overflow-y: auto; }
@@ -192,8 +146,8 @@
 <body>
 
 <nav>
-    <div>
-        <span class="glitch-text" style="color: var(--primary); font-weight: bold; letter-spacing: 2px;">IRATHIENS_SYSTEMS // WIKI_INTEL</span>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="color: var(--primary); font-weight: bold; letter-spacing: 2px;">IRATHIENS_INTEL // V.3.5</span>
     </div>
     <div class="nav-links">
         <a href="index.html" class="nav-btn">TERMINAL_EXIT</a>
@@ -202,34 +156,21 @@
 
 <div class="wiki-container">
     <aside class="panel">
-        <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin-bottom:15px;">AVAILABLE_SCHEMATICS</p>
+        <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin-bottom:15px; letter-spacing: 1px;">DATABASE_FILES</p>
         <div id="list-container"></div>
     </aside>
 
     <main class="viewer-box">
         <div style="position:absolute; top:20px; left:20px; z-index:5; font-family:'Orbitron'">
-            <h2 id="display-name" style="margin:0; color:var(--primary); font-size: 1.2rem;">INITIALIZING...</h2>
-            <small id="display-status" style="color:var(--accent); font-size: 0.6rem;">LINK: ESTABLISHED</small>
+            <h2 id="display-name" style="margin:0; color:var(--primary); font-size: 1.2rem; text-shadow: 0 0 10px var(--primary);">LINKING...</h2>
+            <small id="display-status" style="color:var(--accent); font-size: 0.6rem;">ENCRYPTED_STREAM</small>
         </div>
         
-        <model-viewer id="viewer" 
-            src="" 
-            camera-controls 
-            auto-rotate 
-            shadow-intensity="0" 
-            exposure="1.5"
-            interaction-prompt="none"
-            camera-orbit="45deg 75deg 160%">
-        </model-viewer>
-
-        <div style="position:absolute; bottom:10px; right:10px; color:var(--border); font-family:'JetBrains Mono'; font-size:0.5rem;">
-            COORD_X: <span id="valX">0.45</span><br>
-            COORD_Y: <span id="valY">0.12</span>
-        </div>
+        <model-viewer id="viewer" src="" camera-controls auto-rotate shadow-intensity="0" exposure="1.2" camera-orbit="45deg 75deg 160%"></model-viewer>
     </main>
 
     <aside class="panel">
-        <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin-bottom: 10px;">TACTICAL_SPECIFICATIONS</p>
+        <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin-bottom: 10px;">TECHNICAL_OVERRIDE_DATA</p>
         <div id="stats-panel"></div>
     </aside>
 </div>
@@ -245,25 +186,34 @@
     const viewer = document.getElementById('viewer');
     const displayName = document.getElementById('display-name');
 
+    // AQUÍ ESTÁN TUS DATOS DEL JSON INTEGRADOS
     function renderShipStats(shipName) {
         const nameUpper = shipName.toUpperCase();
-        let content = `<div class="stat-header">HOLOGRAPHIC_DATA_STREAM</div>`;
+        let content = `<div class="stat-header">IDENTIFICATION_DATA</div>`;
 
         if(nameUpper.includes("AVENGER STALKER")) {
             content += `
-                <div class="stat-row"><span class="stat-label">Model</span><span class="stat-value">Aegis Avenger Stalker</span></div>
-                <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">Interception / Bounty Hunting</span></div>
-                <div class="stat-row"><span class="stat-label">Max Velocity</span><span class="stat-value">1425 m/s</span></div>
-                <div class="stat-row"><span class="stat-label">Acceleration</span><span class="stat-value">12.8 G</span></div>
-                <div class="stat-header">HULL_&_ARMOR</div>
-                <div class="stat-row"><span class="stat-label">Hull HP</span><span class="stat-value">11,900</span></div>
-                <div class="stat-row"><span class="stat-label">Shield Type</span><span class="stat-value">Size 1 Bubble</span></div>
-                <div class="stat-header">SYSTEMS_LOADOUT</div>
-                <div class="stat-row"><span class="stat-label">Quantum Speed</span><span class="stat-value">0.55c</span></div>
-                <div class="stat-row"><span class="stat-label">Cells</span><span class="stat-value">6 Stasis Chambers</span></div>
+                <div class="stat-row"><span class="stat-label">Model</span><span class="stat-value">AEGIS AVENGER STALKER</span></div>
+                <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">INTERCEPTOR</span></div>
+                <div class="stat-row"><span class="stat-label">Mass</span><span class="stat-value">48,986.3 KG</span></div>
+                
+                <div class="stat-header">FLIGHT_PERFORMANCE</div>
+                <div class="stat-row"><span class="stat-label">SCM Speed</span><span class="stat-value">260 M/S</span></div>
+                <div class="stat-row"><span class="stat-label">Max Speed</span><span class="stat-value">1425 M/S</span></div>
+                <div class="stat-row"><span class="stat-label">Main Acceleration</span><span class="stat-value">12.85 G</span></div>
+                <div class="stat-row"><span class="stat-label">Pitch/Yaw</span><span class="stat-value">52.5 / 48.5 deg/s</span></div>
+
+                <div class="stat-header">QUANTUM_CAPABILITIES</div>
+                <div class="stat-row"><span class="stat-label">Fuel Capacity</span><span class="stat-value">1100 L</span></div>
+                <div class="stat-row"><span class="stat-label">Travel Speed</span><span class="stat-value">165,000 KM/S</span></div>
+
+                <div class="stat-header">HULL_&_STRUCTURAL</div>
+                <div class="stat-row"><span class="stat-label">Total Health</span><span class="stat-value">11,900 HP</span></div>
+                <div class="stat-row"><span class="stat-label">Nose/Body HP</span><span class="stat-value">2500 / 2500</span></div>
+                <div class="stat-row"><span class="stat-label">Canopy Health</span><span class="stat-value">1,500 HP</span></div>
             `;
         } else {
-            content += `<div style="padding:20px; color:#555;">DECRYPTING_FILE...</div>`;
+            content += `<div style="padding:20px; font-family:'JetBrains Mono'; font-size:0.7rem; color:#666;">LOADING_REMOTE_ASSETS_FOR: ${nameUpper}...</div>`;
         }
         statsPanel.innerHTML = content;
     }
@@ -271,17 +221,15 @@
     async function loadShips() {
         const { data: ships } = await supabase.from('ships_wiki').select('*').order('name', { ascending: true });
         listContainer.innerHTML = '';
-        
-        if (ships && ships.length > 0) {
+        if (ships) {
             ships.forEach((ship, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'ship-btn';
-                btn.innerText = `[ ${ship.name.toUpperCase()} ]`;
+                btn.innerText = `> ${ship.name.toUpperCase()}`;
                 btn.onclick = () => {
                     viewer.src = ship.model_path;
                     displayName.innerText = ship.name.toUpperCase();
                     renderShipStats(ship.name);
-                    if(window.innerWidth < 1100) window.scrollTo({top: 0, behavior: 'smooth'});
                 };
                 listContainer.appendChild(btn);
                 if(index === 0) btn.click();
@@ -289,14 +237,9 @@
         }
     }
 
-    // Efecto de coordenadas aleatorias
-    setInterval(() => {
-        document.getElementById('valX').innerText = Math.random().toFixed(3);
-        document.getElementById('valY').innerText = Math.random().toFixed(3);
-    }, 1000);
-
     loadShips();
 </script>
 </body>
 </html>
+
 
