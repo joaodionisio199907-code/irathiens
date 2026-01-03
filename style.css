@@ -478,4 +478,71 @@ model-viewer {
     background: rgba(0, 255, 136, 0.1);
     border-style: solid;
     transform: scale(1.02);
+}/* Sección del Token en Inicio */
+.token-feature-section {
+    margin-top: 80px;
+    padding: 60px 40px;
+    background: radial-gradient(circle at center, rgba(255, 154, 31, 0.05) 0%, transparent 70%);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+/* Contenedor de la moneda */
+.coin-viewport {
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.coin {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: rotateCoin 8s linear infinite, floatCoin 4s ease-in-out infinite;
+}
+
+.coin-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 50%;
+    box-shadow: 0 0 30px var(--shadow);
+}
+
+.coin-front {
+    transform: rotateY(0deg);
+}
+
+.coin-back {
+    transform: rotateY(180deg);
+}
+
+.coin img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 10px var(--primary));
+}
+
+/* Animaciones */
+@keyframes rotateCoin {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+}
+
+@keyframes floatCoin {
+    0%, 100% { transform: translateY(0) rotateY(var(--rotation, 0deg)); }
+    50% { transform: translateY(-20px) rotateY(var(--rotation, 0deg)); }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .token-feature-section { grid-template-columns: 1fr; text-align: center; }
 }
