@@ -18,6 +18,7 @@
             --border: rgba(255, 154, 31, 0.2);
             --glass: rgba(11, 18, 32, 0.85);
             --shadow: rgba(255, 154, 31, 0.15);
+            --success: #00ff88;
         }
 
         * { box-sizing: border-box; transition: all 0.3s ease; }
@@ -30,7 +31,7 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
-            user-select: none; /* Evita selección de texto básica */
+            user-select: none;
         }
 
         body::after {
@@ -143,6 +144,64 @@
         .status-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 30px; }
         .info-grid { max-width: 1200px; margin: 80px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; padding: 0 20px; }
         .info-card { background: var(--glass); border: 1px solid var(--border); padding: 30px; border-radius: 12px; }
+
+        /* NUEVA SECCION TOKEN */
+        .token-section {
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 40px;
+            background: radial-gradient(circle at center, rgba(255, 154, 31, 0.05) 0%, transparent 70%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .coin-viewport {
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+        }
+
+        .coin {
+            width: 220px;
+            height: 220px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCoin 10s linear infinite, floatCoin 4s ease-in-out infinite;
+        }
+
+        .coin-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 50%;
+        }
+
+        .coin-front { transform: rotateY(0deg); }
+        .coin-back { transform: rotateY(180deg); }
+
+        .coin img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px var(--primary));
+        }
+
+        @keyframes rotateCoin {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        @keyframes floatCoin {
+            0%, 100% { margin-top: 0; }
+            50% { margin-top: -30px; }
+        }
         
         footer { padding: 40px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); margin-top: 50px; }
 
@@ -173,11 +232,14 @@
             .nav-menu { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--bg-soft); flex-direction: column; padding: 20px; border-bottom: 1px solid var(--border); }
             .nav-menu.mobile-active { display: flex; }
             .hero { grid-template-columns: 1fr; text-align: center; }
+            .token-section { grid-template-columns: 1fr; text-align: center; }
             .music-bubble { left: auto; right: 20px; }
         }
     </style>
 </head>
-<body oncontextmenu="return false;"> <header>
+<body oncontextmenu="return false;"> 
+
+<header>
     <div class="nav-container">
         <a href="/" class="logo">
             <img src="logo.png" alt="Logo" class="logo-img"> 
@@ -222,6 +284,35 @@
     <div class="info-card"><h3>MIEMBROS</h3><p>Estructura clara.</p></div>
 </section>
 
+<section class="token-section">
+    <div class="token-text">
+        <h2 style="font-family: 'Orbitron'; color: var(--primary); font-size: 2rem; margin-bottom: 20px;">$CITIZEN PROTOCOL</h2>
+        <p style="line-height: 1.8; color: var(--text);">
+            Impulsa tu progreso en el Verso con el activo digital oficial de la flota. <strong>$CITIZEN</strong> no es solo una moneda, es el estándar económico de Irathiens diseñado para recompensar la lealtad y la participación de nuestros miembros.
+        </p>
+        <div style="margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="background: rgba(0,255,136,0.05); padding: 15px; border-radius: 10px; border: 1px solid var(--success);">
+                <small style="color: var(--success); font-family: 'Orbitron';">RED</small>
+                <div style="font-weight: bold;">SOLANA</div>
+            </div>
+            <div style="background: rgba(255,154,31,0.05); padding: 15px; border-radius: 10px; border: 1px solid var(--primary);">
+                <small style="color: var(--primary); font-family: 'Orbitron';">UTILIDAD</small>
+                <div style="font-weight: bold;">AIRDROP ACTIVO</div>
+            </div>
+        </div>
+    </div>
+    <div class="coin-viewport">
+        <div class="coin">
+            <div class="coin-face coin-front">
+                <img src="img/ctz.png" alt="CTZ Token">
+            </div>
+            <div class="coin-face coin-back">
+                <img src="img/ctz.png" alt="CTZ Token">
+            </div>
+        </div>
+    </div>
+</section>
+
 <footer>© 2025 IRATHIENS ORGANIZATION</footer>
 
 <div class="chat-bubble" onclick="toggleChat()"><span style="color:var(--primary); font-family:'Orbitron'; font-weight:bold;">>_</span></div>
@@ -246,7 +337,6 @@
 
     function toggleChat() { document.getElementById('chatWindow').classList.toggle('active'); }
 
-    // --- LOGICA DE MUSICA ---
     const audio = document.getElementById('bg-music');
     const musicBubble = document.getElementById('musicBubble');
     const musicStatus = document.getElementById('musicStatus');
@@ -265,7 +355,6 @@
         }
     }, { once: true });
 
-    // --- SESION Y CHAT ---
     async function checkSession() {
         const { data: { user } } = await _supabase.auth.getUser();
         if (user) {
@@ -293,18 +382,13 @@
         container.scrollTop = container.scrollHeight;
     }
 
-    // --- PROTOCOLOS DE SEGURIDAD (BLOQUEO F12 Y CLIC DERECHO) ---
     document.addEventListener('keydown', function(e) {
-        if (e.keyCode == 123 || // F12
-            (e.ctrlKey && e.shiftKey && e.keyCode == 73) || // Ctrl+Shift+I
-            (e.ctrlKey && e.shiftKey && e.keyCode == 74) || // Ctrl+Shift+J
-            (e.ctrlKey && e.keyCode == 85)) { // Ctrl+U
+        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.shiftKey && e.keyCode == 74) || (e.ctrlKey && e.keyCode == 85)) {
             e.preventDefault();
             return false;
         }
     });
 
-    // --- LIMPIADOR DE URL ---
     (function() {
         let path = window.location.pathname;
         if (path.endsWith('.html') || path.endsWith('/index')) {
