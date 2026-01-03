@@ -249,11 +249,18 @@ async function init() {
     if (profile) {
         document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
         document.getElementById('display-rank').innerText = profile.rank || "Cadete de Flota";
-        // Cargamos el saldo de la base de datos
         document.getElementById('display-balance').innerText = profile.citizen_tokens || 0;
         
+        // --- VINCULACIÓN CON STRIPE ---
+        const stripeBtn = document.querySelector('stripe-buy-button');
+        if (stripeBtn) {
+            // Esto le dice a Stripe: "Este pago pertenece al usuario X"
+            stripeBtn.setAttribute('client-reference-id', user.id);
+            console.log("Sistema de pagos vinculado al ID:", user.id);
+        }
+        // ------------------------------
+
         if (profile.role === 'admin') document.getElementById('admin-link').style.display = 'inline';
-        
         if (profile.ships) {
             document.getElementById('fleet-grid').innerHTML = '';
             profile.ships.forEach(s => renderShipCard(s));
