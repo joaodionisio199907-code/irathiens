@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Irathiens | Perfil de Ciudadano</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=Rajdhani:wght@500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -80,6 +80,21 @@
             backdrop-filter: blur(10px); position: relative; overflow: hidden;
         }
 
+        /* Estilo para el Balance de Tokens */
+        .token-balance-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 154, 31, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .token-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
         .profile-card::before {
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
             background: linear-gradient(90deg, transparent, var(--primary), transparent);
@@ -125,27 +140,14 @@
 
         footer { margin-top: 60px; padding: 30px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); }
 
-        .chat-bubble {
-            position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px;
-            background: rgba(255, 154, 31, 0.1); border: 2px solid #ff9a1f;
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; z-index: 3000; box-shadow: 0 0 15px #ff9a1f;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .chat-bubble:hover { transform: scale(1.1) rotate(90deg); }
-        
-        .chat-window {
-            position: fixed; bottom: 90px; left: 20px; width: 320px; height: 400px;
-            background: rgba(6, 11, 20, 0.95); border: 1px solid #ff9a1f;
-            backdrop-filter: blur(15px); display: none; flex-direction: column;
-            z-index: 2999; box-shadow: 0 0 30px rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden;
-        }
+        /* CHAT CSS ... (igual al anterior) */
+        .chat-bubble { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(255, 154, 31, 0.1); border: 2px solid #ff9a1f; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3000; box-shadow: 0 0 15px #ff9a1f; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .chat-window { position: fixed; bottom: 90px; left: 20px; width: 320px; height: 400px; background: rgba(6, 11, 20, 0.95); border: 1px solid #ff9a1f; backdrop-filter: blur(15px); display: none; flex-direction: column; z-index: 2999; box-shadow: 0 0 30px rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden; }
         .chat-window.active { display: flex; }
         .chat-header { background: #ff9a1f; color: #000; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold; display: flex; justify-content: space-between; }
         .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(rgba(255,154,31,0.02) 1px, transparent 1px); background-size: 100% 20px; }
         .msg { font-size: 0.75rem; padding: 5px 8px; border-left: 2px solid #ffb347; background: rgba(255,255,255,0.03); color: #e6f1ff; }
         .msg-user { color: #ff9a1f; font-weight: bold; font-size: 0.65rem; display: block; }
-        .msg-time { color: #555; font-size: 0.6rem; float: right; }
         .chat-input-area { padding: 10px; border-top: 1px solid rgba(255,154,31,0.2); display: flex; gap: 5px; }
         .chat-input { flex: 1; background: #000; border: 1px solid #ff9a1f; color: #fff; padding: 8px; font-size: 0.8rem; }
         .btn-send { background: #ff9a1f; border: none; padding: 0 10px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem; }
@@ -163,6 +165,7 @@
         </a>
         <nav>
             <a href="index.html">Inicio</a>
+            <a href="wiki.html">Wiki</a>
             <a href="banco.html">Banco</a>
             <a href="Members.html">Miembros</a>
             <a href="AdminPanel.html" id="admin-link" style="display:none; color:cyan;">ADMIN</a>
@@ -180,6 +183,11 @@
             <div class="user-name" id="display-name">CIUDADANO</div>
             <div class="user-rank" id="display-rank">Cadete de Flota</div>
             
+            <div class="token-balance-box">
+                <small style="display:block; letter-spacing:1px; margin-bottom:5px;">CITIZEN TOKENS</small>
+                <div class="token-value" id="display-balance">0</div>
+            </div>
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px;">
                 <div><small>NAVES</small><div id="ship-count" style="font-size:1.1rem; font-weight:700;">0</div></div>
                 <div><small>SISTEMA</small><div style="color:#00ff88; font-size:0.8rem;">ONLINE</div></div>
@@ -201,6 +209,7 @@
                 <option value="Carrack">Carrack</option>
                 <option value="Arrow">Arrow</option>
                 <option value="Cutter">Cutter</option>
+                <option value="Avenger Titan">Avenger Titan</option>
             </select>
             <button class="btn-action" style="width:100%" onclick="addShip()">DESPLEGAR EN HANGAR</button>
 
@@ -240,7 +249,11 @@ async function init() {
     if (profile) {
         document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
         document.getElementById('display-rank').innerText = profile.rank || "Cadete de Flota";
+        // Cargamos el saldo de la base de datos
+        document.getElementById('display-balance').innerText = profile.citizen_tokens || 0;
+        
         if (profile.role === 'admin') document.getElementById('admin-link').style.display = 'inline';
+        
         if (profile.ships) {
             document.getElementById('fleet-grid').innerHTML = '';
             profile.ships.forEach(s => renderShipCard(s));
@@ -250,35 +263,36 @@ async function init() {
     initChat();
 }
 
+async function saveHandle() {
+    const val = document.getElementById('handle-input').value;
+    if (!val) return;
+    // Usamos upsert para actualizar el handle del perfil actual
+    await _supabase.from('perfiles').upsert({ id: currentUser.id, handle: val });
+    location.reload();
+}
+
 function toggleChat() {
     document.getElementById('chatWindow').classList.toggle('active');
 }
 
+// LOGICA CHAT
 async function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const content = input.value.trim();
-    const userName = document.getElementById('display-name').innerText || "Recluta";
+    const userName = document.getElementById('display-name').innerText;
 
     if (content !== "" && currentUser) {
-        const { error } = await _supabase
-            .from('mensajes')
-            .insert([{ 
-                user_name: userName, 
-                content: content,
-                user_id: currentUser.id 
-            }]);
-
-        if (error) {
-            console.error("Error de seguridad:", error.message);
-            alert("No tienes permiso para realizar esta acción.");
-        } else {
-            input.value = "";
-        }
+        await _supabase.from('mensajes').insert([{ 
+            user_name: userName, 
+            content: content,
+            user_id: currentUser.id 
+        }]);
+        input.value = "";
     }
-} // <--- LLAVE AÑADIDA AQUÍ
+}
 
 async function initChat() {
-    let { data: msgs } = await _supabase.from('mensajes').select('*').order('created_at', { ascending: true });
+    let { data: msgs } = await _supabase.from('mensajes').select('*').order('created_at', { ascending: true }).limit(50);
     if (msgs) msgs.forEach(m => renderMsg(m));
 
     _supabase.channel('chat-room').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
@@ -289,26 +303,18 @@ async function initChat() {
 function renderMsg(data) {
     const container = document.getElementById('chatMessages');
     const time = new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const isAdmin = data.user_name === 'JOAO_DIONISIO' || data.user_name === 'ADMIN';
-
     const div = document.createElement('div');
     div.className = 'msg';
-    if (isAdmin) {
-        div.style.borderLeftColor = '#00ffff';
-        div.style.background = 'rgba(0, 255, 255, 0.05)';
-    }
-
     div.innerHTML = `
         <span class="msg-time">${time}</span>
-        <span class="msg-user" style="color: ${isAdmin ? '#00ffff' : '#ff9a1f'}">
-            ${data.user_name} ${isAdmin ? '[ADMIN]' : ''}
-        </span>
-        <span style="color: ${isAdmin ? '#e6f1ff' : 'inherit'}">${data.content}</span>
+        <span class="msg-user">${data.user_name}</span>
+        <span>${data.content}</span>
     `;
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
 }
 
+// LOGICA HANGAR
 function renderShipCard(name) {
     const grid = document.getElementById('fleet-grid');
     const card = document.createElement('div');
@@ -325,30 +331,24 @@ async function addShip() {
     const name = document.getElementById('ship-selector').value;
     if (!name) return;
     renderShipCard(name);
-    const ships = Array.from(document.querySelectorAll('.ship-card div')).map(el => el.innerText);
-    await _supabase.from('perfiles').update({ ships: ships }).eq('id', currentUser.id);
-    updateShipCount();
+    syncShips();
 }
 
 async function removeShip(btn) {
     if(confirm("¿Retirar nave del hangar?")) {
         btn.parentElement.remove();
-        const ships = Array.from(document.querySelectorAll('.ship-card div')).map(el => el.innerText);
-        await _supabase.from('perfiles').update({ ships: ships }).eq('id', currentUser.id);
-        updateShipCount();
+        syncShips();
     }
 }
 
-function updateShipCount() {
-    const count = document.querySelectorAll('.ship-card').length;
-    document.getElementById('ship-count').innerText = count;
+async function syncShips() {
+    const ships = Array.from(document.querySelectorAll('.ship-card div')).map(el => el.innerText);
+    await _supabase.from('perfiles').update({ ships: ships }).eq('id', currentUser.id);
+    updateShipCount();
 }
 
-async function saveHandle() {
-    const val = document.getElementById('handle-input').value;
-    if (!val) return;
-    await _supabase.from('perfiles').upsert({ id: currentUser.id, handle: val });
-    location.reload();
+function updateShipCount() {
+    document.getElementById('ship-count').innerText = document.querySelectorAll('.ship-card').length;
 }
 
 async function handleLogout() {
@@ -356,12 +356,7 @@ async function handleLogout() {
     window.location.href = "login.html";
 }
 
-document.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && document.activeElement.id === 'chatInput') {
-        sendChatMessage();
-    }
-});
-
+// Efectos Visuales
 window.addEventListener('mousemove', (e) => {
     const x = (e.clientX / window.innerWidth - 0.5) * -20;
     const y = (e.clientY / window.innerHeight - 0.5) * -20;
