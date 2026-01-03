@@ -24,14 +24,13 @@
 
         #starfield { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
 
-        /* BOTÓN DE CERRAR (X) - CORREGIDO */
         .btn-close-terminal {
             position: absolute;
             top: 25px;
             right: 25px;
             width: 45px;
             height: 45px;
-            border: 2px solid var(--primary); /* Cambiado a naranja para que se vea bien */
+            border: 2px solid var(--primary);
             background: rgba(0,0,0,0.8);
             color: var(--primary);
             display: flex;
@@ -40,7 +39,7 @@
             cursor: pointer;
             font-family: 'Orbitron';
             font-size: 1.4rem;
-            z-index: 1000; /* Aseguramos que esté por encima de todo */
+            z-index: 1000;
             transition: 0.3s;
             clip-path: polygon(20% 0%, 100% 0, 100% 80%, 80% 100%, 0 100%, 0% 20%);
         }
@@ -95,9 +94,7 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <div class="btn-close-terminal" onclick="window.location.href='index'" title="ABORTAR_CONEXIÓN">
-        ✕
-    </div>
+    <div class="btn-close-terminal" onclick="window.location.href='index'" title="ABORTAR_CONEXIÓN">✕</div>
 
     <canvas id="starfield"></canvas>
 
@@ -144,22 +141,49 @@
             document.getElementById('registerBox').classList.toggle('hidden');
         }
 
-        // Lógica de Login
+        // LÓGICA DE LOGIN ARREGLADA
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const email = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
             const { data, error } = await _supabase.auth.signInWithPassword({
-                email: document.getElementById('username').value,
-                password: document.getElementById('password').value
+                email: email,
+                password: password
             });
+
             if (error) {
-                document.getElementById('error').style.display = 'block';
-                document.getElementById('error').innerText = error.message;
+                const errBox = document.getElementById('error');
+                errBox.style.display = 'block';
+                errBox.innerText = "ERROR: " + error.message;
             } else {
                 window.location.href = "perfil";
             }
         });
 
-        // Motor de estrellas (Simplificado para que no falle)
+        // LÓGICA DE REGISTRO ARREGLADA (ESTO ERA LO QUE NO TENÍAS)
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            const { data, error } = await _supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    emailRedirectTo: window.location.origin
+                }
+            });
+
+            if (error) {
+                alert("ERROR EN REGISTRO: " + error.message);
+            } else {
+                alert("¡REGISTRO COMPLETADO! Revisa tu email para confirmar o intenta entrar si la confirmación está desactivada.");
+                toggleForm();
+            }
+        });
+
+        // MOTOR DE ESTRELLAS (SIN TOCAR)
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -175,17 +199,13 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "white";
             stars.forEach(s => {
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-                ctx.fill();
-                s.y += s.speed;
-                if (s.y > canvas.height) s.y = 0;
+                ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
+                s.y += s.speed; if (s.y > canvas.height) s.y = 0;
             });
             requestAnimationFrame(drawStars);
         }
         drawStars();
 
-        // Limpiador de URL
         (function() {
             let path = window.location.pathname;
             if (path.endsWith('.html')) {
@@ -195,11 +215,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
