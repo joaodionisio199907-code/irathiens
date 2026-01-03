@@ -6,6 +6,7 @@
     <title>Irathiens | Perfil de Ciudadano</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=Rajdhani:wght@500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
     <style>
         :root {
             --bg: #060b14;
@@ -18,6 +19,7 @@
             --glass: rgba(11, 18, 32, 0.8);
             --shadow: rgba(255, 154, 31, 0.15);
             --danger: #ff4444;
+            --success: #00ff88;
         }
 
         * { box-sizing: border-box; }
@@ -80,7 +82,6 @@
             backdrop-filter: blur(10px); position: relative; overflow: hidden;
         }
 
-        /* Estilo para el Balance de Tokens */
         .token-balance-box {
             margin-top: 15px;
             padding: 10px;
@@ -113,6 +114,7 @@
         .content-panel {
             background: var(--glass); border: 1px solid var(--border);
             border-radius: 15px; padding: 30px; backdrop-filter: blur(10px);
+            margin-bottom: 30px;
         }
 
         .section-title {
@@ -140,12 +142,12 @@
 
         footer { margin-top: 60px; padding: 30px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); }
 
-        /* CHAT CSS ... (igual al anterior) */
+        /* CHAT CSS */
         .chat-bubble { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(255, 154, 31, 0.1); border: 2px solid #ff9a1f; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3000; box-shadow: 0 0 15px #ff9a1f; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .chat-window { position: fixed; bottom: 90px; left: 20px; width: 320px; height: 400px; background: rgba(6, 11, 20, 0.95); border: 1px solid #ff9a1f; backdrop-filter: blur(15px); display: none; flex-direction: column; z-index: 2999; box-shadow: 0 0 30px rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden; }
         .chat-window.active { display: flex; }
         .chat-header { background: #ff9a1f; color: #000; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold; display: flex; justify-content: space-between; }
-        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(rgba(255,154,31,0.02) 1px, transparent 1px); background-size: 100% 20px; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .msg { font-size: 0.75rem; padding: 5px 8px; border-left: 2px solid #ffb347; background: rgba(255,255,255,0.03); color: #e6f1ff; }
         .msg-user { color: #ff9a1f; font-weight: bold; font-size: 0.65rem; display: block; }
         .chat-input-area { padding: 10px; border-top: 1px solid rgba(255,154,31,0.2); display: flex; gap: 5px; }
@@ -202,8 +204,23 @@
                 <input type="text" id="handle-input" placeholder="Tu Citizen Handle...">
                 <button class="btn-action" onclick="saveHandle()">VINCULAR</button>
             </div>
+        </div>
 
-            <div class="section-title" style="margin-top: 40px;">GESTIÓN DE HANGAR</div>
+        <div class="content-panel" style="border-color: var(--success);">
+            <div class="section-title" style="color: var(--success);">RECARGA DE CITIZEN TOKENS</div>
+            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 20px;">
+                Adquiere créditos para tu cuenta. Tasa actual: <strong style="color: white;">1€ = 1 Token</strong>.
+            </p>
+            
+            <stripe-buy-button
+              buy-button-id="TU_ID_DE_BOTON"
+              publishable-key="TU_KEY_PUBLISHABLE"
+            >
+            </stripe-buy-button>
+        </div>
+
+        <div class="content-panel">
+            <div class="section-title">GESTIÓN DE HANGAR</div>
             <select id="ship-selector">
                 <option value="" disabled selected>Busca tu nave...</option>
                 <option value="Carrack">Carrack</option>
@@ -252,13 +269,12 @@ async function init() {
         document.getElementById('display-balance').innerText = profile.citizen_tokens || 0;
         
         // --- VINCULACIÓN CON STRIPE ---
+        // Esto busca el botón de Stripe y le inyecta tu ID de Supabase
         const stripeBtn = document.querySelector('stripe-buy-button');
         if (stripeBtn) {
-            // Esto le dice a Stripe: "Este pago pertenece al usuario X"
             stripeBtn.setAttribute('client-reference-id', user.id);
             console.log("Sistema de pagos vinculado al ID:", user.id);
         }
-        // ------------------------------
 
         if (profile.role === 'admin') document.getElementById('admin-link').style.display = 'inline';
         if (profile.ships) {
@@ -273,7 +289,6 @@ async function init() {
 async function saveHandle() {
     const val = document.getElementById('handle-input').value;
     if (!val) return;
-    // Usamos upsert para actualizar el handle del perfil actual
     await _supabase.from('perfiles').upsert({ id: currentUser.id, handle: val });
     location.reload();
 }
@@ -282,7 +297,6 @@ function toggleChat() {
     document.getElementById('chatWindow').classList.toggle('active');
 }
 
-// LOGICA CHAT
 async function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const content = input.value.trim();
@@ -321,7 +335,6 @@ function renderMsg(data) {
     container.scrollTop = container.scrollHeight;
 }
 
-// LOGICA HANGAR
 function renderShipCard(name) {
     const grid = document.getElementById('fleet-grid');
     const card = document.createElement('div');
@@ -363,7 +376,6 @@ async function handleLogout() {
     window.location.href = "login.html";
 }
 
-// Efectos Visuales
 window.addEventListener('mousemove', (e) => {
     const x = (e.clientX / window.innerWidth - 0.5) * -20;
     const y = (e.clientY / window.innerHeight - 0.5) * -20;
