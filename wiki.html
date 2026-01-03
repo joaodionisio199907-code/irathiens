@@ -32,7 +32,6 @@
             display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* HUD NAVBAR */
         nav {
             padding: 15px 30px; background: rgba(0, 0, 0, 0.9);
             border-bottom: 1px solid var(--primary);
@@ -51,7 +50,6 @@
 
         .nav-btn:hover { background: var(--holo-blue); color: black; box-shadow: 0 0 15px var(--holo-blue); }
 
-        /* VISTAS */
         .view-section {
             display: none; grid-template-columns: 300px 1fr 400px;
             gap: 20px; padding: 20px; flex-grow: 1;
@@ -63,7 +61,6 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* PANELES */
         .panel { 
             background: var(--glass); border: 1px solid var(--border);
             backdrop-filter: blur(10px); padding: 20px; overflow-y: auto;
@@ -73,10 +70,9 @@
         .viewer-box {
             border: 1px solid var(--holo-blue);
             background: radial-gradient(circle at center, rgba(0, 242, 255, 0.08) 0%, transparent 75%);
-            position: relative; padding: 25px; overflow-y: auto;
+            position: relative; padding: 25px; display: flex; flex-direction: column;
         }
 
-        /* BOTONES DE LISTA */
         .list-btn {
             width: 100%; padding: 14px; margin-bottom: 10px;
             background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
@@ -85,23 +81,6 @@
         }
 
         .list-btn:hover { border-color: var(--primary); background: var(--primary-low); padding-left: 20px; }
-
-        /* ESTILO CONTENIDO */
-        .img-holo-frame {
-            width: 240px; height: 320px; border: 1px solid var(--holo-blue);
-            background: rgba(0, 0, 0, 0.3); position: relative;
-            margin: 0 auto 25px auto; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px var(--holo-glow);
-        }
-
-        .species-img { max-width: 85%; max-height: 85%; animation: float 6s ease-in-out infinite; }
-
-        .info-header {
-            color: var(--primary); font-family: 'Orbitron'; font-size: 0.85rem;
-            margin: 20px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 5px;
-        }
-
-        .info-content { font-size: 1rem; line-height: 1.7; color: #ddd; margin-bottom: 15px; }
 
         .stat-row {
             display: flex; justify-content: space-between; padding: 10px 5px;
@@ -114,11 +93,20 @@
         .scanline {
             position: absolute; top: 0; left: 0; width: 100%; height: 2px;
             background: var(--holo-blue); box-shadow: 0 0 10px var(--holo-blue);
-            animation: scan 4s linear infinite; opacity: 0.4;
+            animation: scan 4s linear infinite; opacity: 0.4; pointer-events: none;
         }
 
         @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* Estilos específicos de Razas */
+        .img-holo-frame {
+            width: 240px; height: 300px; border: 1px solid var(--holo-blue);
+            background: rgba(0, 0, 0, 0.3); position: relative;
+            margin: 0 auto 25px auto; display: flex; align-items: center; justify-content: center;
+        }
+        .species-img { max-width: 85%; max-height: 85%; filter: drop-shadow(0 0 15px var(--holo-blue)); }
+        .info-header { color: var(--primary); font-family: 'Orbitron'; font-size: 0.85rem; margin: 20px 0 10px 0; border-bottom: 1px solid var(--border); }
+        .info-content { font-size: 0.95rem; line-height: 1.6; color: #ddd; margin-bottom: 15px; }
 
         @media (max-width: 1100px) {
             .view-section { grid-template-columns: 1fr; overflow-y: auto; height: auto; }
@@ -143,8 +131,8 @@
     </aside>
     <main class="viewer-box">
         <div class="scanline"></div>
-        <h2 id="display-name" style="font-family:'Orbitron'; color:var(--primary); font-size: 2rem; margin:0;">SELECT_UNIT</h2>
-        <model-viewer id="viewer" src="" camera-controls auto-rotate shadow-intensity="1" exposure="0.8" style="width:100%; height:85%;"></model-viewer>
+        <h2 id="display-name" style="font-family:'Orbitron'; color:var(--primary); font-size: 2rem; margin:0; z-index:10;">SELECT_UNIT</h2>
+        <model-viewer id="viewer" src="" camera-controls auto-rotate shadow-intensity="1" exposure="0.8" style="width:100%; height:100%; flex-grow:1;"></model-viewer>
     </main>
     <aside class="panel">
         <p style="color:var(--primary); font-family:'Orbitron'; font-size:0.6rem; margin-bottom:15px;">TECHNICAL_SPEC_SCAN</p>
@@ -162,8 +150,8 @@
             <div class="scanline"></div>
             <img id="sp-img" src="" class="species-img">
         </div>
-        <h2 id="sp-name" style="font-family:'Orbitron'; color:var(--primary); font-size: 2.5rem; margin:0;"></h2>
-        <p id="sp-tag" style="color:var(--holo-blue); font-family:'JetBrains Mono'; margin-bottom:30px;"></p>
+        <h2 id="sp-name" style="font-family:'Orbitron'; color:var(--primary); font-size: 2.2rem; margin:0;"></h2>
+        <p id="sp-tag" style="color:var(--holo-blue); font-family:'JetBrains Mono'; margin-bottom:20px;"></p>
         <div id="info-container"></div>
     </main>
     <aside class="panel">
@@ -173,27 +161,45 @@
 </div>
 
 <script type="module">
-    // --- LÓGICA DE NAVES (SUPABASE) ---
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
     const supabase = createClient('https://dfizvgagofsctgwzksgd.supabase.co', 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR')
 
+    // --- LÓGICA DE NAVES (REPARADA) ---
     async function initShips() {
-        const { data } = await supabase.from('ships_wiki').select('*');
+        const { data, error } = await supabase.from('ships_wiki').select('*');
+        if (error) console.error("Error Supabase:", error);
+
         const list = document.getElementById('list-container');
         if(data) data.forEach(ship => {
             const b = document.createElement('button');
             b.className = 'list-btn';
             b.innerText = `> ${ship.name.toUpperCase()}`;
             b.onclick = () => {
+                // Actualizar Visor
                 document.getElementById('viewer').src = ship.model_path;
                 document.getElementById('display-name').innerText = ship.name.toUpperCase();
-                // Aquí puedes añadir la lógica de stats de naves si la tienes en la tabla
+                
+                // Actualizar Estadísticas Dinámicas
+                const statsPanel = document.getElementById('stats-panel');
+                statsPanel.innerHTML = ''; // Limpiar anterior
+                
+                // Mapeo automático de columnas de Supabase a la interfaz
+                const exclude = ['id', 'created_at', 'model_path', 'name'];
+                for (let key in ship) {
+                    if (!exclude.includes(key) && ship[key] !== null) {
+                        statsPanel.innerHTML += `
+                            <div class="stat-row">
+                                <span class="stat-label">${key.replace('_', ' ')}</span>
+                                <span class="stat-value">${ship[key]}</span>
+                            </div>`;
+                    }
+                }
             };
             list.appendChild(b);
         });
     }
 
-    // --- LÓGICA DE RAZAS (DATA LOCAL AMPLIADA) ---
+    // --- LÓGICA DE RAZAS (Mantenida) ---
     const speciesData = {
         "Banu": {
             tag: "CIVILIZACIÓN MERCANTIL // PRIMER CONTACTO: 2438",
@@ -222,13 +228,11 @@
         document.getElementById('sp-name').innerText = key.toUpperCase();
         document.getElementById('sp-tag').innerText = d.tag;
         document.getElementById('sp-img').src = d.img;
-        
         const infoCont = document.getElementById('info-container');
         infoCont.innerHTML = '';
         for(let s in d.sections) {
             infoCont.innerHTML += `<div class="info-header">> ${s.toUpperCase()}</div><p class="info-content">${d.sections[s]}</p>`;
         }
-        
         const statsBox = document.getElementById('sp-stats');
         statsBox.innerHTML = '';
         for(let s in d.stats) {
@@ -236,7 +240,6 @@
         }
     }
 
-    // --- NAVEGACIÓN Y CARGA ---
     window.switchView = (id) => {
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active-view'));
         document.getElementById(id).classList.add('active-view');
@@ -250,8 +253,10 @@
         sList.appendChild(b);
     });
 
+    // Carga inicial
     initShips();
     loadSpecies("Banu");
 </script>
 </body>
 </html>
+
