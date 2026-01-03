@@ -3,223 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Irathiens | Wiki Intel Holo-Blue</title>
+    <title>Irathiens | Neural Intel Link</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
         :root {
             --primary: #ff9a1f;
-            --bg: #02050a;
-            --border: rgba(255, 154, 31, 0.3);
-            --glass: rgba(6, 11, 20, 0.9);
+            --primary-low: rgba(255, 154, 31, 0.2);
+            --bg: #010409;
+            --border: rgba(255, 154, 31, 0.4);
+            --glass: rgba(6, 11, 25, 0.85);
             --holo-blue: #00f2ff;
+            --holo-glow: rgba(0, 242, 255, 0.3);
+        }
+
+        /* EFECTO CRT GLOBAL */
+        body::before {
+            content: " "; display: block; position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+            z-index: 200; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
         body {
-            margin: 0;
-            background: var(--bg);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
-            background-size: 40px 40px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            animation: flicker 0.3s infinite;
+            margin: 0; background: var(--bg); color: white;
+            font-family: 'Inter', sans-serif; height: 100vh;
+            display: flex; flex-direction: column; overflow: hidden;
         }
 
+        /* HUD NAVBAR */
         nav {
-            padding: 12px 25px;
-            border-bottom: 2px solid var(--primary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: black;
-            font-family: 'Orbitron';
+            padding: 15px 30px; background: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid var(--primary);
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 0 20px rgba(255, 154, 31, 0.1); z-index: 100;
         }
 
-        .wiki-container {
-            display: grid;
-            grid-template-columns: 280px 1fr 380px;
-            gap: 20px;
-            padding: 20px;
-            flex-grow: 1;
-            height: calc(100vh - 70px);
+        .nav-logo { font-family: 'Orbitron'; color: var(--primary); letter-spacing: 3px; font-weight: bold; }
+
+        .nav-btn {
+            color: var(--holo-blue); font-size: 0.75rem; border: 1px solid var(--holo-blue);
+            padding: 8px 18px; background: transparent; cursor: pointer;
+            font-family: 'Orbitron'; transition: all 0.3s; margin-left: 10px;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
         }
 
-        .panel {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 15px;
-            overflow-y: auto;
+        .nav-btn:hover { background: var(--holo-blue); color: black; box-shadow: 0 0 15px var(--holo-blue); }
+
+        /* VISTAS */
+        .view-section {
+            display: none; grid-template-columns: 300px 1fr 400px;
+            gap: 20px; padding: 20px; flex-grow: 1;
+            height: calc(100vh - 75px); box-sizing: border-box;
+            animation: fadeIn 0.5s ease-out;
         }
 
-        /* --- VISOR HOLOGRÁFICO AZUL --- */
+        .active-view { display: grid !important; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* PANELES */
+        .panel { 
+            background: var(--glass); border: 1px solid var(--border);
+            backdrop-filter: blur(10px); padding: 20px; overflow-y: auto;
+            position: relative; border-radius: 4px;
+        }
+
         .viewer-box {
-            border: 1px solid var(--border);
-            background: radial-gradient(circle, rgba(0, 242, 255, 0.08) 0%, transparent 85%);
-            position: relative;
+            border: 1px solid var(--holo-blue);
+            background: radial-gradient(circle at center, rgba(0, 242, 255, 0.08) 0%, transparent 75%);
+            position: relative; padding: 25px; overflow-y: auto;
         }
 
-        model-viewer {
-            width: 100%;
-            height: 100%;
-            /* Filtro corregido para azul translúcido sin quemar el blanco */
-            filter: hue-rotate(160deg) saturate(2.5) brightness(1.1) drop-shadow(0 0 10px rgba(0, 242, 255, 0.4));
-            --poster-color: transparent;
+        /* BOTONES DE LISTA */
+        .list-btn {
+            width: 100%; padding: 14px; margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
+            color: white; font-family: 'Orbitron'; text-align: left;
+            cursor: pointer; transition: 0.3s; overflow: hidden; position: relative;
         }
 
-        .viewer-box::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 2px;
-            background: var(--holo-blue);
-            opacity: 0.2;
-            box-shadow: 0 0 15px var(--holo-blue);
-            animation: scan 5s linear infinite;
-            pointer-events: none;
+        .list-btn:hover { border-color: var(--primary); background: var(--primary-low); padding-left: 20px; }
+
+        /* ESTILO CONTENIDO */
+        .img-holo-frame {
+            width: 240px; height: 320px; border: 1px solid var(--holo-blue);
+            background: rgba(0, 0, 0, 0.3); position: relative;
+            margin: 0 auto 25px auto; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 20px var(--holo-glow);
+        }
+
+        .species-img { max-width: 85%; max-height: 85%; animation: float 6s ease-in-out infinite; }
+
+        .info-header {
+            color: var(--primary); font-family: 'Orbitron'; font-size: 0.85rem;
+            margin: 20px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 5px;
+        }
+
+        .info-content { font-size: 1rem; line-height: 1.7; color: #ddd; margin-bottom: 15px; }
+
+        .stat-row {
+            display: flex; justify-content: space-between; padding: 10px 5px;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.1); font-family: 'JetBrains Mono';
+        }
+
+        .stat-label { color: #888; font-size: 0.75rem; text-transform: uppercase; }
+        .stat-value { color: var(--holo-blue); font-weight: bold; }
+
+        .scanline {
+            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: var(--holo-blue); box-shadow: 0 0 10px var(--holo-blue);
+            animation: scan 4s linear infinite; opacity: 0.4;
         }
 
         @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
-        @keyframes flicker { 0% { opacity: 0.99; } 100% { opacity: 1; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* --- UI DATA --- */
-        .stat-header {
-            color: var(--primary);
-            font-size: 0.7rem;
-            margin-top: 15px;
-            border-left: 3px solid var(--primary);
-            padding: 5px 10px;
-            background: rgba(255, 154, 31, 0.1);
-            font-family: 'Orbitron';
+        @media (max-width: 1100px) {
+            .view-section { grid-template-columns: 1fr; overflow-y: auto; height: auto; }
+            nav { flex-direction: column; gap: 10px; }
         }
-
-        .stat-row {
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding: 8px 0;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            font-family: 'JetBrains Mono';
-        }
-
-        .stat-label { color: #888; text-transform: uppercase; }
-        .stat-value { color: var(--holo-blue); font-weight: bold; }
-
-        .ship-btn {
-            width: 100%;
-            padding: 14px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            color: white;
-            font-family: 'Orbitron';
-            cursor: pointer;
-            text-align: left;
-            margin-bottom: 10px;
-            font-size: 0.7rem;
-            transition: 0.2s;
-        }
-        .ship-btn:hover { background: rgba(255, 154, 31, 0.15); border-color: var(--primary); }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); }
     </style>
 </head>
 <body>
 
 <nav>
-    <span style="color: var(--primary); letter-spacing: 2px;">IRATHIENS // INTEL_DATABASE</span>
-    <a href="index.html" style="color:white; text-decoration:none; font-size:0.7rem; border:1px solid var(--border); padding:5px 10px;">EXIT_TERMINAL</a>
+    <div class="nav-logo">IRATHIENS_HUD // INTEL_CORE</div>
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="switchView('view-ships')">VISOR_NAVES</button>
+        <button class="nav-btn" onclick="switchView('view-species')">ARCHIVOS_XENO</button>
+    </div>
 </nav>
 
-<div class="wiki-container">
+<div id="view-ships" class="view-section active-view">
     <aside class="panel">
-        <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron'; margin-bottom:15px;">AVAILABLE_FILES</p>
+        <p style="color:var(--primary); font-family:'Orbitron'; font-size:0.6rem; margin-bottom:15px;">VESSEL_INDEX</p>
         <div id="list-container"></div>
     </aside>
-
     <main class="viewer-box">
-        <div style="position:absolute; top:20px; left:20px; z-index:10; font-family:'Orbitron'">
-            <h2 id="display-name" style="margin:0; color:var(--primary); font-size: 1.1rem;">INITIALIZING...</h2>
-            <small id="display-status" style="color:var(--holo-blue); font-size: 0.6rem;">DECRYPTING_HOLO_FEED</small>
-        </div>
-        <model-viewer id="viewer" src="" camera-controls auto-rotate shadow-intensity="1" exposure="0.8" camera-orbit="45deg 75deg 160%"></model-viewer>
+        <div class="scanline"></div>
+        <h2 id="display-name" style="font-family:'Orbitron'; color:var(--primary); font-size: 2rem; margin:0;">SELECT_UNIT</h2>
+        <model-viewer id="viewer" src="" camera-controls auto-rotate shadow-intensity="1" exposure="0.8" style="width:100%; height:85%;"></model-viewer>
     </main>
-
     <aside class="panel">
-        <p style="color:var(--primary); font-size:0.6rem; font-family:'Orbitron';">TECHNICAL_SPECIFICATIONS</p>
+        <p style="color:var(--primary); font-family:'Orbitron'; font-size:0.6rem; margin-bottom:15px;">TECHNICAL_SPEC_SCAN</p>
         <div id="stats-panel"></div>
     </aside>
 </div>
 
+<div id="view-species" class="view-section">
+    <aside class="panel">
+        <p style="color:var(--primary); font-family:'Orbitron'; font-size:0.6rem; margin-bottom:15px;">SPECIES_INDEX</p>
+        <div id="species-list-container"></div>
+    </aside>
+    <main class="viewer-box">
+        <div class="img-holo-frame">
+            <div class="scanline"></div>
+            <img id="sp-img" src="" class="species-img">
+        </div>
+        <h2 id="sp-name" style="font-family:'Orbitron'; color:var(--primary); font-size: 2.5rem; margin:0;"></h2>
+        <p id="sp-tag" style="color:var(--holo-blue); font-family:'JetBrains Mono'; margin-bottom:30px;"></p>
+        <div id="info-container"></div>
+    </main>
+    <aside class="panel">
+        <p style="color:var(--primary); font-family:'Orbitron'; font-size:0.6rem; margin-bottom:15px;">XENO_BIOMETRICS</p>
+        <div id="sp-stats"></div>
+    </aside>
+</div>
+
 <script type="module">
+    // --- LÓGICA DE NAVES (SUPABASE) ---
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-    const supabaseUrl = 'https://dfizvgagofsctgwzksgd.supabase.co'
-    const supabaseKey = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR'
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    const supabase = createClient('https://dfizvgagofsctgwzksgd.supabase.co', 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR')
 
-    const listContainer = document.getElementById('list-container');
-    const statsPanel = document.getElementById('stats-panel');
-    const viewer = document.getElementById('viewer');
-    const displayName = document.getElementById('display-name');
-
-    function renderShipStats(shipName) {
-        const nameClean = shipName.toUpperCase();
-        let content = `<div class="stat-header">IDENTIFICATION</div>`;
-
-        if(nameClean.includes("AVENGER")) {
-            content += `
-                <div class="stat-row"><span class="stat-label">Class</span><span class="stat-value">Avenger Stalker</span></div>
-                <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">Interceptor</span></div>
-                <div class="stat-row"><span class="stat-label">Mass</span><span class="stat-value">48,986.3 kg</span></div>
-                <div class="stat-header">FLIGHT_PERFORMANCE</div>
-                <div class="stat-row"><span class="stat-label">SCM Speed</span><span class="stat-value">260 m/s</span></div>
-                <div class="stat-row"><span class="stat-label">Max Speed</span><span class="stat-value">1425 m/s</span></div>
-                <div class="stat-row"><span class="stat-label">Acceleration</span><span class="stat-value">12.85 G</span></div>
-                <div class="stat-header">HULL_INTEGRITY</div>
-                <div class="stat-row"><span class="stat-label">Total HP</span><span class="stat-value">11,900</span></div>
-            `;
-        } else if(nameClean.includes("VANGUARD")) {
-            content += `
-                <div class="stat-row"><span class="stat-label">Class</span><span class="stat-value">Vanguard Hoplite</span></div>
-                <div class="stat-row"><span class="stat-label">Role</span><span class="stat-value">Dropship</span></div>
-                <div class="stat-row"><span class="stat-label">Mass</span><span class="stat-value">217,870 kg</span></div>
-                <div class="stat-header">FLIGHT_PERFORMANCE</div>
-                <div class="stat-row"><span class="stat-label">SCM Speed</span><span class="stat-value">209 m/s</span></div>
-                <div class="stat-row"><span class="stat-label">Max Speed</span><span class="stat-value">1115 m/s</span></div>
-                <div class="stat-row"><span class="stat-label">Acceleration</span><span class="stat-value">10.04 G</span></div>
-                <div class="stat-header">HULL_INTEGRITY</div>
-                <div class="stat-row"><span class="stat-label">Total HP</span><span class="stat-value">57,800</span></div>
-                <div class="stat-row"><span class="stat-label">Nose Armor</span><span class="stat-value">14,000 HP</span></div>
-            `;
-        } else {
-            content += `<div style="padding:15px; font-size:0.7rem; color:#444;">DATA_NOT_FOUND: ${nameClean}</div>`;
-        }
-        statsPanel.innerHTML = content;
+    async function initShips() {
+        const { data } = await supabase.from('ships_wiki').select('*');
+        const list = document.getElementById('list-container');
+        if(data) data.forEach(ship => {
+            const b = document.createElement('button');
+            b.className = 'list-btn';
+            b.innerText = `> ${ship.name.toUpperCase()}`;
+            b.onclick = () => {
+                document.getElementById('viewer').src = ship.model_path;
+                document.getElementById('display-name').innerText = ship.name.toUpperCase();
+                // Aquí puedes añadir la lógica de stats de naves si la tienes en la tabla
+            };
+            list.appendChild(b);
+        });
     }
 
-    async function loadShips() {
-        const { data: ships } = await supabase.from('ships_wiki').select('*').order('name', { ascending: true });
-        listContainer.innerHTML = '';
-        if (ships) {
-            ships.forEach((ship, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'ship-btn';
-                btn.innerText = `> ${ship.name.toUpperCase()}`;
-                btn.onclick = () => {
-                    viewer.src = ship.model_path;
-                    displayName.innerText = ship.name.toUpperCase();
-                    renderShipStats(ship.name);
-                };
-                listContainer.appendChild(btn);
-                if(index === 0) btn.click();
-            });
+    // --- LÓGICA DE RAZAS (DATA LOCAL AMPLIADA) ---
+    const speciesData = {
+        "Banu": {
+            tag: "CIVILIZACIÓN MERCANTIL // PRIMER CONTACTO: 2438",
+            img: "https://raw.githubusercontent.com/JoaoIrathen/irathiens-wiki/main/banu.png",
+            sections: {
+                "Historia": "Los Banu fueron la primera especie inteligente que la Humanidad encontró. Descubiertos por Vernon Tar, el contacto inicial fue tenso pero derivó en el primer Acuerdo Interestelar de Paz y Comercio.",
+                "Sociedad": "Se organizan en 'Soulis' (gremios), que actúan como unidades familiares y económicas. Son comerciantes natos que operan incluso con los Vanduul.",
+                "Gobierno": "El Protectorado Banu es una república descentralizada de estados-planeta."
+            },
+            stats: { "Capital": "Baco II", "Idioma": "Banu", "Religión": "Cassa / Taernin", "Gobierno": "Protectorado", "Sistemas": "7" }
+        },
+        "Xi'an": {
+            tag: "IMPERIO DINÁSTICO // TECNOLOGÍA GRAVITATORIA",
+            img: "https://raw.githubusercontent.com/JoaoIrathen/irathiens-wiki/main/xian.png",
+            sections: {
+                "Biología": "Seres longevos con esperanza de vida de +250 años. Su metabolismo es lento y su dieta rituálica.",
+                "Cultura": "Su vida se rige por el Li'tova, un código espiritual de armonía. Valoran la paciencia extrema.",
+                "Servicio": "El servicio nacional es obligatorio, ya sea en roles militares o civiles para el sustento del Imperio."
+            },
+            stats: { "Capital": "Hyōtan", "Gobierno": "Imperio", "Religión": "Li'tova", "Vida Media": "250+", "Sistemas": "14" }
+        }
+    };
+
+    function loadSpecies(key) {
+        const d = speciesData[key];
+        document.getElementById('sp-name').innerText = key.toUpperCase();
+        document.getElementById('sp-tag').innerText = d.tag;
+        document.getElementById('sp-img').src = d.img;
+        
+        const infoCont = document.getElementById('info-container');
+        infoCont.innerHTML = '';
+        for(let s in d.sections) {
+            infoCont.innerHTML += `<div class="info-header">> ${s.toUpperCase()}</div><p class="info-content">${d.sections[s]}</p>`;
+        }
+        
+        const statsBox = document.getElementById('sp-stats');
+        statsBox.innerHTML = '';
+        for(let s in d.stats) {
+            statsBox.innerHTML += `<div class="stat-row"><span class="stat-label">${s}</span><span class="stat-value">${d.stats[s]}</span></div>`;
         }
     }
-    loadShips();
+
+    // --- NAVEGACIÓN Y CARGA ---
+    window.switchView = (id) => {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active-view'));
+        document.getElementById(id).classList.add('active-view');
+    };
+
+    const sList = document.getElementById('species-list-container');
+    Object.keys(speciesData).forEach(n => {
+        const b = document.createElement('button');
+        b.className = 'list-btn'; b.innerText = `> ${n.toUpperCase()}`;
+        b.onclick = () => loadSpecies(n);
+        sList.appendChild(b);
+    });
+
+    initShips();
+    loadSpecies("Banu");
 </script>
 </body>
 </html>
-</html>
-
