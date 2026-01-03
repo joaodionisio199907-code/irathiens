@@ -6,7 +6,9 @@
     <title>Irathiens | Perfil de Ciudadano</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=Rajdhani:wght@500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+
     <style>
         :root {
             --bg: #060b14;
@@ -83,38 +85,19 @@
         }
 
         .token-balance-box {
-            margin-top: 15px;
-            padding: 10px;
+            margin-top: 15px; padding: 10px;
             background: rgba(255, 154, 31, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            border: 1px solid var(--border); border-radius: 8px;
         }
         .token-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.2rem;
-            color: var(--primary);
-            font-weight: bold;
+            font-family: 'JetBrains Mono', monospace; font-size: 1.2rem;
+            color: var(--primary); font-weight: bold;
         }
-
-        .profile-card::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-        }
-
-        .avatar-wrapper {
-            width: 140px; height: 140px; margin: 0 auto 20px;
-            border-radius: 50%; border: 3px solid var(--primary); padding: 5px;
-        }
-
-        .avatar-wrapper img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-
-        .user-name { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; color: var(--text); margin: 10px 0 5px; }
-        .user-rank { color: var(--primary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
 
         .content-panel {
             background: var(--glass); border: 1px solid var(--border);
             border-radius: 15px; padding: 30px; backdrop-filter: blur(10px);
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .section-title {
@@ -142,17 +125,14 @@
 
         footer { margin-top: 60px; padding: 30px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); }
 
-        /* CHAT CSS */
-        .chat-bubble { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(255, 154, 31, 0.1); border: 2px solid #ff9a1f; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3000; box-shadow: 0 0 15px #ff9a1f; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .chat-window { position: fixed; bottom: 90px; left: 20px; width: 320px; height: 400px; background: rgba(6, 11, 20, 0.95); border: 1px solid #ff9a1f; backdrop-filter: blur(15px); display: none; flex-direction: column; z-index: 2999; box-shadow: 0 0 30px rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden; }
+        /* Estilos Chat */
+        .chat-bubble { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background: rgba(255, 154, 31, 0.1); border: 2px solid #ff9a1f; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3000; box-shadow: 0 0 15px #ff9a1f; }
+        .chat-window { position: fixed; bottom: 90px; left: 20px; width: 320px; height: 400px; background: rgba(6, 11, 20, 0.95); border: 1px solid #ff9a1f; backdrop-filter: blur(15px); display: none; flex-direction: column; z-index: 2999; border-radius: 10px; overflow: hidden; }
         .chat-window.active { display: flex; }
-        .chat-header { background: #ff9a1f; color: #000; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold; display: flex; justify-content: space-between; }
+        .chat-header { background: #ff9a1f; color: #000; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold; }
         .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .msg { font-size: 0.75rem; padding: 5px 8px; border-left: 2px solid #ffb347; background: rgba(255,255,255,0.03); color: #e6f1ff; }
-        .msg-user { color: #ff9a1f; font-weight: bold; font-size: 0.65rem; display: block; }
-        .chat-input-area { padding: 10px; border-top: 1px solid rgba(255,154,31,0.2); display: flex; gap: 5px; }
-        .chat-input { flex: 1; background: #000; border: 1px solid #ff9a1f; color: #fff; padding: 8px; font-size: 0.8rem; }
-        .btn-send { background: #ff9a1f; border: none; padding: 0 10px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem; }
+        .msg-user { color: #ff9a1f; font-weight: bold; display: block; }
     </style>
 </head>
 <body>
@@ -198,29 +178,28 @@
     </aside>
 
     <main>
+        <div class="content-panel" style="border-color: var(--success);">
+            <div class="section-title" style="color: var(--success);">RECARGA DE CITIZEN TOKENS</div>
+            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 20px;">
+                Tasa de cambio: <strong style="color: white;">1€ = 1 Token</strong>. 
+                Haz clic en el botón inferior para realizar la compra segura vía Stripe.
+            </p>
+            
+            <stripe-buy-button
+              buy-button-id="buy_btn_1SlKorRkUbsaww5Lk1yybRFT"
+              publishable-key="pk_test_51SlKmLRkUbsaww5LxU4Dei6WZWHyXGk1qCkEag4FPd8GPXFaIYZ5dGPREdfBUlVLvYjDOS6NViOtqTlRVEfSDZNV00ktlUhrXl"
+            >
+            </stripe-buy-button>
+        </div>
+
         <div class="content-panel">
             <div class="section-title">CONFIGURACIÓN DE IDENTIDAD</div>
             <div style="display: flex; gap: 10px; align-items: flex-start;">
                 <input type="text" id="handle-input" placeholder="Tu Citizen Handle...">
                 <button class="btn-action" onclick="saveHandle()">VINCULAR</button>
             </div>
-        </div>
 
-        <div class="content-panel" style="border-color: var(--success);">
-            <div class="section-title" style="color: var(--success);">RECARGA DE CITIZEN TOKENS</div>
-            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 20px;">
-                Adquiere créditos para tu cuenta. Tasa actual: <strong style="color: white;">1€ = 1 Token</strong>.
-            </p>
-            
-            <stripe-buy-button
-              buy-button-id="TU_ID_DE_BOTON"
-              publishable-key="TU_KEY_PUBLISHABLE"
-            >
-            </stripe-buy-button>
-        </div>
-
-        <div class="content-panel">
-            <div class="section-title">GESTIÓN DE HANGAR</div>
+            <div class="section-title" style="margin-top: 40px;">GESTIÓN DE HANGAR</div>
             <select id="ship-selector">
                 <option value="" disabled selected>Busca tu nave...</option>
                 <option value="Carrack">Carrack</option>
@@ -239,9 +218,8 @@
 <footer>© 2025 Irathiens Command · Seguridad Encriptada</footer>
 
 <div class="chat-bubble" onclick="toggleChat()"><span style="color:#ff9a1f; font-weight:bold;">COMM</span></div>
-
 <div class="chat-window" id="chatWindow">
-    <div class="chat-header"><span>IRATHIENS_COMM_LINK</span><span id="chat-status">●</span></div>
+    <div class="chat-header">IRATHIENS_COMM_LINK</div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-area">
         <input type="text" class="chat-input" id="chatInput" placeholder="Escribir...">
@@ -268,12 +246,11 @@ async function init() {
         document.getElementById('display-rank').innerText = profile.rank || "Cadete de Flota";
         document.getElementById('display-balance').innerText = profile.citizen_tokens || 0;
         
-        // --- VINCULACIÓN CON STRIPE ---
-        // Esto busca el botón de Stripe y le inyecta tu ID de Supabase
+        // VINCULACIÓN DINÁMICA CON STRIPE
         const stripeBtn = document.querySelector('stripe-buy-button');
         if (stripeBtn) {
             stripeBtn.setAttribute('client-reference-id', user.id);
-            console.log("Sistema de pagos vinculado al ID:", user.id);
+            console.log("Stripe vinculado al usuario:", user.id);
         }
 
         if (profile.role === 'admin') document.getElementById('admin-link').style.display = 'inline';
@@ -293,18 +270,14 @@ async function saveHandle() {
     location.reload();
 }
 
-function toggleChat() {
-    document.getElementById('chatWindow').classList.toggle('active');
-}
+function toggleChat() { document.getElementById('chatWindow').classList.toggle('active'); }
 
 async function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const content = input.value.trim();
-    const userName = document.getElementById('display-name').innerText;
-
     if (content !== "" && currentUser) {
         await _supabase.from('mensajes').insert([{ 
-            user_name: userName, 
+            user_name: document.getElementById('display-name').innerText, 
             content: content,
             user_id: currentUser.id 
         }]);
@@ -315,7 +288,6 @@ async function sendChatMessage() {
 async function initChat() {
     let { data: msgs } = await _supabase.from('mensajes').select('*').order('created_at', { ascending: true }).limit(50);
     if (msgs) msgs.forEach(m => renderMsg(m));
-
     _supabase.channel('chat-room').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
         renderMsg(payload.new);
     }).subscribe();
@@ -323,14 +295,9 @@ async function initChat() {
 
 function renderMsg(data) {
     const container = document.getElementById('chatMessages');
-    const time = new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const div = document.createElement('div');
     div.className = 'msg';
-    div.innerHTML = `
-        <span class="msg-time">${time}</span>
-        <span class="msg-user">${data.user_name}</span>
-        <span>${data.content}</span>
-    `;
+    div.innerHTML = `<span class="msg-user">${data.user_name}</span><span>${data.content}</span>`;
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
 }
@@ -349,16 +316,11 @@ function renderShipCard(name) {
 
 async function addShip() {
     const name = document.getElementById('ship-selector').value;
-    if (!name) return;
-    renderShipCard(name);
-    syncShips();
+    if (name) { renderShipCard(name); syncShips(); }
 }
 
 async function removeShip(btn) {
-    if(confirm("¿Retirar nave del hangar?")) {
-        btn.parentElement.remove();
-        syncShips();
-    }
+    if(confirm("¿Retirar nave?")) { btn.parentElement.remove(); syncShips(); }
 }
 
 async function syncShips() {
@@ -375,13 +337,6 @@ async function handleLogout() {
     await _supabase.auth.signOut();
     window.location.href = "login.html";
 }
-
-window.addEventListener('mousemove', (e) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * -20;
-    const y = (e.clientY / window.innerHeight - 0.5) * -20;
-    const bg = document.getElementById('bg-parallax');
-    if(bg) bg.style.transform = `translate(${x}px, ${y}px)`;
-});
 
 init();
 </script>
