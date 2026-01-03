@@ -451,3 +451,31 @@ model-viewer {
     filter: drop-shadow(0 0 15px rgba(255, 154, 31, 0.6)) contrast(1.2);
     animation: flicker 5s infinite;
 }
+/* Animación de entrada y salida */
+.fade-content {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hidden { display: none !important; }
+
+/* Tarjeta especial para el enlace al Token */
+.token-portal-card {
+    background: linear-gradient(45deg, rgba(0, 255, 136, 0.05), rgba(255, 154, 31, 0.05));
+    border: 1px dashed var(--success);
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.token-portal-card:hover {
+    background: rgba(0, 255, 136, 0.1);
+    border-style: solid;
+    transform: scale(1.02);
+}
