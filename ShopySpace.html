@@ -147,7 +147,7 @@
         <a class="cat-item" onclick="filterByCategory('Armor', this)">ARMOR_SETS</a>
         <a class="cat-item" onclick="filterByCategory('Weapons', this)">PERSONAL_WEAPONS</a>
         <a class="cat-item" onclick="filterByCategory('Ships', this)">SHIPS_VEHICLES</a>
-        <a class="cat-item" onclick="filterByCategory('Mining', this)">MINING_RESOURCES</a>
+        <a class="cat-item" onclick="filterByCategory('Modules', this)">SHIP_MODULES</a> <a class="cat-item" onclick="filterByCategory('Mining', this)">MINING_RESOURCES</a>
         <a class="cat-item" onclick="filterByCategory('Medical', this)">MEDICAL_SUPPLIES</a>
         
         <div class="category-title" style="margin-top:30px;">NETWORK_STATUS</div>
@@ -162,8 +162,7 @@
                     <button class="tag-btn" style="border-color: var(--ui-blue); color: var(--ui-blue);" onclick="fetchMarket()">REFRESH_DATA</button>
                 </div>
             </header>
-            <div id="market-grid" class="market-grid">
-                </div>
+            <div id="market-grid" class="market-grid"></div>
         </section>
 
         <section id="sell" class="tab-content">
@@ -182,7 +181,8 @@
                             <option value="Armor">Armor</option>
                             <option value="Weapons">Weapons</option>
                             <option value="Ships">Ships</option>
-                            <option value="Mining">Mining</option>
+                            <option value="Modules">Modules</option> <option value="Mining">Mining</option>
+                            <option value="Medical">Medical</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -215,11 +215,9 @@
         </div>
         <div class="details-content">
             <span onclick="closeM()" style="position:absolute; top:20px; right:20px; cursor:pointer; color:var(--danger); font-family:var(--font-hud); font-size:1.2rem;">[X]</span>
-            
             <div id="m-status-badge"></div>
             <h2 id="m-title" style="font-family:var(--font-hud); color:var(--accent); margin:0; font-size:1.4rem;"></h2>
             <div id="m-price" style="font-family:'JetBrains Mono'; color:var(--ui-blue); font-size:2rem; margin-top:10px;"></div>
-            
             <div class="data-grid">
                 <div class="data-item">
                     <div class="data-label">SPEC_CATEGORY</div>
@@ -238,12 +236,8 @@
                     <div class="data-value" style="color:var(--success)">TRUE</div>
                 </div>
             </div>
-
-            <p style="font-size:0.85rem; opacity:0.6; line-height:1.5;">
-                Inicie una conexión encriptada con el vendedor para coordinar el encuentro y la transferencia de créditos.
-            </p>
-            
-            <button class="tag-btn" id="btn-chat-trigger" style="width:100%; padding:18px; margin-top:auto; border-color:var(--ui-blue); color:var(--ui-blue); font-weight:bold; letter-spacing:1px;">ESTABLISH_COMMS_LINK</button>
+            <p style="font-size:0.85rem; opacity:0.6; line-height:1.5;">Inicie una conexión encriptada con el vendedor para coordinar el encuentro.</p>
+            <button class="tag-btn" id="btn-chat-trigger" style="width:100%; padding:18px; margin-top:auto; border-color:var(--ui-blue); color:var(--ui-blue); font-weight:bold;">ESTABLISH_COMMS_LINK</button>
         </div>
     </div>
 </div>
@@ -276,19 +270,14 @@
         fetchMarket();
     };
 
-    // --- CARGA Y RENDER ---
     async function fetchMarket() {
         const { data, error } = await _supabase.from('marketplace_items').select('*').order('created_at', {ascending: false});
-        if (!error) {
-            allItems = data;
-            renderItems(data);
-        }
+        if (!error) { allItems = data; renderItems(data); }
     }
 
     function renderItems(list) {
         const grid = document.getElementById('market-grid');
         grid.innerHTML = list.length ? "" : "<p style='padding:20px; color:var(--danger);'>NO_DATA_FOUND_IN_SECTOR</p>";
-        
         list.forEach(item => {
             const div = document.createElement('div');
             div.className = 'item-card';
@@ -304,44 +293,29 @@
         });
     }
 
-    // --- DETALLES Y DATOS SUPABASE ---
     function openDetails(item) {
         selectedItem = item;
         document.getElementById('m-title').innerText = item.item_name.toUpperCase();
         document.getElementById('m-price').innerText = parseInt(item.price_auec).toLocaleString() + " aUEC";
         document.getElementById('m-img').src = item.image_1;
-        
-        // Inyectar Location, Category y Status
-        document.getElementById('m-location').innerText = (item.location || 'UNKNOWN_SECTOR').toUpperCase();
+        document.getElementById('m-location').innerText = (item.location || 'UNKNOWN').toUpperCase();
         document.getElementById('m-category').innerText = (item.category || 'GENERAL').toUpperCase();
         document.getElementById('m-status-text').innerText = (item.status || 'AVAILABLE').toUpperCase();
-
         const badge = document.getElementById('m-status-badge');
         const isAvail = (item.status === 'available' || !item.status);
         badge.innerHTML = `<span class="status-badge ${isAvail ? 'status-available' : 'status-sold'}">${isAvail ? 'ONLINE_DISPONIBLE' : 'OFFLINE_VENDIDO'}</span>`;
-
         document.getElementById('modal').style.display = 'flex';
         document.getElementById('btn-chat-trigger').onclick = () => initChat(item);
     }
 
     function closeM() { document.getElementById('modal').style.display = 'none'; }
 
-    // --- CHAT EN TIEMPO REAL ---
     async function initChat(item) {
-        if(!currentUser) return alert("ERROR: AUTH_REQUIRED. Inicie sesión en la terminal.");
-        if(currentUser.id === item.seller_id) return alert("NOTICE: ITEM_OWNERSHIP_DETECTED.");
-
+        if(!currentUser) return alert("AUTH REQUIRED");
         document.getElementById('modal').style.display = 'none';
         document.getElementById('chat-panel').style.display = 'flex';
         document.getElementById('chat-title').innerText = "LINK: " + item.item_name.toUpperCase();
-        
         loadMessages(item.id);
-
-        // Suscripción Realtime para este item
-        _supabase.channel('public:marketplace_chats')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'marketplace_chats', filter: `item_id=eq.${item.id}` }, payload => {
-            appendMsg(payload.new);
-        }).subscribe();
     }
 
     async function loadMessages(itemId) {
@@ -363,7 +337,6 @@
     async function sendMessage() {
         const input = document.getElementById('chat-input');
         if(!input.value.trim()) return;
-
         await _supabase.from('marketplace_chats').insert([{
             item_id: selectedItem.id,
             buyer_id: currentUser.id,
@@ -376,12 +349,10 @@
 
     function closeChat() { document.getElementById('chat-panel').style.display = 'none'; }
 
-    // --- FILTROS Y BÚSQUEDA ---
     function handleGlobalSearch() {
         const q = document.getElementById('main-search').value.toLowerCase();
         const filtered = allItems.filter(i => 
-            i.item_name.toLowerCase().includes(q) || 
-            (i.location && i.location.toLowerCase().includes(q))
+            i.item_name.toLowerCase().includes(q) || (i.location && i.location.toLowerCase().includes(q))
         );
         renderItems(filtered);
     }
@@ -400,7 +371,6 @@
         document.getElementById('link-'+t).classList.add('active');
     }
 
-    // --- LÓGICA DE SUBIDA (VENDER) ---
     function processImg(input) {
         const reader = new FileReader();
         reader.onload = (e) => { 
@@ -412,7 +382,6 @@
 
     async function uploadToNet() {
         if(!currentUser) return alert("ERROR: AUTH_REQUIRED.");
-        
         const payload = {
             seller_id: currentUser.id,
             item_name: document.getElementById('item-name').value,
@@ -422,12 +391,10 @@
             image_1: uploadedImgBase64,
             status: 'available'
         };
-
         const { error } = await _supabase.from('marketplace_items').insert([payload]);
         if(error) alert("UPLOAD_FAILED: " + error.message);
         else { alert("SUCCESS: MANIFEST_UPDATED"); location.reload(); }
     }
 </script>
-
 </body>
 </html>
