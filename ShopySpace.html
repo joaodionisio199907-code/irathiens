@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UCS CORP | TERMINAL V2</title>
+    <title>UCS CORP | TERMINAL DE MERCADO</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -22,93 +22,139 @@
             font-family: 'Rajdhani', sans-serif;
             background-image: radial-gradient(circle at 2px 2px, var(--accent-dim) 1px, transparent 0);
             background-size: 30px 30px;
+            min-height: 100vh;
         }
 
+        /* --- NAVEGACIÓN --- */
         nav {
             background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--accent);
             padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 1000;
         }
 
-        .nav-links a { color: #fff; text-decoration: none; font-family: var(--font-hud); font-size: 0.7rem; margin-left: 20px; cursor: pointer; }
+        .nav-links a { color: #fff; text-decoration: none; font-family: var(--font-hud); font-size: 0.7rem; margin-left: 20px; cursor: pointer; transition: 0.3s; }
         .nav-links a.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
 
         .main-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
 
-        /* --- FORM PANEL --- */
-        .card-panel { background: rgba(10, 12, 15, 0.95); border: 1px solid var(--accent-dim); padding: 30px; clip-path: polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%); }
-        
-        input, select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; margin-bottom: 15px; font-family: 'JetBrains Mono'; }
+        /* --- GRILLA DE MERCADO --- */
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
 
-        /* --- PHOTO UPLOADER CON X --- */
+        .item-card {
+            background: rgba(10, 15, 20, 0.9);
+            border: 1px solid var(--accent-dim);
+            padding: 15px;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .item-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(196, 154, 92, 0.1);
+        }
+
+        .item-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border: 1px solid #222;
+            margin-bottom: 15px;
+        }
+
+        .item-card h3 { font-family: var(--font-hud); font-size: 0.85rem; color: var(--accent); margin: 0 0 10px 0; }
+        .item-price { font-family: 'JetBrains Mono'; color: var(--ui-blue); font-size: 1.2rem; font-weight: bold; }
+
+        /* --- FORMULARIO DE VENTA --- */
+        .card-panel { 
+            background: rgba(10, 12, 15, 0.95); 
+            border: 1px solid var(--accent-dim); 
+            padding: 30px; 
+            clip-path: polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%); 
+        }
+        
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; margin-bottom: 15px; font-family: 'JetBrains Mono'; box-sizing: border-box; }
+
         .file-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .file-box { 
-            border: 2px dashed var(--accent-dim); height: 150px; position: relative;
+            border: 2px dashed var(--accent-dim); height: 160px; position: relative;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.3); overflow: hidden;
         }
-        .file-box:hover { border-color: var(--accent); }
         .file-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
         
-        /* La X para borrar */
         .remove-btn {
-            position: absolute; top: 5px; right: 5px; background: var(--danger);
-            color: white; border: none; width: 25px; height: 25px; cursor: pointer;
+            position: absolute; top: 8px; right: 8px; background: var(--danger);
+            color: white; border: none; width: 24px; height: 24px; cursor: pointer;
             display: none; z-index: 10; font-weight: bold; font-family: var(--font-hud);
             clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
         }
 
-        .btn-primary { width: 100%; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 15px; font-family: var(--font-hud); cursor: pointer; font-weight: bold; }
+        .btn-primary { 
+            width: 100%; background: transparent; border: 1px solid var(--accent); 
+            color: var(--accent); padding: 15px; font-family: var(--font-hud); 
+            cursor: pointer; font-weight: bold; text-transform: uppercase;
+        }
         .btn-primary:hover { background: var(--accent); color: #000; }
 
         /* --- MODAL --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background: #0a0d12; border: 1px solid var(--accent); width: 90%; max-width: 700px; padding: 25px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: #0a0d12; border: 1px solid var(--accent); width: 90%; max-width: 600px; padding: 25px; }
         .verify-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .verify-imgs img { width: 100%; height: 120px; object-fit: cover; border: 1px solid #333; }
 
-        .tab-content { display: none; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .status-badge { position: absolute; top: 10px; left: 10px; background: var(--accent); color: black; font-size: 0.6rem; padding: 2px 6px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="font-family: var(--font-hud); color: var(--accent);">UCS_ORBITAL_V2</div>
+    <div style="font-family: var(--font-hud); color: var(--accent); letter-spacing: 2px;">UCS_ORBITAL_MARKET</div>
     <div class="nav-links">
         <a onclick="showTab('market')" id="link-market" class="active">MERCADO</a>
-        <a onclick="showTab('sell')" id="link-sell">VENDER</a>
-    </section>
+        <a onclick="showTab('sell')" id="link-sell">VENDER_ITEM</a>
+    </div>
 </nav>
 
 <div class="main-container">
+    
     <section id="market" class="tab-content active">
-        <div id="market-items" class="file-grid"></div>
+        <div id="market-items" class="market-grid">
+            </div>
     </section>
 
     <section id="sell" class="tab-content">
         <div class="card-panel" style="max-width: 600px; margin: auto;">
-            <h2 style="font-family: var(--font-hud); color: var(--accent); font-size: 1rem;">NUEVO_MANIFIESTO</h2>
+            <h2 style="font-family: var(--font-hud); color: var(--accent); font-size: 1rem; margin-top: 0;">REGISTRO_DE_MANIFIESTO</h2>
             
-            <input type="text" id="item-name" placeholder="NOMBRE DEL OBJETO">
-            <input type="number" id="item-price" placeholder="PRECIO aUEC">
+            <input type="text" id="item-name" placeholder="NOMBRE DEL OBJETO / NAVE">
+            <input type="number" id="item-price" placeholder="PRECIO EN aUEC">
             
             <div class="file-grid">
                 <div class="file-box" id="box-1">
-                    <button class="remove-btn" id="rm-1" onclick="removeImg(1, event)">X</button>
-                    <span id="txt-1" onclick="document.getElementById('file-1').click()">+ FOTO 1</span>
+                    <button class="remove-btn" id="rm-1" onclick="removeImg(1, event)"></button>
+                    <span id="txt-1" onclick="document.getElementById('file-1').click()">[ + FOTO_PRINCIPAL ]</span>
                     <img id="img-1">
                     <input type="file" id="file-1" hidden accept="image/*" onchange="previewImg(this, 1)">
                 </div>
                 <div class="file-box" id="box-2">
-                    <button class="remove-btn" id="rm-2" onclick="removeImg(2, event)">X</button>
-                    <span id="txt-2" onclick="document.getElementById('file-2').click()">+ FOTO 2</span>
+                    <button class="remove-btn" id="rm-2" onclick="removeImg(2, event)"></button>
+                    <span id="txt-2" onclick="document.getElementById('file-2').click()">[ + FOTO_DETALLE ]</span>
                     <img id="img-2">
                     <input type="file" id="file-2" hidden accept="image/*" onchange="previewImg(this, 2)">
                 </div>
             </div>
 
-            <button class="btn-primary" onclick="openVerify()">ANALIZAR DATOS</button>
+            <button class="btn-primary" onclick="openVerify()">ANALIZAR PARA PUBLICACIÓN</button>
         </div>
     </section>
 </div>
@@ -120,37 +166,86 @@
             <span onclick="closeModal()" style="cursor:pointer; color:var(--danger)">[ CERRAR ]</span>
         </div>
         
-        <p>OBJETO: <span id="v-name" style="color:white">--</span></p>
-        <p>PRECIO: <span id="v-price" style="color:var(--ui-blue)">--</span></p>
+        <p style="margin: 5px 0;">ITEM: <span id="v-name" style="color:white; font-weight: bold;">--</span></p>
+        <p style="margin: 5px 0;">COSTO: <span id="v-price" style="color:var(--ui-blue); font-family: 'JetBrains Mono';">--</span></p>
 
         <div class="verify-imgs">
             <img id="v-img-1" src="">
             <img id="v-img-2" src="">
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
-            <button class="btn-primary" style="border-color:var(--danger); color:var(--danger)" onclick="closeModal()">CANCELAR</button>
-            <button class="btn-primary" id="confirm-upload-btn" onclick="finalUpload()">CONFIRMAR SUBIDA</button>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:25px;">
+            <button class="btn-primary" style="border-color:var(--danger); color:var(--danger)" onclick="closeModal()">ABORTAR</button>
+            <button class="btn-primary" id="confirm-upload-btn" onclick="finalUpload()">CONFIRMAR_ENVÍO</button>
         </div>
     </div>
 </div>
 
 <script>
+    // CONFIGURACIÓN SUPABASE
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
     let imagesBase64 = [null, null];
 
+    // INICIO: Cargar mercado al abrir
+    window.onload = () => {
+        loadMarketItems();
+    };
+
     function showTab(t) {
         document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.nav-links a').forEach(x => x.classList.remove('active'));
+        
         document.getElementById(t).classList.add('active');
+        document.getElementById('link-' + t).classList.add('active');
+        
+        if(t === 'market') loadMarketItems();
     }
 
-    // --- PREVISUALIZAR Y QUITAR ---
+    // --- LÓGICA DE CARGA (VER EL MERCADO) ---
+    async function loadMarketItems() {
+        const container = document.getElementById('market-items');
+        container.innerHTML = "<p style='color:var(--accent); font-family:JetBrains Mono;'>Escaneando sector...</p>";
+
+        const { data, error } = await _supabase
+            .from('marketplace_items')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            container.innerHTML = "<p style='color:var(--danger)'>ERROR DE ENLACE</p>";
+            return;
+        }
+
+        container.innerHTML = ""; 
+
+        data.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            const imgUrl = item.image_1 || 'https://via.placeholder.com/400x250?text=NO+IMAGE';
+
+            card.innerHTML = `
+                <div class="status-badge">DISPONIBLE</div>
+                <img src="${imgUrl}">
+                <div class="item-info">
+                    <h3>${item.item_name.toUpperCase()}</h3>
+                    <div class="item-price">${item.price_auec.toLocaleString()} aUEC</div>
+                    <button class="btn-primary" style="margin-top:12px; padding:8px; font-size:0.6rem;" 
+                            onclick="alert('ID de Transacción: ${item.id}')">
+                        ADQUIRIR DATOS
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // --- PREVISUALIZAR FOTOS ---
     function previewImg(input, n) {
         const file = input.files[0];
-        if (file && file.size < 10*1024*1024) {
+        if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = document.getElementById('img-'+n);
@@ -161,11 +256,10 @@
                 imagesBase64[n-1] = e.target.result;
             };
             reader.readAsDataURL(file);
-        } else {
-            alert("Archivo demasiado grande (Máximo 10MB)");
         }
     }
 
+    // --- QUITAR FOTOS (LA X) ---
     function removeImg(n, e) {
         e.stopPropagation();
         document.getElementById('img-'+n).style.display = 'none';
@@ -179,7 +273,7 @@
     function openVerify() {
         const name = document.getElementById('item-name').value;
         const price = document.getElementById('item-price').value;
-        if(!name || !price) return alert("Completa los campos");
+        if(!name || !price) return alert("Error: Faltan datos del manifiesto.");
 
         document.getElementById('v-name').innerText = name;
         document.getElementById('v-price').innerText = parseInt(price).toLocaleString() + " aUEC";
@@ -190,15 +284,15 @@
 
     function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
-    // --- SUBIDA REAL ---
+    // --- SUBIDA FINAL ---
     async function finalUpload() {
         const btn = document.getElementById('confirm-upload-btn');
-        btn.innerText = "SUBIENDO...";
+        btn.innerText = "TRANSMITIENDO...";
         btn.disabled = true;
 
         const { data: { session } } = await _supabase.auth.getSession();
         if (!session) {
-            alert("No hay sesión activa. Por favor, logueate.");
+            alert("Acceso denegado: Sesión no encontrada.");
             btn.disabled = false;
             return;
         }
@@ -215,12 +309,11 @@
         const { error } = await _supabase.from('marketplace_items').insert([payload]);
 
         if (error) {
-            console.error(error);
-            alert("Error al subir: " + error.message);
+            alert("Error de red: " + error.message);
             btn.disabled = false;
-            btn.innerText = "CONFIRMAR SUBIDA";
+            btn.innerText = "REINTENTAR";
         } else {
-            alert("¡Subida con éxito!");
+            alert("MANIFIESTO PUBLICADO CON ÉXITO");
             location.reload();
         }
     }
