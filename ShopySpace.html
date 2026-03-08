@@ -3,183 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UCS CORP | TACTICAL MARKETPLACE</title>
+    <title>UCS CORP | INTEGRATED TERMINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-dark: #05070a;
-            --accent: #c49a5c; /* Dorado ARKA/UCS */
-            --accent-dim: rgba(196, 154, 92, 0.2);
+            --accent: #c49a5c;
+            --accent-dim: rgba(196, 154, 92, 0.15);
             --ui-blue: #00f2ff;
+            --danger: #ff3e3e;
             --text: #e0e0e0;
             --font-hud: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
         }
 
         * { box-sizing: border-box; transition: all 0.2s ease; }
-
         body {
             margin: 0; background-color: var(--bg-dark); color: var(--text);
             font-family: var(--font-body); overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(196, 154, 92, 0.03) 0%, transparent 80%),
-                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            background-image: radial-gradient(circle at 2px 2px, var(--accent-dim) 1px, transparent 0);
+            background-size: 40px 40px;
         }
 
-        /* --- NAVIGATION --- */
+        /* --- NAVEGACIÓN --- */
         nav {
             background: rgba(0, 0, 0, 0.9); border-bottom: 1px solid var(--accent);
             padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
             backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000;
         }
-
         .nav-links a {
             color: var(--text); text-decoration: none; font-family: var(--font-hud);
             font-size: 0.7rem; letter-spacing: 2px; cursor: pointer; margin-left: 25px;
         }
         .nav-links a:hover, .nav-links a.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
 
-        .main-container { max-width: 1300px; margin: 40px auto; padding: 0 20px; }
+        .main-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
 
-        /* --- GRID & CARDS (DISEÑO 1 MEJORADO) --- */
+        /* --- MERCADO --- */
         .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-
         .item-card {
             background: rgba(15, 18, 22, 0.8); border: 1px solid var(--accent-dim);
             padding: 20px; cursor: pointer; position: relative;
-            clip-path: polygon(0 0, 90% 0, 100% 15%, 100% 100%, 10% 100%, 0 85%);
+            clip-path: polygon(0 0, 92% 0, 100% 15%, 100% 100%, 8% 100%, 0 85%);
         }
-        .item-card:hover { border-color: var(--accent); background: rgba(196, 154, 92, 0.05); transform: translateY(-5px); }
-        
-        .item-img { height: 150px; background: rgba(0,0,0,0.4); margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 1px solid rgba(255,255,255,0.05); }
+        .item-card:hover { border-color: var(--accent); transform: translateY(-5px); background: rgba(196, 154, 92, 0.05); }
+        .card-img { height: 160px; background-size: cover; background-position: center; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
 
-        /* --- MODAL ESTILO HUD NAVE --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000;
-            backdrop-filter: blur(8px);
-        }
+        /* --- FORMULARIOS --- */
+        .card-panel { background: rgba(10, 12, 15, 0.95); border: 1px solid var(--accent-dim); padding: 35px; position: relative; }
+        input, select { width: 100%; padding: 15px; background: #000; border: 1px solid #222; color: #fff; font-family: 'JetBrains Mono'; margin-bottom: 20px; }
+        .btn-primary { width: 100%; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 15px; font-family: var(--font-hud); cursor: pointer; letter-spacing: 2px; font-weight: bold; }
+        .btn-primary:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
 
-        .modal-content {
-            background: #0a0d12; border: 1px solid var(--accent); width: 95%; max-width: 750px;
-            position: relative; padding: 0;
-            clip-path: polygon(0 5%, 5% 0, 95% 0, 100% 5%, 100% 95%, 95% 100%, 5% 100%, 0 95%);
-            box-shadow: 0 0 50px rgba(0,0,0,1), inset 0 0 20px rgba(196, 154, 92, 0.1);
-        }
+        /* --- UPLOADER FOTOS --- */
+        .file-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .file-box { border: 2px dashed var(--accent-dim); height: 120px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
+        .file-box img { position: absolute; width: 100%; height: 100%; object-fit: cover; display: none; }
 
-        .modal-header {
-            border-bottom: 1px solid var(--accent-dim); padding: 15px 25px;
-            display: flex; justify-content: space-between; align-items: center;
-            background: linear-gradient(90deg, rgba(196, 154, 92, 0.1), transparent);
-        }
+        /* --- MODAL HUD --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(10px); }
+        .modal-content { background: #0a0d12; border: 1px solid var(--accent); width: 95%; max-width: 800px; display: grid; grid-template-columns: 1fr 1fr; }
+        .modal-side { padding: 30px; }
+        .modal-header { grid-column: span 2; padding: 15px 30px; border-bottom: 1px solid var(--accent-dim); display: flex; justify-content: space-between; font-family: var(--font-hud); color: var(--accent); }
 
-        .modal-body { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 30px; }
-
-        .info-panel h4 { font-family: var(--font-hud); color: var(--accent); font-size: 0.8rem; margin: 0 0 15px 0; border-bottom: 1px solid var(--accent-dim); padding-bottom: 5px; }
-        
-        .spec-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
-        .spec-label { color: rgba(255,255,255,0.4); }
-        .spec-value { color: var(--ui-blue); text-shadow: 0 0 5px rgba(0, 242, 255, 0.3); }
-
-        .vendedor-box {
-            background: rgba(196, 154, 92, 0.05); border: 1px solid var(--accent-dim);
-            padding: 15px; margin-top: 20px;
-        }
-
-        .btn-confirm {
-            grid-column: span 2; background: transparent; border: 1px solid var(--accent);
-            color: var(--accent); font-family: var(--font-hud); padding: 15px; cursor: pointer;
-            margin-top: 10px; font-weight: bold; letter-spacing: 2px;
-        }
-        .btn-confirm:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
-
-        /* --- TABS --- */
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="font-family: var(--font-hud); color: var(--accent); letter-spacing: 3px;">UCS_MANIFEST_OS</div>
+    <div style="font-family: var(--font-hud); color: var(--accent);">UCS_INTEGRATED_OS_V1</div>
     <div class="nav-links">
-        <a onclick="showTab('market')" id="btn-market" class="active">DATABANK</a>
-        <a onclick="showTab('sell')" id="btn-sell">UPLOADER</a>
-        <a onclick="showTab('profile')" id="btn-profile">USER_ID</a>
+        <a onclick="showTab('market')" id="link-market" class="active">MERCADO</a>
+        <a onclick="showTab('sell')" id="link-sell">VENDER</a>
+        <a onclick="showTab('profile')" id="link-profile">PERFIL</a>
     </div>
 </nav>
 
 <div class="main-container">
 
     <section id="market" class="tab-content active">
-        <div style="margin-bottom: 40px;">
-            <h1 style="font-family: var(--font-hud); font-size: 1.5rem; letter-spacing: 5px; color: var(--accent);">CENTRAL_LOGÍSTICA</h1>
-            <div style="width: 100px; height: 2px; background: var(--accent);"></div>
-        </div>
+        <h2 style="font-family: var(--font-hud); letter-spacing: 4px; color: var(--accent);">DATABANK_MERCANTIL</h2>
         <div class="products-grid" id="market-items"></div>
     </section>
 
     <section id="sell" class="tab-content">
-        <div style="max-width: 600px; margin: auto; background: rgba(15,18,22,0.9); border: 1px solid var(--accent); padding: 40px; clip-path: polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%);">
-            <h2 style="font-family: var(--font-hud); color: var(--accent);">REGISTRAR_ÍTEM</h2>
-            <input type="text" id="item-name" placeholder="NOMBRE DEL OBJETO..." style="width:100%; padding:15px; background:black; border:1px solid var(--accent-dim); color:white; margin-bottom:20px;">
-            <input type="number" id="item-price" placeholder="aUEC" style="width:100%; padding:15px; background:black; border:1px solid var(--accent-dim); color:white; margin-bottom:20px;">
-            <button onclick="publicarItem()" class="btn-confirm" style="width:100%">ENVIAR A LA RED</button>
+        <div class="card-panel" style="max-width: 700px; margin: auto;">
+            <h2 style="font-family: var(--font-hud); color: var(--accent);">REGISTRO_DE_CARGA</h2>
+            <input type="text" id="item-name" placeholder="NOMBRE DEL OBJETO..." oninput="buscarEnCatalogo(this.value)">
+            <select id="item-cat">
+                <option value="ships">NAVES</option>
+                <option value="weapons">ARMAS</option>
+                <option value="items">COMPONENTES</option>
+            </select>
+            <input type="number" id="item-price" placeholder="VALOR aUEC">
+            
+            <div class="file-grid">
+                <div class="file-box" onclick="document.getElementById('file-1').click()">
+                    <span id="txt-1">+ FOTO_01</span>
+                    <img id="img-1">
+                    <input type="file" id="file-1" hidden onchange="previsualizar(this, 1)">
+                </div>
+                <div class="file-box" onclick="document.getElementById('file-2').click()">
+                    <span id="txt-2">+ FOTO_02</span>
+                    <img id="img-2">
+                    <input type="file" id="file-2" hidden onchange="previsualizar(this, 2)">
+                </div>
+            </div>
+            <button class="btn-primary" onclick="abrirVerificacion()">ANALIZAR_Y_PUBLICAR</button>
         </div>
     </section>
 
+    <section id="profile" class="tab-content">
+        <div class="card-panel" style="max-width: 600px; margin: auto;">
+            <h2 id="profile-handle" style="font-family: var(--font-hud);">IDENTIFICANDO...</h2>
+            <p>TOKEN DE BIO PARA RSI:</p>
+            <div id="bio-token" style="background:#000; padding:20px; border:1px dashed var(--ui-blue); text-align:center; color:var(--ui-blue); cursor:pointer;" onclick="copyToken()">---</div>
+            <input type="text" id="rsi-input" placeholder="URL o Handle de Ciudadano RSI" style="margin-top:20px;">
+            <button class="btn-primary" onclick="verificarRSI()">SINC_BIO_PROTOCOL</button>
+        </div>
+    </section>
 </div>
 
-<div class="modal-overlay" id="item-modal">
+<div class="modal-overlay" id="main-modal">
     <div class="modal-content">
         <div class="modal-header">
-            <span style="font-family: var(--font-hud); letter-spacing: 2px;">FILE_INFO // SCAN_RESULT</span>
-            <span style="cursor:pointer; color: var(--accent);" onclick="closeModal()">[ CLOSE_X ]</span>
+            <span id="modal-title">SCANNER_DE_OBJETO</span>
+            <span onclick="closeModal()" style="cursor:pointer">[X]</span>
         </div>
-        <div class="modal-body">
-            <div class="visual-panel">
-                <div id="modal-img" class="item-img" style="height: 200px; border: 1px solid var(--accent-dim);">📦</div>
-                <div class="vendedor-box">
-                    <div class="spec-label" style="font-size: 0.6rem; margin-bottom: 5px;">PROPIETARIO_IDENTIFICADO:</div>
-                    <div id="det-seller" style="font-family: var(--font-hud); color: #fff;">-</div>
-                    <div id="det-verified" style="font-size: 0.7rem; margin-top: 5px;"></div>
-                </div>
-            </div>
-
-            <div class="info-panel">
-                <h4>DATOS_TÉCNICOS</h4>
-                <div class="spec-row">
-                    <span class="spec-label">DESIGNACIÓN:</span>
-                    <span id="det-name" class="spec-value">-</span>
-                </div>
-                <div class="spec-row">
-                    <span class="spec-label">CRÉDITOS:</span>
-                    <span id="det-price" class="spec-value" style="color: var(--accent);">-</span>
-                </div>
-                <div class="spec-row">
-                    <span class="spec-label">LOCALIZACIÓN:</span>
-                    <span class="spec-value">SISTEMA STANTON</span>
-                </div>
-                <div class="spec-row">
-                    <span class="spec-label">ESTADO_FÍSICO:</span>
-                    <span class="spec-value">OPERATIVO / USADO</span>
-                </div>
-                
-                <h4 style="margin-top:25px;">SEGURIDAD_RED</h4>
-                <div class="spec-row">
-                    <span class="spec-label">PROTOCOLO:</span>
-                    <span class="spec-value">ESCROW_ENCRYPTED</span>
-                </div>
-                <div class="spec-row">
-                    <span class="spec-label">GARANTÍA:</span>
-                    <span class="spec-value">UCS_INSURANCE_OFF</span>
-                </div>
-            </div>
-
-            <button class="btn-confirm" onclick="iniciarCompra()">SOLICITAR_TRANSFERENCIA_DE_ACTIVOS</button>
+        <div class="modal-side" style="border-right: 1px solid var(--accent-dim);">
+            <div id="m-img-1" style="height:200px; background:#000; margin-bottom:10px; background-size:cover;"></div>
+            <div id="m-img-2" style="height:100px; background:#000; background-size:cover;"></div>
+        </div>
+        <div class="modal-side">
+            <h3 id="m-name" style="font-family: var(--font-hud); color: var(--accent);">---</h3>
+            <p style="color: var(--ui-blue); font-size: 1.5rem; font-weight: bold;" id="m-price">0 aUEC</p>
+            <hr style="border:0; border-top:1px solid var(--accent-dim);">
+            <p>VENDEDOR: <span id="m-seller" style="color:#fff">---</span></p>
+            <p id="m-status" style="font-size:0.8rem;">---</p>
+            <button id="btn-final" class="btn-primary" style="margin-top:30px;">SOLICITAR_COMPRA</button>
         </div>
     </div>
 </div>
@@ -189,74 +153,95 @@
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    // Items de prueba mejorados
-    const itemsPrueba = [
-        { item_name: "Aegis Avenger Titan", price_auec: 850000, profiles: { rsi_handle: "Titan_Pilot", is_verified: true }, category: "ships" },
-        { item_name: "Coda Pistol - Gold Edition", price_auec: 45000, profiles: { rsi_handle: "Outlaw_J", is_verified: false }, category: "weapons" }
-    ];
+    let tempImages = [null, null];
 
     function showTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        document.getElementById('btn-' + tabId).classList.add('active');
+        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+        document.getElementById('link-'+tabId).classList.add('active');
     }
 
-    async function loadMarketItems() {
+    // --- LÓGICA DE FOTOS ---
+    function previsualizar(input, num) {
+        if(input.files[0].size > 10*1024*1024) return alert("ERROR: Máximo 10MB");
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('img-'+num).src = e.target.result;
+            document.getElementById('img-'+num).style.display = 'block';
+            document.getElementById('txt-'+num).style.display = 'none';
+            tempImages[num-1] = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    // --- CARGAR MERCADO ---
+    async function loadMarket() {
         const grid = document.getElementById('market-items');
-        grid.innerHTML = '<p style="font-family:var(--font-hud); font-size:0.7rem;">> INICIALIZANDO_CONEXIÓN_SATELITAL...</p>';
-
-        const { data: items, error } = await _supabase
-            .from('marketplace_items')
-            .select('*, profiles:seller_id(rsi_handle, is_verified)')
-            .eq('status', 'available');
-
-        grid.innerHTML = '';
-        if (items && items.length > 0) items.forEach(item => renderCard(item, grid));
-        itemsPrueba.forEach(item => renderCard(item, grid));
-    }
-
-    function renderCard(item, container) {
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        card.onclick = () => openModal(item);
+        grid.innerHTML = "> ESCANEANDO...";
+        const { data } = await _supabase.from('marketplace_items').select('*, profiles:seller_id(rsi_handle, is_verified)').order('created_at', {ascending:false});
         
-        let icono = "📦";
-        if(item.category === "ships") icono = "🚀";
-        if(item.category === "weapons") icono = "🔫";
-
-        card.innerHTML = `
-            <div class="item-img">${icono}</div>
-            <div style="font-family: var(--font-hud); font-size: 0.8rem; color: var(--accent);">${item.item_name}</div>
-            <div style="font-family: 'JetBrains Mono'; font-size: 1rem; margin-top: 5px;">${item.price_auec.toLocaleString()} <span style="font-size:0.6rem">aUEC</span></div>
-        `;
-        container.appendChild(card);
+        grid.innerHTML = "";
+        data.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.onclick = () => verDetalles(item);
+            card.innerHTML = `
+                <div class="card-img" style="background-image:url('${item.image_1 || 'https://via.placeholder.com/300?text=NO_IMAGE'}')"></div>
+                <div style="font-family:var(--font-hud); font-size:0.8rem; color:var(--accent)">${item.item_name}</div>
+                <div style="color:var(--ui-blue); font-weight:bold;">${item.price_auec.toLocaleString()} aUEC</div>
+            `;
+            grid.appendChild(card);
+        });
     }
 
-    function openModal(item) {
-        document.getElementById('det-name').innerText = item.item_name.toUpperCase();
-        document.getElementById('det-price').innerText = item.price_auec.toLocaleString() + " aUEC";
-        document.getElementById('det-seller').innerText = (item.profiles?.rsi_handle || 'ANON_USER').toUpperCase();
-        
-        const verifiedTag = document.getElementById('det-verified');
-        if(item.profiles?.is_verified) {
-            verifiedTag.innerHTML = '<span style="color:var(--ui-blue)">[ SINC_RSI_CONFIRMED ]</span>';
-        } else {
-            verifiedTag.innerHTML = '<span style="color:#ff3e3e">[ NO_RSI_LINK ]</span>';
-        }
-
-        document.getElementById('item-modal').style.display = 'flex';
+    // --- MODAL DETALLES ---
+    function verDetalles(item) {
+        document.getElementById('m-name').innerText = item.item_name;
+        document.getElementById('m-price').innerText = item.price_auec.toLocaleString() + " aUEC";
+        document.getElementById('m-seller').innerText = item.profiles?.rsi_handle || "Anon";
+        document.getElementById('m-img-1').style.backgroundImage = `url(${item.image_1})`;
+        document.getElementById('m-img-2').style.backgroundImage = `url(${item.image_2})`;
+        document.getElementById('btn-final').onclick = () => alert("Contactando con vendedor...");
+        document.getElementById('btn-final').innerText = "SOLICITAR_COMPRA";
+        document.getElementById('main-modal').style.display = 'flex';
     }
 
-    function closeModal() { document.getElementById('item-modal').style.display = 'none'; }
+    // --- MODAL VERIFICACIÓN (ANTES DE SUBIR) ---
+    function abrirVerificacion() {
+        const name = document.getElementById('item-name').value;
+        const price = document.getElementById('item-price').value;
+        if(!name || !price) return alert("Faltan datos");
 
-    function iniciarCompra() {
-        alert("PROTOCOLO INICIADO: Solicitando respuesta de Spectrum al vendedor...");
+        document.getElementById('m-name').innerText = name;
+        document.getElementById('m-price').innerText = parseInt(price).toLocaleString() + " aUEC";
+        document.getElementById('m-img-1').style.backgroundImage = `url(${tempImages[0]})`;
+        document.getElementById('m-img-2').style.backgroundImage = `url(${tempImages[1]})`;
+        document.getElementById('btn-final').innerText = "CONFIRMAR_Y_PUBLICAR";
+        document.getElementById('btn-final').onclick = publicarReal;
+        document.getElementById('main-modal').style.display = 'flex';
     }
 
-    window.onload = loadMarketItems;
-    window.onclick = (e) => { if(e.target.id === 'item-modal') closeModal(); }
+    async function publicarReal() {
+        const { data: { user } } = await _supabase.auth.getUser();
+        const item = {
+            seller_id: user.id,
+            item_name: document.getElementById('item-name').value,
+            price_auec: parseInt(document.getElementById('item-price').value),
+            category: document.getElementById('item-cat').value,
+            image_1: tempImages[0], // En producción subirías a Storage primero
+            image_2: tempImages[1]
+        };
+        const { error } = await _supabase.from('marketplace_items').insert([item]);
+        if(!error) location.reload(); else alert(error.message);
+    }
+
+    function closeModal() { document.getElementById('main-modal').style.display = 'none'; }
+
+    // (Aquí iría tu lógica de checkUserSession, verificarRSI y copyToken de la base vieja)
+    // ... manteniendo las funciones originales ...
+
+    window.onload = () => { loadMarket(); /* checkUserSession(); */ };
 </script>
-
 </body>
 </html>
