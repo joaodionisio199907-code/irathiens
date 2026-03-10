@@ -1,400 +1,244 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOPYSPACE | MARKETPLACE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
+    <title>SHOPYSPACE | STAR CITIZEN MARKET</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Barlow+Condensed:wght@700;900&family=Noto+Sans+JP:wght@700&family=Noto+Sans+SC:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg-dark: #0a0c0f;
-            --bg-card: #14181d;
-            --accent: #c49a5c;
-            --accent-dim: rgba(196, 154, 92, 0.2);
-            --ui-blue: #00f2ff;
-            --danger: #ff3e3e;
-            --success: #00ff88;
-            --text-main: #e0e0e0;
-            --font-hud: 'Orbitron', sans-serif;
+            --blue-light: #00d2ff;
+            --blue-dark: #0056ff;
+            --yellow-accent: #ffb800;
+            --yellow-bright: #ffe600;
+            --bg-deep: #050a12;
+            --bg-card: #0e1621;
+            --text-white: #ffffff;
+            --grad-blue: linear-gradient(90deg, #00d2ff 0%, #0056ff 100%);
+            --font-main: 'Rajdhani', 'Noto Sans JP', 'Noto Sans SC', sans-serif;
+            --font-impact: 'Barlow Condensed', sans-serif;
         }
 
         body {
-            margin: 0; background-color: var(--bg-dark); color: var(--text-main);
-            font-family: 'Rajdhani', sans-serif; overflow-x: hidden;
-            background-image: linear-gradient(rgba(196, 154, 92, 0.03) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(196, 154, 92, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+            margin: 0; background-color: var(--bg-deep); color: var(--text-white);
+            font-family: var(--font-main); overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #102a4d 0%, var(--bg-deep) 80%);
         }
 
-        /* --- NAVEGACIÓN --- */
+        /* --- NAVEGACIÓN CON LOGO --- */
         nav {
-            background: #000; border-bottom: 2px solid var(--accent);
-            padding: 10px 40px; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 3px solid;
+            border-image: var(--grad-blue) 1;
+            padding: 5px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px);
+            height: 70px; /* Altura fija para control del logo */
         }
 
-        .nav-links a { color: #fff; text-decoration: none; font-family: var(--font-hud); font-size: 0.7rem; margin-left: 20px; cursor: pointer; opacity: 0.7; transition: 0.3s; }
-        .nav-links a.active { color: var(--accent); opacity: 1; text-shadow: 0 0 10px var(--accent); }
+        .logo-wrapper {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
 
-        /* --- LAYOUT PRINCIPAL --- */
+        .logo-img {
+            max-height: 55px; /* Ajusta según el tamaño de tu imagen */
+            width: auto;
+            filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.5)); /* Efecto de brillo sutil */
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 12px rgba(0, 210, 255, 0.8));
+        }
+
+        .nav-controls { display: flex; align-items: center; gap: 30px; }
+        
+        .lang-selector {
+            background: #000; border: 1px solid var(--blue-light); color: var(--blue-light);
+            padding: 5px 10px; font-family: var(--font-main); font-weight: bold; 
+            cursor: pointer; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        }
+
+        .nav-links { display: flex; gap: 25px; }
+
+        .nav-links a { 
+            color: #fff; text-decoration: none; font-family: var(--font-impact); 
+            font-size: 1.2rem; cursor: pointer; transition: 0.3s; 
+            text-transform: uppercase; font-style: italic; letter-spacing: 1px;
+        }
+        .nav-links a:hover { color: var(--blue-light); }
+        .nav-links a.active { color: var(--yellow-accent); border-bottom: 2px solid var(--yellow-accent); }
+
+        /* --- RESTO DEL DISEÑO --- */
         .marketplace-wrapper {
-            display: grid; grid-template-columns: 260px 1fr; gap: 20px;
-            max-width: 1600px; margin: 20px auto; padding: 0 20px;
+            display: grid; grid-template-columns: 280px 1fr; gap: 30px;
+            max-width: 1600px; margin: 30px auto; padding: 0 20px;
         }
 
-        /* --- BARRA LATERAL --- */
         .sidebar {
-            background: var(--bg-card); border: 1px solid var(--accent-dim); padding: 20px;
-            height: calc(100vh - 120px); position: sticky; top: 80px; overflow-y: auto;
-        }
-
-        .category-title {
-            font-family: var(--font-hud); font-size: 0.75rem; color: var(--accent);
-            margin-bottom: 15px; border-bottom: 1px solid var(--accent-dim); padding-bottom: 5px; letter-spacing: 1px;
+            background: var(--bg-card); padding: 25px; border-radius: 0 20px 0 20px;
+            border-left: 4px solid var(--blue-light); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .cat-item {
-            display: block; padding: 10px 0; color: #aaa; text-decoration: none;
-            font-size: 0.9rem; cursor: pointer; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.02);
+            display: block; padding: 12px 15px; color: #8899af; text-decoration: none;
+            font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.3s;
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%); margin-bottom: 8px;
         }
-        .cat-item:hover { color: var(--ui-blue); padding-left: 8px; background: rgba(0, 242, 255, 0.05); }
-        .cat-item.active { color: var(--accent); font-weight: bold; border-left: 3px solid var(--accent); padding-left: 10px; }
+        .cat-item:hover { background: rgba(0, 210, 255, 0.1); color: #fff; padding-left: 20px; }
+        .cat-item.active { background: var(--grad-blue); color: white; }
 
-        /* --- FILTROS SUPERIORES --- */
-        .filter-header {
-            background: var(--bg-card); border: 1px solid var(--accent-dim); padding: 15px;
-            margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px;
-        }
-
-        .search-row { display: flex; gap: 10px; }
-        .search-bar {
-            flex: 1; background: #000; border: 1px solid #333;
-            padding: 12px; color: white; font-family: 'JetBrains Mono'; outline: none; transition: 0.3s;
-        }
-        .search-bar:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-dim); }
-
-        .tag-btn {
-            background: #1a1f26; border: 1px solid #333; color: white;
-            padding: 5px 15px; font-family: var(--font-hud); font-size: 0.6rem;
-            cursor: pointer; transition: 0.3s; text-transform: uppercase;
-        }
-        .tag-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-        /* --- GRID DE PRODUCTOS --- */
-        .market-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;
-        }
-
-        .item-card {
-            background: var(--bg-card); border: 1px solid #2a2f35;
-            transition: 0.3s; cursor: pointer; position: relative;
-            overflow: hidden;
-        }
-        .item-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        .item-card img { width: 100%; height: 180px; object-fit: cover; filter: grayscale(20%); transition: 0.5s; }
-        .item-card:hover img { filter: grayscale(0%); transform: scale(1.05); }
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         
-        .item-card-info { padding: 15px; background: linear-gradient(to top, #000, transparent); }
-        .item-card h3 { font-family: var(--font-hud); font-size: 0.8rem; color: var(--accent); margin: 0 0 10px 0; }
-        .price { color: var(--ui-blue); font-family: 'JetBrains Mono'; font-weight: bold; font-size: 1.2rem; }
+        .item-card {
+            background: var(--bg-card); border: 1px solid #1a2635; transition: 0.4s;
+            cursor: pointer; border-radius: 0 15px 0 15px; overflow: hidden;
+            position: relative;
+        }
+        .item-card:hover { transform: translateY(-10px); border-color: var(--yellow-accent); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .item-card img { width: 100%; height: 200px; object-fit: cover; }
+        .item-card-info { padding: 15px; background: linear-gradient(180deg, transparent 0%, #000 100%); }
+        .price { color: var(--yellow-bright); font-weight: bold; font-size: 1.3rem; }
 
-        /* --- MODAL DETALLES --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(8px); }
-        .details-box { background: var(--bg-dark); border: 1px solid var(--accent); width: 90%; max-width: 900px; display: grid; grid-template-columns: 1fr 1fr; position: relative; box-shadow: 0 0 50px rgba(0,0,0,1); }
-        .details-content { padding: 40px; display: flex; flex-direction: column; border-left: 1px solid var(--accent-dim); }
+        .search-bar {
+            width: 100%; background: #000; border: 2px solid #1a2635; padding: 15px;
+            color: white; font-size: 1.1rem; border-radius: 5px; margin-bottom: 20px;
+            box-sizing: border-box;
+        }
 
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0; padding: 20px 0; border-top: 1px solid #222; border-bottom: 1px solid #222; }
-        .data-label { color: var(--accent); font-family: var(--font-hud); font-size: 0.65rem; margin-bottom: 5px; opacity: 0.7; }
-        .data-value { color: #fff; font-family: 'JetBrains Mono'; font-size: 0.9rem; }
-
-        .status-badge { padding: 4px 12px; border-radius: 2px; font-size: 0.7rem; font-family: var(--font-hud); display: inline-block; margin-bottom: 15px; }
-        .status-available { background: rgba(0, 255, 136, 0.1); color: var(--success); border: 1px solid var(--success); }
-        .status-sold { background: rgba(255, 62, 62, 0.1); color: var(--danger); border: 1px solid var(--danger); }
-
-        /* --- CHAT TERMINAL --- */
-        .chat-overlay { position: fixed; bottom: 20px; right: 20px; width: 380px; height: 500px; background: var(--bg-dark); border: 1px solid var(--accent); display: none; flex-direction: column; z-index: 3000; box-shadow: 0 0 40px rgba(0,0,0,0.9); }
-        .chat-header { background: var(--accent); color: black; padding: 12px; font-family: var(--font-hud); font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.5); }
-        .msg { padding: 10px 15px; border-radius: 4px; font-size: 0.9rem; max-width: 80%; line-height: 1.4; position: relative; }
-        .msg.me { background: var(--accent-dim); align-self: flex-end; border-right: 3px solid var(--accent); color: #fff; }
-        .msg.them { background: #1a1f26; align-self: flex-start; border-left: 3px solid var(--ui-blue); color: var(--text-main); }
-        .chat-input-row { display: flex; padding: 15px; background: #000; gap: 10px; border-top: 1px solid #333; }
-
-        /* --- TAB VENDER --- */
-        .tab-content { display: none; animation: fadeIn 0.4s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-family: var(--font-hud); font-size: 0.7rem; color: var(--accent); margin-bottom: 8px; }
+        .action-btn {
+            background: linear-gradient(90deg, #ffb800, #ffe600); border: none; padding: 15px 30px;
+            font-family: var(--font-impact); font-size: 1.2rem; font-weight: 900;
+            cursor: pointer; text-transform: uppercase; font-style: italic;
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+        }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="font-family: var(--font-hud); color: var(--accent); letter-spacing: 3px; font-weight: bold;">SHOPYSPACE</div>
-    <div class="nav-links">
-        <a onclick="showTab('market')" id="link-market" class="active">MARKETPLACE</a>
-        <a onclick="showTab('sell')" id="link-sell">PUBLISH_ITEM</a>
+    <div class="logo-wrapper" onclick="location.reload()">
+        <img src="img/Shopy.png" alt="SHOPYSPACE LOGO" class="logo-img">
+    </div>
+
+    <div class="nav-controls">
+        <div class="nav-links">
+            <a onclick="showTab('market')" id="link-market" class="active" data-i18n="nav_market">MARKETPLACE</a>
+            <a onclick="showTab('sell')" id="link-sell" data-i18n="nav_sell">PUBLISH ITEM</a>
+        </div>
+        <select class="lang-selector" onchange="changeLang(this.value)">
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+            <option value="zh">ZH</option>
+            <option value="ja">JA</option>
+            <option value="ru">RU</option>
+        </select>
     </div>
 </nav>
 
 <div class="marketplace-wrapper">
     <aside class="sidebar">
-        <div class="category-title">SYSTEM_CATEGORIES</div>
-        <a class="cat-item active" onclick="filterByCategory('all', this)">ALL_ITEMS</a>
-        <a class="cat-item" onclick="filterByCategory('Armor', this)">ARMOR_SETS</a>
-        <a class="cat-item" onclick="filterByCategory('Weapons', this)">PERSONAL_WEAPONS</a>
-        <a class="cat-item" onclick="filterByCategory('Ships', this)">SHIPS_VEHICLES</a>
-        <a class="cat-item" onclick="filterByCategory('Modules', this)">SHIP_MODULES</a> <a class="cat-item" onclick="filterByCategory('Mining', this)">MINING_RESOURCES</a>
-        <a class="cat-item" onclick="filterByCategory('Medical', this)">MEDICAL_SUPPLIES</a>
-        
-        <div class="category-title" style="margin-top:30px;">NETWORK_STATUS</div>
-        <div style="font-size: 0.8rem; color: var(--success); opacity: 0.6;">● GLOBAL_SERVERS_ONLINE</div>
+        <div style="font-family: 'Orbitron'; font-size: 0.7rem; color: var(--blue-light); margin-bottom: 15px; letter-spacing: 1px;" data-i18n="side_title">NETWORK SECTORS</div>
+        <a class="cat-item active" onclick="filterByCategory('all', this)" data-i18n="cat_all">ALL ITEMS</a>
+        <a class="cat-item" onclick="filterByCategory('Armor', this)" data-i18n="cat_armor">ARMOR SETS</a>
+        <a class="cat-item" onclick="filterByCategory('Weapons', this)" data-i18n="cat_weapons">WEAPONS</a>
+        <a class="cat-item" onclick="filterByCategory('Ships', this)" data-i18n="cat_ships">SHIPS</a>
+        <a class="cat-item" onclick="filterByCategory('Medical', this)" data-i18n="cat_medical">MEDICAL</a>
     </aside>
 
     <main>
-        <section id="market" class="tab-content active">
-            <header class="filter-header">
-                <div class="search-row">
-                    <input type="text" id="main-search" class="search-bar" placeholder="SEARCH BY NAME, LOCATION OR TAGS..." oninput="handleGlobalSearch()">
-                    <button class="tag-btn" style="border-color: var(--ui-blue); color: var(--ui-blue);" onclick="fetchMarket()">REFRESH_DATA</button>
-                </div>
-            </header>
+        <section id="market">
+            <input type="text" id="main-search" class="search-bar" data-i18n-placeholder="search_placeholder" oninput="handleGlobalSearch()">
             <div id="market-grid" class="market-grid"></div>
         </section>
 
-        <section id="sell" class="tab-content">
-            <div style="max-width: 700px; background: var(--bg-card); padding: 40px; border: 1px solid var(--accent-dim); margin: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
-                <h2 style="font-family: var(--font-hud); color: var(--accent); margin-top: 0; border-bottom: 1px solid var(--accent-dim); padding-bottom: 15px;">NEW_MANIFEST_ENTRY</h2>
-                
-                <div class="form-group">
-                    <label>ITEM_NAME</label>
-                    <input type="text" id="item-name" class="search-bar" style="width:100%;" placeholder="e.g. ADP-Core Armor Set">
+        <section id="sell" style="display:none;">
+            <div style="max-width:600px; background:var(--bg-card); padding:40px; border-radius: 0 20px 0 20px; border: 1px solid #1a2635; margin: auto;">
+                <h2 style="font-family:var(--font-impact); font-style:italic; color:var(--yellow-accent); font-size: 2rem;" data-i18n="sell_title">NEW MANIFEST ENTRY</h2>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <input type="text" id="item-name" class="search-bar" data-i18n-placeholder="ph_name" style="margin:0">
+                    <input type="number" id="item-price" class="search-bar" data-i18n-placeholder="ph_price" style="margin:0">
+                    <button class="action-btn" style="width:100%; margin-top: 10px;" data-i18n="btn_upload">TRANSMIT TO GALAXY NET</button>
                 </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                    <div class="form-group">
-                        <label>CATEGORY</label>
-                        <select id="item-cat" class="search-bar" style="width:100%; background:#000;">
-                            <option value="Armor">Armor</option>
-                            <option value="Weapons">Weapons</option>
-                            <option value="Ships">Ships</option>
-                            <option value="Modules">Modules</option> <option value="Mining">Mining</option>
-                            <option value="Medical">Medical</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>CURRENT_LOCATION</label>
-                        <input type="text" id="item-location" class="search-bar" style="width:100%;" placeholder="e.g. Orison, MicroTech">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>PRICE (aUEC)</label>
-                    <input type="number" id="item-price" class="search-bar" style="width:100%;" placeholder="000,000">
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:25px;">
-                    <button class="tag-btn" style="height:100px;" onclick="document.getElementById('f1').click()">[+] PRIMARY_IMAGE</button>
-                    <input type="file" id="f1" hidden onchange="processImg(this)">
-                    <div id="img-preview" style="height:100px; border: 1px dashed #333; display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:#555;">NO_PREVIEW</div>
-                </div>
-
-                <button class="tag-btn" style="width:100%; padding:20px; font-size:0.8rem; border-color:var(--accent); color:var(--accent); font-weight:bold;" onclick="uploadToNet()">UPLOAD_TO_GALAXY_NETWORK</button>
             </div>
         </section>
     </main>
 </div>
 
-<div class="modal-overlay" id="modal">
-    <div class="details-box">
-        <div style="background: #000; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <img id="m-img" style="width:100%; height:100%; object-fit:contain;">
-        </div>
-        <div class="details-content">
-            <span onclick="closeM()" style="position:absolute; top:20px; right:20px; cursor:pointer; color:var(--danger); font-family:var(--font-hud); font-size:1.2rem;">[X]</span>
-            <div id="m-status-badge"></div>
-            <h2 id="m-title" style="font-family:var(--font-hud); color:var(--accent); margin:0; font-size:1.4rem;"></h2>
-            <div id="m-price" style="font-family:'JetBrains Mono'; color:var(--ui-blue); font-size:2rem; margin-top:10px;"></div>
-            <div class="data-grid">
-                <div class="data-item">
-                    <div class="data-label">SPEC_CATEGORY</div>
-                    <div class="data-value" id="m-category">---</div>
-                </div>
-                <div class="data-item">
-                    <div class="data-label">LAST_KNOWN_LOCATION</div>
-                    <div class="data-value" id="m-location">---</div>
-                </div>
-                <div class="data-item">
-                    <div class="data-label">MANIFEST_STATUS</div>
-                    <div class="data-value" id="m-status-text">---</div>
-                </div>
-                <div class="data-item">
-                    <div class="data-label">VERIFIED_LISTING</div>
-                    <div class="data-value" style="color:var(--success)">TRUE</div>
-                </div>
-            </div>
-            <p style="font-size:0.85rem; opacity:0.6; line-height:1.5;">Inicie una conexión encriptada con el vendedor para coordinar el encuentro.</p>
-            <button class="tag-btn" id="btn-chat-trigger" style="width:100%; padding:18px; margin-top:auto; border-color:var(--ui-blue); color:var(--ui-blue); font-weight:bold;">Open ad</button>
-        </div>
-    </div>
-</div>
-
-<div class="chat-overlay" id="chat-panel">
-    <div class="chat-header">
-        <span id="chat-title">SPECTRUM_LINK_ESTABLISHED</span>
-        <span onclick="closeChat()" style="cursor:pointer;">[X]</span>
-    </div>
-    <div class="chat-messages" id="chat-box"></div>
-    <div class="chat-input-row">
-        <input type="text" id="chat-input" class="search-bar" placeholder="Enter secure message..." onkeypress="if(event.key==='Enter') sendMessage()">
-        <button class="tag-btn" onclick="sendMessage()" style="border-color:var(--accent);">SEND</button>
-    </div>
-</div>
-
 <script>
-    const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
-    const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
-    const _supabase = supabase.createClient(SB_URL, SB_KEY);
-
-    let allItems = [];
-    let selectedItem = null;
-    let currentUser = null;
-    let uploadedImgBase64 = null;
-
-    window.onload = async () => {
-        const { data: { session } } = await _supabase.auth.getSession();
-        currentUser = session?.user;
-        fetchMarket();
+    const i18n = {
+        en: {
+            nav_market: "MARKETPLACE", nav_sell: "PUBLISH ITEM",
+            side_title: "NETWORK SECTORS", cat_all: "ALL ITEMS",
+            cat_armor: "ARMOR SETS", cat_weapons: "WEAPONS",
+            cat_ships: "SHIPS", cat_medical: "MEDICAL",
+            search_placeholder: "SEARCH BY NAME OR SECTOR...",
+            sell_title: "NEW MANIFEST ENTRY", ph_name: "ITEM NAME...",
+            ph_price: "PRICE (aUEC)...", btn_upload: "TRANSMIT TO GALAXY NET"
+        },
+        es: {
+            nav_market: "MERCADO", nav_sell: "PUBLICAR ITEM",
+            side_title: "SECTORES DE RED", cat_all: "TODO EL BOTÍN",
+            cat_armor: "ARMADURAS", cat_weapons: "ARMAMENTO",
+            cat_ships: "NAVES", cat_medical: "MÉDICO",
+            search_placeholder: "BUSCAR POR NOMBRE O SECTOR...",
+            sell_title: "NUEVO MANIFIESTO", ph_name: "NOMBRE DEL ITEM...",
+            ph_price: "PRECIO (aUEC)...", btn_upload: "TRANSMITIR A LA RED"
+        },
+        zh: {
+            nav_market: "市场", nav_sell: "发布物品",
+            side_title: "网络部门", cat_all: "所有物品",
+            cat_armor: "护甲套装", cat_weapons: "个人武器",
+            cat_ships: "飞船", cat_medical: "医疗用品",
+            search_placeholder: "按名称或扇区搜索...",
+            sell_title: "新清单条目", ph_name: "物品名称...",
+            ph_price: "价格 (aUEC)...", btn_upload: "传输到星系网络"
+        },
+        ja: {
+            nav_market: "マーケット", nav_sell: "アイテムを出品",
+            side_title: "ネットワークセクター", cat_all: "全アイテム",
+            cat_armor: "アーマーセット", cat_weapons: "武器",
+            cat_ships: "シップ", cat_medical: "医療品",
+            search_placeholder: "名前またはセクターで検索...",
+            sell_title: "新規マニフェスト入力", ph_name: "アイテム名...",
+            ph_price: "価格 (aUEC)...", btn_upload: "銀河ネットワークに送信"
+        },
+        ru: {
+            nav_market: "РЫНОК", nav_sell: "ОПУБЛИКОВАТЬ",
+            side_title: "СЕТЕВЫЕ СЕКТОРЫ", cat_all: "ВСЕ ПРЕДМЕТЫ",
+            cat_armor: "БРОНЯ", cat_weapons: "ОРУЖИЕ",
+            cat_ships: "КОРАБЛИ", cat_medical: "МЕДИЦИНА",
+            search_placeholder: "ПОИСК ПО ИМЕНИ ИЛИ СЕКТОРУ...",
+            sell_title: "НОВАЯ ЗАПИСЬ В МАНИФЕСТЕ", ph_name: "НАЗВАНИЕ...",
+            ph_price: "ЦЕНА (aUEC)...", btn_upload: "ПЕРЕДАТЬ В СЕТЬ ГАЛАКТИКИ"
+        }
     };
 
-    async function fetchMarket() {
-        const { data, error } = await _supabase.from('marketplace_items').select('*').order('created_at', {ascending: false});
-        if (!error) { allItems = data; renderItems(data); }
-    }
-
-    function renderItems(list) {
-        const grid = document.getElementById('market-grid');
-        grid.innerHTML = list.length ? "" : "<p style='padding:20px; color:var(--danger);'>NO_DATA_FOUND_IN_SECTOR</p>";
-        list.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'item-card';
-            div.onclick = () => openDetails(item);
-            div.innerHTML = `
-                <img src="${item.image_1 || 'https://via.placeholder.com/400x250?text=NO_SIGNAL'}">
-                <div class="item-card-info">
-                    <h3>${item.item_name.toUpperCase()}</h3>
-                    <div class="price">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
-                </div>
-            `;
-            grid.appendChild(div);
+    function changeLang(lang) {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            el.innerText = i18n[lang][el.getAttribute('data-i18n')];
         });
-    }
-
-    function openDetails(item) {
-        selectedItem = item;
-        document.getElementById('m-title').innerText = item.item_name.toUpperCase();
-        document.getElementById('m-price').innerText = parseInt(item.price_auec).toLocaleString() + " aUEC";
-        document.getElementById('m-img').src = item.image_1;
-        document.getElementById('m-location').innerText = (item.location || 'UNKNOWN').toUpperCase();
-        document.getElementById('m-category').innerText = (item.category || 'GENERAL').toUpperCase();
-        document.getElementById('m-status-text').innerText = (item.status || 'AVAILABLE').toUpperCase();
-        const badge = document.getElementById('m-status-badge');
-        const isAvail = (item.status === 'available' || !item.status);
-        badge.innerHTML = `<span class="status-badge ${isAvail ? 'status-available' : 'status-sold'}">${isAvail ? 'ONLINE_DISPONIBLE' : 'OFFLINE_VENDIDO'}</span>`;
-        document.getElementById('modal').style.display = 'flex';
-        document.getElementById('btn-chat-trigger').onclick = () => initChat(item);
-    }
-
-    function closeM() { document.getElementById('modal').style.display = 'none'; }
-
-    async function initChat(item) {
-        if(!currentUser) return alert("AUTH REQUIRED");
-        document.getElementById('modal').style.display = 'none';
-        document.getElementById('chat-panel').style.display = 'flex';
-        document.getElementById('chat-title').innerText = "LINK: " + item.item_name.toUpperCase();
-        loadMessages(item.id);
-    }
-
-    async function loadMessages(itemId) {
-        const { data } = await _supabase.from('marketplace_chats').select('*').eq('item_id', itemId).order('created_at', {ascending: true});
-        const box = document.getElementById('chat-box');
-        box.innerHTML = "";
-        data?.forEach(appendMsg);
-    }
-
-    function appendMsg(msg) {
-        const box = document.getElementById('chat-box');
-        const div = document.createElement('div');
-        div.className = `msg ${msg.sender_id === currentUser.id ? 'me' : 'them'}`;
-        div.innerText = msg.message;
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('chat-input');
-        if(!input.value.trim()) return;
-        await _supabase.from('marketplace_chats').insert([{
-            item_id: selectedItem.id,
-            buyer_id: currentUser.id,
-            seller_id: selectedItem.seller_id,
-            sender_id: currentUser.id,
-            message: input.value
-        }]);
-        input.value = "";
-    }
-
-    function closeChat() { document.getElementById('chat-panel').style.display = 'none'; }
-
-    function handleGlobalSearch() {
-        const q = document.getElementById('main-search').value.toLowerCase();
-        const filtered = allItems.filter(i => 
-            i.item_name.toLowerCase().includes(q) || (i.location && i.location.toLowerCase().includes(q))
-        );
-        renderItems(filtered);
-    }
-
-    function filterByCategory(cat, el) {
-        document.querySelectorAll('.cat-item').forEach(x => x.classList.remove('active'));
-        el.classList.add('active');
-        if(cat === 'all') return renderItems(allItems);
-        renderItems(allItems.filter(i => i.category === cat));
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            el.placeholder = i18n[lang][el.getAttribute('data-i18n-placeholder')];
+        });
+        document.documentElement.lang = lang;
     }
 
     function showTab(t) {
-        document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-        document.querySelectorAll('.nav-links a').forEach(x => x.classList.remove('active'));
-        document.getElementById(t).classList.add('active');
-        document.getElementById('link-'+t).classList.add('active');
+        document.getElementById('market').style.display = (t === 'market') ? 'block' : 'none';
+        document.getElementById('sell').style.display = (t === 'sell') ? 'block' : 'none';
+        document.getElementById('link-market').classList.toggle('active', t === 'market');
+        document.getElementById('link-sell').classList.toggle('active', t === 'sell');
     }
 
-    function processImg(input) {
-        const reader = new FileReader();
-        reader.onload = (e) => { 
-            uploadedImgBase64 = e.target.result; 
-            document.getElementById('img-preview').innerHTML = `<img src="${e.target.result}" style="height:100%;">`;
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-
-    async function uploadToNet() {
-        if(!currentUser) return alert("ERROR: AUTH_REQUIRED.");
-        const payload = {
-            seller_id: currentUser.id,
-            item_name: document.getElementById('item-name').value,
-            category: document.getElementById('item-cat').value,
-            location: document.getElementById('item-location').value,
-            price_auec: document.getElementById('item-price').value,
-            image_1: uploadedImgBase64,
-            status: 'available'
-        };
-        const { error } = await _supabase.from('marketplace_items').insert([payload]);
-        if(error) alert("UPLOAD_FAILED: " + error.message);
-        else { alert("SUCCESS: MANIFEST_UPDATED"); location.reload(); }
-    }
+    // Inicializar en inglés por defecto
+    window.onload = () => changeLang('en');
 </script>
+
 </body>
 </html>
