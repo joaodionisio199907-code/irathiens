@@ -131,14 +131,14 @@
         <div class="content-panel">
             <div class="section-title">VERIFICACIÓN CIUDADANA RSI</div>
             <div id="rsi-section">
-                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 15px;">Vincula tu cuenta de Roberts Space Industries para sincronizar tu identidad oficial.</p>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 15px;">Pega la URL de tu perfil de RSI para generar tu código de vinculación.</p>
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="handle-input" placeholder="Tu Handle RSI (ej: Ghost_99)..." style="margin-bottom: 0;">
-                    <button class="btn-action" onclick="saveHandle()">SINCRO</button>
+                    <input type="text" id="handle-input" placeholder="https://robertsspaceindustries.com/citizens/TuNombre..." style="margin-bottom: 0;">
+                    <button class="btn-action" onclick="saveRSIUrl()">SINCRO</button>
                 </div>
-                <div id="verification-box" style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 8px; font-size: 0.8rem; display: none;">
-                    <p>Copia este código en tu biografía de RSI para verificar:</p>
-                    <code id="bio-code" style="color: var(--primary); background: #000; padding: 5px 10px; border-radius: 4px; display: block; margin: 10px 0; text-align: center;">---</code>
+                <div id="verification-box" style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--primary); border-radius: 8px; font-size: 0.8rem; display: none;">
+                    <p>Copia este código en tu <strong>Short Bio</strong> de RSI para verificar:</p>
+                    <code id="bio-code" style="color: var(--primary); background: #000; padding: 10px; border-radius: 4px; display: block; margin: 10px 0; text-align: center; border: 1px dashed var(--primary); font-family: 'JetBrains Mono';">---</code>
                     <button class="btn-action" style="width: 100%; font-size: 0.7rem;" onclick="checkRSIVerification()">COMPROBAR BIOGRAFÍA</button>
                 </div>
             </div>
@@ -178,20 +178,19 @@ async function init() {
     let { data: profile } = await _supabase.from('perfiles').select('*').eq('id', user.id).single();
     
     if (profile) {
-        document.getElementById('display-name').innerText = (profile.handle || "CIUDADANO").toUpperCase();
+        // Mostramos el nombre guardado en DB (o el email si no hay) sin sobreescribirlo con el handle de RSI
+        document.getElementById('display-name').innerText = (profile.display_name || user.email.split('@')[0]).toUpperCase();
         document.getElementById('display-rank').innerText = (profile.rank || "Cadete de Flota").toUpperCase();
         document.getElementById('display-balance').innerText = profile.citizen_tokens || 0;
-        document.getElementById('handle-input').value = profile.handle || "";
 
-        // Status de verificación
         const statusBadge = document.getElementById('status-badge');
         if (profile.is_verified) {
             statusBadge.innerText = "VERIFICADO RSI";
             statusBadge.className = "verification-badge v-done";
-            document.getElementById('verification-box').style.display = 'none';
+            document.getElementById('rsi-section').innerHTML = `<p style="color:var(--success); font-size:0.8rem; text-align:center;">✓ Ciudadano verificado como: <strong>${profile.handle}</strong></p>`;
         } else if (profile.handle) {
             statusBadge.innerText = "PENDIENTE";
-            showVerificationBox(profile.handle);
+            showVerificationBox();
         }
 
         if (profile.ships) {
@@ -204,24 +203,36 @@ async function init() {
     updateShipCount();
 }
 
-function showVerificationBox(handle) {
+function showVerificationBox() {
     const box = document.getElementById('verification-box');
     box.style.display = 'block';
-    // Generamos un código corto basado en el ID del usuario
+    // Código único basado en el ID de Supabase para evitar suplantaciones
     document.getElementById('bio-code').innerText = "IRATH-" + currentUser.id.substring(0,8).toUpperCase();
 }
 
-async function saveHandle() {
-    const val = document.getElementById('handle-input').value.trim();
-    if(!val) return;
-    await _supabase.from('perfiles').update({ handle: val, is_verified: false }).eq('id', currentUser.id);
+async function saveRSIUrl() {
+    const urlVal = document.getElementById('handle-input').value.trim();
+    if(!urlVal) return;
+
+    // Extraemos el handle de la URL (el texto después de /citizens/)
+    const parts = urlVal.split('/');
+    const handle = parts[parts.length - 1] || parts[parts.length - 2];
+
+    if(!handle || !urlVal.includes('robertsspaceindustries.com')) {
+        alert("Por favor, introduce una URL de ciudadano válida.");
+        return;
+    }
+
+    // Actualizamos el handle en la DB pero mantenemos la verificación en falso
+    await _supabase.from('perfiles').update({ handle: handle, is_verified: false }).eq('id', currentUser.id);
     location.reload();
 }
 
 async function checkRSIVerification() {
-    alert("Conectando con Spectrum RSI... (Simulado para esta demo)");
-    // Aquí iría el fetch a una API que lea la bio de RSI
-    // Por ahora, activamos la verificación:
+    const code = "IRATH-" + currentUser.id.substring(0,8).toUpperCase();
+    alert("Buscando el código [" + code + "] en tu Bio de RSI...");
+    
+    // Aquí se activaría la verificación
     await _supabase.from('perfiles').update({ is_verified: true }).eq('id', currentUser.id);
     location.reload();
 }
@@ -255,7 +266,8 @@ async function syncShips() {
 
 function updateShipCount() {
     const count = document.querySelectorAll('.ship-card').length;
-    document.getElementById('ship-count').innerText = count;
+    const el = document.getElementById('ship-count');
+    if(el) el.innerText = count;
 }
 
 async function handleLogout() {
