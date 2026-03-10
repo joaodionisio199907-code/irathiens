@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOPYSPACE | DETALLES DEL ACTIVO</title>
+    <title>SHOPYSPACE | ASSET DETAILS</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -17,8 +17,11 @@
             --text-white: #ffffff;
             --grad-blue: linear-gradient(90deg, #00d2ff 0%, #0056ff 100%);
             --grad-yellow: linear-gradient(90deg, #ffb800 0%, #ffe600 100%);
+            --success: #00ff88;
         }
 
+        /* Hide scrollbars but allow scrolling */
+        ::-webkit-scrollbar { display: none; }
         body {
             margin: 0;
             background-color: var(--bg-dark);
@@ -26,31 +29,31 @@
             font-family: 'Rajdhani', sans-serif;
             background-image: radial-gradient(circle at 50% 0%, #102a4d 0%, var(--bg-dark) 70%);
             min-height: 100vh;
+            -ms-overflow-style: none;  scrollbar-width: none;
         }
 
-        /* --- NAVEGACIÓN ESTILO LOGO --- */
+        /* --- NAVIGATION --- */
         nav {
             background: rgba(0, 0, 0, 0.8);
             border-bottom: 4px solid;
             border-image: var(--grad-blue) 1;
-            padding: 10px 50px;
+            padding: 5px 50px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .logo-text {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            font-size: 1.5rem;
-            font-style: italic;
-            display: flex;
-            gap: 2px;
+        .logo-img {
+            height: 65px;
+            cursor: pointer;
+            filter: drop-shadow(0 0 8px var(--blue-primary));
+            transition: 0.3s;
         }
-
-        .logo-blue { color: var(--blue-primary); text-shadow: 0 0 10px var(--blue-dark); }
-        .logo-yellow { color: var(--yellow-accent); text-shadow: 0 0 10px var(--yellow-bright); }
+        .logo-img:hover { transform: scale(1.05); }
 
         .back-btn {
             background: var(--grad-blue);
@@ -66,7 +69,7 @@
 
         .back-btn:hover { transform: scale(1.1); filter: brightness(1.2); }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
+        /* --- MAIN WRAPPER --- */
         .wrapper { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
 
         .main-card {
@@ -80,7 +83,7 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        /* --- VISUALIZADOR --- */
+        /* --- VISUALIZER --- */
         .image-container {
             background: #000;
             display: flex;
@@ -94,10 +97,12 @@
             width: 100%;
             border-radius: 10px;
             box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
+            object-fit: contain;
+            max-height: 500px;
         }
 
-        /* --- PANEL DE INFORMACIÓN --- */
-        .info-panel { padding: 40px; position: relative; }
+        /* --- INFO PANEL --- */
+        .info-panel { padding: 40px; position: relative; display: flex; flex-direction: column; }
 
         .category-tag {
             display: inline-block;
@@ -107,6 +112,7 @@
             font-size: 0.7rem;
             clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
             margin-bottom: 15px;
+            width: fit-content;
         }
 
         h1 {
@@ -126,7 +132,7 @@
             margin: 15px 0;
             color: var(--yellow-accent);
             font-family: 'Orbitron';
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
         .price-box {
@@ -139,7 +145,7 @@
             gap: 10px;
         }
 
-        /* --- DESCRIPCIÓN Y SPECS --- */
+        /* --- DESCRIPTION AND SPECS --- */
         .item-desc {
             background: rgba(255,255,255,0.05);
             padding: 20px;
@@ -148,6 +154,7 @@
             border-left: 3px solid var(--blue-primary);
             line-height: 1.5;
             color: #ccc;
+            font-size: 1rem;
         }
 
         .specs-list {
@@ -166,7 +173,7 @@
         .spec-label { font-size: 0.7rem; color: var(--blue-primary); text-transform: uppercase; font-weight: bold; }
         .spec-val { display: block; font-size: 1.1rem; font-family: 'Orbitron'; }
 
-        /* --- BOTONES ACCIÓN --- */
+        /* --- ACTION BUTTONS --- */
         .buy-btn {
             width: 100%;
             background: var(--grad-yellow);
@@ -179,11 +186,12 @@
             text-transform: uppercase;
             clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
             transition: 0.3s;
+            margin-top: auto;
         }
 
         .buy-btn:hover { filter: brightness(1.2); transform: translateY(-3px); }
 
-        /* --- SECCIÓN KO-FI --- */
+        /* --- KO-FI SECTION --- */
         .support-box {
             margin-top: 30px;
             background: linear-gradient(45deg, #0e1621, #1a2635);
@@ -207,34 +215,37 @@
 
         footer { text-align: center; padding: 50px; color: #444; font-family: 'Orbitron'; font-size: 0.8rem; }
 
+        /* --- MOBILE OPTIMIZATION --- */
         @media (max-width: 900px) {
+            nav { padding: 10px 20px; }
+            .logo-img { height: 50px; }
             .main-card { grid-template-columns: 1fr; }
+            h1 { font-size: 2.5rem; }
+            .info-panel { padding: 25px; }
         }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo-text">
-        <span class="logo-blue">SHOPY</span><span class="logo-yellow">SPACE</span>
-    </div>
-    <a href="index.html" class="back-btn">VOLVER AL MERCADO</a>
+    <img src="img/Shopy.png" alt="SHOPYSPACE" class="logo-img" onclick="window.location.href='https://irathiens.org/ShopySpace'">
+    <a href="https://irathiens.org/ShopySpace" class="back-btn">RETURN TO MARKET</a>
 </nav>
 
 <div class="wrapper">
     <div class="main-card">
         <div class="image-container">
-            <img id="item-img" src="" alt="Cargando activo...">
+            <img id="item-img" src="" alt="Loading asset...">
         </div>
 
         <div class="info-panel">
-            <span class="category-tag" id="item-cat">CARGANDO...</span>
-            <h1 id="item-name">NOMBRE DEL ITEM</h1>
+            <span class="category-tag" id="item-cat">LOADING...</span>
+            <h1 id="item-name">ITEM NAME</h1>
             
             <div class="seller-info">
-                <span>VENDEDOR:</span>
-                <span id="item-seller" style="color: #fff;">DESCONOCIDO</span>
-                <span id="verified-icon" style="color: var(--blue-primary);">[✔ VERIFICADO]</span>
+                <span>SELLER:</span>
+                <span id="item-seller" style="color: #fff;">UNKNOWN</span>
+                <span id="verified-icon" style="color: var(--blue-primary);">[✔ VERIFIED]</span>
             </div>
 
             <div class="price-box">
@@ -242,33 +253,33 @@
             </div>
 
             <div class="item-desc" id="item-desc">
-                Cargando descripción del manifiesto de la UEE...
+                Retrieving manifest description from UEE data network...
             </div>
 
             <div class="specs-list">
                 <div class="spec-box">
-                    <span class="spec-label">Ubicación</span>
+                    <span class="spec-label">Location</span>
                     <span class="spec-val" id="item-loc">---</span>
                 </div>
                 <div class="spec-box">
-                    <span class="spec-label">Estado</span>
-                    <span class="spec-val" id="item-status" style="color: var(--success);">ESTABLE</span>
+                    <span class="spec-label">Status</span>
+                    <span class="spec-val" id="item-status" style="color: var(--success);">STABLE</span>
                 </div>
             </div>
 
-            <button class="buy-btn" onclick="contactSeller()">CONTACTAR VENDEDOR</button>
+            <button class="buy-btn" onclick="contactSeller()">CONTACT SELLER</button>
         </div>
     </div>
 
     <div class="support-box">
-        <h2 style="font-family: 'Barlow Condensed'; font-size: 2rem; color: var(--yellow-accent);">¿TE GUSTA SHOPYSPACE?</h2>
-        <p>Ayúdanos a mantener la red libre de piratas y servidores estables.</p>
-        <a href="https://ko-fi.com/TU_USUARIO" target="_blank" class="kofi-link">DONAR EN KO-FI</a>
+        <h2 style="font-family: 'Barlow Condensed'; font-size: 2rem; color: var(--yellow-accent);">ENJOYING SHOPYSPACE?</h2>
+        <p>Help us keep the network pirate-free and the servers running at 30 FPS.</p>
+        <a href="https://ko-fi.com/TU_USUARIO" target="_blank" class="kofi-link">DONATE ON KO-FI</a>
     </div>
 </div>
 
 <footer>
-    SHOPYSPACE NETWORK &copy; 2954 | STANTON SYSTEM TRADING HUB
+    SHOPYSPACE NETWORK &copy; 2956 | STANTON SYSTEM TRADING HUB
 </footer>
 
 <script>
@@ -279,32 +290,40 @@
     async function loadItem() {
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
-        if (!id) return;
+        
+        // If no ID is provided, we show a default message or redirect
+        if (!id) {
+            document.getElementById('item-name').innerText = "NO ASSET SELECTED";
+            return;
+        }
 
         const { data, error } = await _supabase.from('marketplace_items').select('*').eq('id', id).single();
         
         if (data) {
             document.getElementById('item-name').innerText = data.item_name.toUpperCase();
             document.getElementById('item-price').innerText = parseInt(data.price_auec).toLocaleString() + " aUEC";
-            document.getElementById('item-img').src = data.image_1 || 'https://via.placeholder.com/800x600?text=SIN_IMAGEN';
-            document.getElementById('item-cat').innerText = data.category.toUpperCase();
-            document.getElementById('item-loc').innerText = data.location.toUpperCase();
+            document.getElementById('item-img').src = data.image_1 || 'https://via.placeholder.com/800x600?text=NO_IMAGE';
+            document.getElementById('item-cat').innerText = (data.category || 'GENERAL').toUpperCase();
+            document.getElementById('item-loc').innerText = (data.location || 'UNKNOWN').toUpperCase();
             
-            // Si tienes una columna 'seller' o 'description' en tu Supabase:
             if(data.seller_name) document.getElementById('item-seller').innerText = data.seller_name.toUpperCase();
             if(data.description) document.getElementById('item-desc').innerText = data.description;
 
             if(data.status !== 'available') {
                 const status = document.getElementById('item-status');
-                status.innerText = "VENDIDO";
+                status.innerText = "SOLD OUT";
                 status.style.color = "#ff3e3e";
             }
+        } else {
+            document.getElementById('item-name').innerText = "ASSET NOT FOUND";
         }
     }
 
     function contactSeller() {
-        alert("Abriendo enlace seguro de Spectrum...");
-        // Aquí podrías redirigir a un perfil de Discord o chat
+        const name = document.getElementById('item-name').innerText;
+        alert("Establishing secure Spectrum link for: " + name);
+        // Add your Discord link here
+        window.open("https://discord.gg/TU_LINK", "_blank");
     }
 
     window.onload = loadItem;
