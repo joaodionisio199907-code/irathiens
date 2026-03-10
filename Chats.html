@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SHOPYSPACE | ENCRYPTED COMMS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -18,115 +18,135 @@
             --grad-blue: linear-gradient(90deg, #00d2ff 0%, #0056ff 100%);
         }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--blue-primary); border-radius: 10px; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--blue-primary); }
 
         body {
             margin: 0; background-color: var(--bg-deep); color: var(--text-white);
-            font-family: 'Rajdhani', sans-serif; height: 100vh; display: flex; flex-direction: column;
+            font-family: 'Rajdhani', sans-serif; height: 100dvh; display: flex; flex-direction: column;
             overflow: hidden;
         }
 
         /* --- NAV --- */
         nav {
-            background: #000; border-bottom: 3px solid; border-image: var(--grad-blue) 1;
-            padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
-            height: 60px; box-sizing: border-box; z-index: 1000;
+            background: #000; border-bottom: 2px solid var(--blue-primary);
+            padding: 5px 15px; display: flex; justify-content: space-between; align-items: center;
+            height: 55px; z-index: 1001;
         }
-        .logo-img { height: 30px; cursor: pointer; filter: drop-shadow(0 0 5px var(--blue-primary)); }
-        .menu-toggle { display: none; background: none; border: 1px solid var(--blue-primary); color: var(--blue-primary); padding: 5px 10px; font-family: 'Orbitron'; cursor: pointer; font-size: 0.8rem; }
+        .logo-img { height: 25px; filter: drop-shadow(0 0 5px var(--blue-primary)); }
+        
+        .id-badge { 
+            background: rgba(0, 210, 255, 0.1); border: 1px solid var(--blue-primary);
+            padding: 4px 8px; border-radius: 4px; font-family: 'Orbitron'; font-size: 0.55rem;
+            color: var(--blue-primary); cursor: pointer; display: flex; align-items: center; gap: 5px;
+        }
 
-        /* --- MAIN LAYOUT --- */
-        .chat-container { display: grid; grid-template-columns: 320px 1fr; flex: 1; overflow: hidden; position: relative; }
+        /* --- LAYOUT --- */
+        .chat-container { display: flex; flex: 1; overflow: hidden; position: relative; }
 
         /* --- SIDEBAR --- */
-        .sidebar { background: var(--bg-card); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: 0.3s; z-index: 999; }
-        .sidebar-header { padding: 15px; border-bottom: 1px solid var(--border-color); }
-        .sidebar-label { font-family: 'Orbitron'; font-size: 0.6rem; color: #444; margin-bottom: 10px; display: block; letter-spacing: 2px; }
-        .add-friend-btn { width: 100%; background: var(--grad-blue); color: white; border: none; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; font-weight: bold; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); transition: 0.3s; }
+        .sidebar { 
+            width: 300px; background: var(--bg-card); border-right: 1px solid var(--border-color); 
+            display: flex; flex-direction: column; transition: all 0.3s ease;
+        }
+
+        .sidebar-header { padding: 15px; }
+        .sidebar-label { font-family: 'Orbitron'; font-size: 0.6rem; color: #444; margin: 15px 0 8px; display: block; letter-spacing: 2px; }
+        
+        .add-friend-btn { 
+            width: 100%; background: var(--grad-blue); color: white; border: none; padding: 12px;
+            font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; font-weight: bold;
+            clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+        }
 
         .contact-list { flex: 1; overflow-y: auto; }
-        .contact-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: 0.2s; }
-        .contact-item:hover { background: rgba(0, 210, 255, 0.05); }
-        .contact-item.active { background: rgba(0, 210, 255, 0.1); border-left: 4px solid var(--blue-primary); }
-        .contact-name { display: block; font-family: 'Orbitron'; font-size: 0.8rem; color: var(--blue-primary); }
-        .contact-status { font-size: 0.65rem; color: #555; }
+        .contact-item { 
+            padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); 
+            cursor: pointer; position: relative;
+        }
+        .contact-item.active { background: rgba(0, 210, 255, 0.08); border-left: 3px solid var(--blue-primary); }
+        .contact-name { display: block; font-family: 'Orbitron'; font-size: 0.75rem; color: var(--blue-primary); }
+        .contact-status { font-size: 0.6rem; color: #555; }
 
         /* --- CHAT AREA --- */
-        .chat-main { display: flex; flex-direction: column; background: radial-gradient(circle at center, #0e1621 0%, #050a12 100%); }
-        .chat-top-bar { padding: 10px 20px; background: rgba(0,0,0,0.6); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .messages-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .chat-main { 
+            flex: 1; display: flex; flex-direction: column; 
+            background: radial-gradient(circle at center, #0e1621 0%, #050a12 100%);
+            position: relative;
+        }
 
-        .msg { max-width: 85%; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; position: relative; word-wrap: break-word; }
-        .msg.sent { align-self: flex-end; background: var(--blue-dark); border-bottom-right-radius: 2px; }
-        .msg.received { align-self: flex-start; background: #1a2635; border: 1px solid #333; border-bottom-left-radius: 2px; }
-        .msg-info { font-size: 0.55rem; color: var(--yellow-accent); margin-bottom: 3px; font-family: 'Orbitron'; display: block; }
+        .chat-top-bar { 
+            padding: 10px 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--border-color); 
+            display: flex; align-items: center; gap: 10px;
+        }
+        .back-btn { display: none; background: none; border: 1px solid var(--blue-primary); color: var(--blue-primary); padding: 4px 8px; border-radius: 4px; font-family: 'Orbitron'; cursor: pointer; }
+
+        .messages-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        
+        .msg { max-width: 85%; padding: 10px 12px; border-radius: 10px; font-size: 0.9rem; line-height: 1.3; }
+        .msg.sent { align-self: flex-end; background: var(--blue-dark); color: white; border-bottom-right-radius: 2px; }
+        .msg.received { align-self: flex-start; background: #1a2635; border: 1px solid #222; border-bottom-left-radius: 2px; }
+        .msg-info { font-size: 0.5rem; color: var(--yellow-accent); margin-bottom: 4px; font-family: 'Orbitron'; display: block; opacity: 0.8; }
 
         /* --- INPUT --- */
-        .input-container { padding: 15px; background: var(--bg-card); border-top: 1px solid var(--border-color); }
-        .input-wrapper { display: flex; gap: 8px; background: #050a12; border: 1px solid #333; padding: 5px; border-radius: 8px; align-items: center; }
-        .input-wrapper input { flex: 1; background: transparent; border: none; color: white; padding: 8px; outline: none; font-size: 0.95rem; }
-        .emoji-btn { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; filter: grayscale(1); }
-        .send-btn { background: var(--grad-blue); border: none; padding: 8px 15px; color: white; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; border-radius: 4px; }
+        .input-container { padding: 10px; background: var(--bg-card); border-top: 1px solid var(--border-color); }
+        .input-wrapper { display: flex; gap: 6px; background: #000; border: 1px solid #333; padding: 4px; border-radius: 8px; align-items: center; }
+        .input-wrapper input { flex: 1; background: transparent; border: none; color: white; padding: 10px; outline: none; font-size: 0.9rem; }
+        .send-btn { background: var(--grad-blue); border: none; padding: 10px 18px; color: white; font-family: 'Orbitron'; font-size: 0.7rem; border-radius: 6px; font-weight: bold; }
 
-        .emoji-picker { display: none; position: absolute; bottom: 80px; left: 20px; background: var(--bg-card); border: 2px solid var(--blue-primary); padding: 8px; grid-template-columns: repeat(5, 1fr); gap: 5px; border-radius: 10px; z-index: 100; }
-        .emoji-picker span { cursor: pointer; font-size: 1.3rem; padding: 5px; }
-
+        /* --- MOBILE ADAPTATION --- */
         @media (max-width: 768px) {
-            .menu-toggle { display: block; }
-            .chat-container { grid-template-columns: 1fr; }
-            .sidebar { position: absolute; left: -100%; top: 0; bottom: 0; width: 280px; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
-            .sidebar.active { left: 0; }
+            .sidebar { 
+                position: absolute; width: 100%; height: 100%; z-index: 1000;
+                left: 0;
+            }
+            .sidebar.hidden { left: -100%; }
+            .back-btn { display: block; }
             .msg { max-width: 90%; }
         }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--bg-card); width: 90%; max-width: 350px; border: 2px solid var(--blue-primary); border-radius: 0 15px 0 15px; overflow: hidden; }
-        .modal-header { background: var(--grad-blue); padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; display: flex; justify-content: space-between; }
+        /* --- MODALS --- */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
+        .modal-content { background: var(--bg-card); width: 100%; max-width: 400px; border: 1px solid var(--blue-primary); border-radius: 8px; }
+        .modal-header { background: var(--grad-blue); padding: 12px; font-family: 'Orbitron'; font-size: 0.7rem; display: flex; justify-content: space-between; }
         .modal-body { padding: 20px; }
-        .modal-input { width: 100%; background: #000; border: 1px solid #333; padding: 10px; color: white; border-radius: 5px; margin-top: 10px; box-sizing: border-box; }
+        .modal-input { width: 100%; background: #000; border: 1px solid #333; padding: 12px; color: white; margin-bottom: 10px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
 <nav>
-    <button class="menu-toggle" onclick="toggleSidebar()">COMMS</button>
-    <img src="img/Shopy.png" class="logo-img" onclick="window.location.href='index.html'">
-    <div style="font-family: 'Orbitron'; font-size: 0.6rem; color: var(--yellow-accent);">
-        ID: <span id="my-name-display">---</span>
+    <img src="img/Shopy.png" class="logo-img">
+    <div id="copy-my-id" class="id-badge" onclick="copyMyID()">
+        <span id="my-name-display">...</span>
+        <span style="opacity:0.5; font-size: 0.4rem;">[COPY ID]</span>
     </div>
 </nav>
 
 <div class="chat-container">
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <span class="sidebar-label">GLOBAL COMMS</span>
-            <div class="contact-item active" onclick="selectContact('Global Hub', this)">
-                <span class="contact-name"># BROADCAST_CHANNEL</span>
-                <span class="contact-status">Stanton System Wide</span>
+            <span class="sidebar-label">NETWORK BROADCAST</span>
+            <div class="contact-item active" id="global-item" onclick="selectContact('Global Hub', null, this)">
+                <span class="contact-name"># BROADCAST_HUB</span>
+                <span class="contact-status">Public Unencrypted Frequency</span>
             </div>
-            <span class="sidebar-label" style="margin-top: 20px;">PRIVATE LINKS</span>
-            <button class="add-friend-btn" onclick="openAddFriend()">+ LINK CITIZEN</button>
+            <span class="sidebar-label">PRIVATE ENCRYPTED LINKS</span>
+            <button class="add-friend-btn" onclick="openModal()">+ LINK NEW CITIZEN</button>
         </div>
         <div class="contact-list" id="contact-list"></div>
     </aside>
 
     <main class="chat-main">
         <div class="chat-top-bar">
+            <button class="back-btn" onclick="showSidebar()"> < </button>
             <span id="current-chat-name" style="font-family: 'Orbitron'; color: var(--blue-primary); font-size: 0.8rem;">GLOBAL HUB</span>
         </div>
         <div class="messages-area" id="messages-area"></div>
         <div class="input-container">
-            <div class="emoji-picker" id="emoji-picker">
-                <span onclick="addEmoji('🚀')">🚀</span><span onclick="addEmoji('🛸')">🛸</span>
-                <span onclick="addEmoji('💎')">💎</span><span onclick="addEmoji('💰')">💰</span>
-                <span onclick="addEmoji('🔥')">🔥</span><span onclick="addEmoji('👍')">👍</span>
-                <span onclick="addEmoji('😎')">😎</span><span onclick="addEmoji('💀')">💀</span>
-                <span onclick="addEmoji('🛠️')">🛠️</span><span onclick="addEmoji('🔫')">🔫</span>
-            </div>
             <div class="input-wrapper">
-                <button class="emoji-btn" onclick="toggleEmojis()">😊</button>
-                <input type="text" id="chat-input" placeholder="Secure transmission..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <input type="text" id="chat-input" placeholder="Enter secure message..." onkeypress="if(event.key==='Enter') sendMessage()">
                 <button class="send-btn" onclick="sendMessage()">SEND</button>
             </div>
         </div>
@@ -135,13 +155,11 @@
 
 <div id="modal-add" class="modal-overlay">
     <div class="modal-content">
-        <div class="modal-header">
-            <span>LINK NEW CITIZEN</span>
-            <span style="cursor:pointer" onclick="closeAddFriend()">×</span>
-        </div>
+        <div class="modal-header"><span>ESTABLISH LINK</span><span onclick="closeModal()" style="cursor:pointer">X</span></div>
         <div class="modal-body">
-            <input type="text" id="new-friend-name" class="modal-input" placeholder="Citizen Handle...">
-            <button class="add-friend-btn" style="margin-top:15px;" onclick="confirmAddFriend()">ESTABLISH LINK</button>
+            <input type="text" id="friend-uuid" class="modal-input" placeholder="Paste Citizen UUID...">
+            <input type="text" id="friend-name" class="modal-input" placeholder="Enter Call-sign...">
+            <button class="add-friend-btn" onclick="confirmAddFriend()">SYNC CHANNEL</button>
         </div>
     </div>
 </div>
@@ -151,7 +169,7 @@
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    let myId, myName, currentTarget = 'Global Hub';
+    let myId, myName, currentTarget = 'Global Hub', targetUserId = null;
 
     async function init() {
         const { data: { session } } = await _supabase.auth.getSession();
@@ -163,61 +181,64 @@
         
         loadMessages();
 
-        // ESCUCHA INTELIGENTE
-        _supabase.channel('comms_v2')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, 
-            payload => {
-                const msg = payload.new;
-                
-                // Si es del canal actual
-                if (msg.channel === currentTarget) {
-                    appendMessage(msg);
-                } 
-                // Si alguien me está hablando a MI canal personal y no lo tengo en la lista
-                else if (msg.channel === myName) {
-                    autoCreateContact(msg.user_name);
+        _supabase.channel('main_room')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
+                const m = payload.new;
+                if (m.channel === currentTarget) appendMessage(m);
+                else if (m.receiver_id === myId) {
+                    autoCreateContact(m.user_name, m.user_id);
                 }
             }).subscribe();
     }
 
-    function autoCreateContact(senderName) {
+    function copyMyID() {
+        navigator.clipboard.writeText(myId);
+        alert("ID COPIED TO CLIPBOARD: " + myId);
+    }
+
+    function getChannelID(id1, id2) {
+        return [id1, id2].sort().join("--");
+    }
+
+    function autoCreateContact(name, id) {
         const list = document.getElementById('contact-list');
-        const exists = Array.from(list.querySelectorAll('.contact-name')).some(el => el.innerText === senderName.toUpperCase());
-        
-        if (!exists && senderName !== myName) {
+        if (!document.getElementById(`contact-${id}`)) {
             const div = document.createElement('div');
             div.className = 'contact-item';
-            div.onclick = () => selectContact(senderName, div);
-            div.innerHTML = `<span class="contact-name">${senderName}</span><span class="contact-status" style="color:var(--yellow-accent)">● NEW SIGNAL DETECTED</span>`;
+            div.id = `contact-${id}`;
+            div.onclick = () => selectContact(name, id, div);
+            div.innerHTML = `<span class="contact-name">${name}</span><span class="contact-status">● P2P ENCRYPTED</span>`;
             list.prepend(div);
         }
     }
 
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-
-    function selectContact(name, el) {
-        currentTarget = name;
+    function selectContact(name, id, el) {
+        currentTarget = id ? getChannelID(myId, id) : 'Global Hub';
+        targetUserId = id;
         document.getElementById('current-chat-name').innerText = name.toUpperCase();
         document.querySelectorAll('.contact-item').forEach(i => i.classList.remove('active'));
         el.classList.add('active');
-        if(window.innerWidth < 768) toggleSidebar();
+        if (window.innerWidth <= 768) document.getElementById('sidebar').classList.add('hidden');
         loadMessages();
     }
 
+    function showSidebar() { document.getElementById('sidebar').classList.remove('hidden'); }
+
     async function loadMessages() {
         const box = document.getElementById('messages-area');
-        box.innerHTML = '<div style="text-align:center; color:#222; font-size:0.7rem;">DECRYPTING...</div>';
-        const { data } = await _supabase.from('mensajes').select('*').eq('channel', currentTarget).order('created_at', { ascending: true }).limit(50);
         box.innerHTML = '';
-        if (data) data.forEach(msg => appendMessage(msg));
+        let query = _supabase.from('mensajes').select('*').eq('channel', currentTarget);
+        if (targetUserId) query = query.or(`user_id.eq.${myId},receiver_id.eq.${myId}`);
+        const { data } = await query.order('created_at', { ascending: true });
+        if (data) data.forEach(m => appendMessage(m));
     }
 
-    function appendMessage(msg) {
+    function appendMessage(m) {
         const box = document.getElementById('messages-area');
-        const isMe = msg.user_id === myId;
+        const isMe = m.user_id === myId;
         const div = document.createElement('div');
         div.className = `msg ${isMe ? 'sent' : 'received'}`;
-        div.innerHTML = `<span class="msg-info">${msg.user_name}</span>${msg.content}`;
+        div.innerHTML = `<span class="msg-info">${m.user_name}</span>${m.content}`;
         box.appendChild(div);
         box.scrollTop = box.scrollHeight;
     }
@@ -226,21 +247,19 @@
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if (!text) return;
-        const { error } = await _supabase.from('mensajes').insert([{ user_id: myId, user_name: myName, content: text, channel: currentTarget }]);
-        if (!error) { input.value = ''; document.getElementById('emoji-picker').style.display = 'none'; }
+        const { error } = await _supabase.from('mensajes').insert([{
+            user_id: myId, user_name: myName, content: text, 
+            channel: currentTarget, receiver_id: targetUserId
+        }]);
+        if (!error) input.value = '';
     }
 
-    function toggleEmojis() { const p = document.getElementById('emoji-picker'); p.style.display = p.style.display === 'grid' ? 'none' : 'grid'; }
-    function addEmoji(emoji) { document.getElementById('chat-input').value += emoji; }
-    function openAddFriend() { document.getElementById('modal-add').style.display = 'flex'; }
-    function closeAddFriend() { document.getElementById('modal-add').style.display = 'none'; }
-    
+    function openModal() { document.getElementById('modal-add').style.display = 'flex'; }
+    function closeModal() { document.getElementById('modal-add').style.display = 'none'; }
     function confirmAddFriend() {
-        const name = document.getElementById('new-friend-name').value.trim();
-        if(name) {
-            autoCreateContact(name);
-            closeAddFriend();
-        }
+        const id = document.getElementById('friend-uuid').value.trim();
+        const name = document.getElementById('friend-name').value.trim();
+        if (id && name) { autoCreateContact(name, id); closeModal(); }
     }
 
     init();
