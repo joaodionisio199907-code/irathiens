@@ -245,6 +245,41 @@
         }
     }
 
+    async function uploadToNet() {
+        if(!currentUser) {
+            alert("⚠️ DEBES ESTAR LOGUEADO");
+            return;
+        }
+
+        const name = document.getElementById('item-name').value;
+        const price = document.getElementById('item-price').value;
+        
+        if(!name || !price) {
+            alert("⚠️ NOMBRE Y PRECIO REQUERIDOS");
+            return;
+        }
+
+        const payload = {
+            item_name: name,
+            category: document.getElementById('item-cat').value,
+            sub_category: document.getElementById('item-subcat').value,
+            location: document.getElementById('item-location').value,
+            price_auec: parseInt(price),
+            description: document.getElementById('item-desc').value,
+            image_1: uploadedImgBase64,
+            seller_id: currentUser.id
+        };
+
+        const { error } = await _supabase.from('marketplace_items').insert([payload]);
+        
+        if (error) {
+            alert("❌ ERROR: " + error.message);
+        } else {
+            alert("🚀 TRANSMISIÓN COMPLETADA");
+            location.reload();
+        }
+    }
+
     function showTab(t) {
         currentTab = t;
         document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
