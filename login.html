@@ -175,15 +175,20 @@
         }
 
         // LOGIN CON DISCORD
-        async function signInWithDiscord() {
-            const { data, error } = await _supabase.auth.signInWithOAuth({
-                provider: 'discord',
-                options: {
-                    redirectTo: window.location.origin + '/perfil'
-                }
-            });
-            if (error) alert("ERROR DE VÍNCULO: " + error.message);
+       async function signInWithDiscord() {
+    const { data, error } = await _supabase.auth.signInWithOAuth({
+        provider: 'discord',
+        options: {
+            // Usamos la URL completa para evitar errores de ruta
+            redirectTo: 'https://www.irathiens.org/perfil' 
         }
+    });
+    
+    if (error) {
+        console.error("Error de vínculo:", error.message);
+        alert("ERROR DE VÍNCULO: " + error.message);
+    }
+}
 
         // LÓGICA DE LOGIN
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -259,4 +264,5 @@
     </script>
 </body>
 </html>
+
 
