@@ -34,7 +34,7 @@
             padding: 5px 15px; display: flex; justify-content: space-between; align-items: center;
             height: 55px; z-index: 1001;
         }
-        .logo-img { height: 25px; filter: drop-shadow(0 0 5px var(--blue-primary)); }
+        .logo-img { height: 25px; filter: drop-shadow(0 0 5px var(--blue-primary)); cursor: pointer; }
         
         .id-badge { 
             background: rgba(0, 210, 255, 0.1); border: 1px solid var(--blue-primary);
@@ -106,7 +106,6 @@
             .msg { max-width: 90%; }
         }
 
-        /* --- MODALS --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
         .modal-content { background: var(--bg-card); width: 100%; max-width: 400px; border: 1px solid var(--blue-primary); border-radius: 8px; }
         .modal-header { background: var(--grad-blue); padding: 12px; font-family: 'Orbitron'; font-size: 0.7rem; display: flex; justify-content: space-between; }
@@ -117,7 +116,7 @@
 <body>
 
 <nav>
-    <img src="img/Shopy.png" class="logo-img">
+    <img src="img/Shopy.png" class="logo-img" onclick="window.location.href='https://irathiens.org/ShopySpace'">
     <div id="copy-my-id" class="id-badge" onclick="copyMyID()">
         <span id="my-name-display">...</span>
         <span style="opacity:0.5; font-size: 0.4rem;">[COPY ID]</span>
@@ -179,9 +178,19 @@
         myName = session.user.user_metadata.full_name || session.user.email.split('@')[0];
         document.getElementById('my-name-display').innerText = myName.toUpperCase();
         
-        // Cargar contactos guardados antes de empezar
         loadSavedContacts();
-        loadMessages();
+
+        // LÓGICA DE PERSISTENCIA AL VENIR DESDE PRODUCTO
+        const pending = localStorage.getItem('pending_contact');
+        if (pending) {
+            const contact = JSON.parse(pending);
+            autoCreateContact(contact.name, contact.id);
+            const el = document.getElementById(`contact-${contact.id}`);
+            selectContact(contact.name, contact.id, el);
+            localStorage.removeItem('pending_contact');
+        } else {
+            loadMessages();
+        }
 
         _supabase.channel('main_room')
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
@@ -195,14 +204,13 @@
 
     function copyMyID() {
         navigator.clipboard.writeText(myId);
-        alert("ID COPIED TO CLIPBOARD: " + myId);
+        alert("ID COPIED: " + myId);
     }
 
     function getChannelID(id1, id2) {
         return [id1, id2].sort().join("--");
     }
 
-    // --- NUEVA LÓGICA DE PERSISTENCIA ---
     function loadSavedContacts() {
         const saved = localStorage.getItem('shopy_contacts_' + myId);
         if (saved) {
@@ -281,14 +289,10 @@
 
     function openModal() { document.getElementById('modal-add').style.display = 'flex'; }
     function closeModal() { document.getElementById('modal-add').style.display = 'none'; }
-    
     function confirmAddFriend() {
         const id = document.getElementById('friend-uuid').value.trim();
         const name = document.getElementById('friend-name').value.trim();
-        if (id && name) { 
-            autoCreateContact(name, id); 
-            closeModal(); 
-        }
+        if (id && name) { autoCreateContact(name, id); closeModal(); }
     }
 
     init();
