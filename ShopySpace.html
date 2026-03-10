@@ -202,16 +202,15 @@
 
         <section id="sell" style="display:none;">
             <div class="seller-recruitment" id="recruitment-banner">
-    <img src="img/Shopy.png" class="recruitment-img" alt="Trader">
-    
-    <div class="recruitment-text">
-        <h2>SELL YOUR ITEMS ON SHOPYSPACE</h2>
-        <p>To sell on our system, you need to be registered</p>
-        
-        <a href="https://www.irathiens.org/login" class="action-btn seller-btn">REGISTER AS SELLER</a>
-    </div>
-</div>
-            <div style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid #1a2635;">
+                <img src="img/Shopy.png" class="recruitment-img" alt="Trader">
+                <div class="recruitment-text">
+                    <h2>SELL YOUR ITEMS ON SHOPYSPACE</h2>
+                    <p>To sell on our system, you need to be registered</p>
+                    <a href="https://www.irathiens.org/login" class="action-btn seller-btn">REGISTER AS SELLER</a>
+                </div>
+            </div>
+            
+            <div id="publish-container" style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid #1a2635;">
                 <h2 style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 15px 0;">NEW MANIFEST</h2>
                 <input type="text" id="item-name" class="search-bar" placeholder="ITEM NAME">
                 <select id="item-cat" class="search-bar">
@@ -221,11 +220,14 @@
                     <option value="Medical">MEDICAL</option>
                 </select>
                 <input type="text" id="item-location" class="search-bar" placeholder="LOCATION">
-                <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC">
+                <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC" inputmode="numeric">
+                
+                <textarea id="item-description" class="search-bar" placeholder="DESCRIPTION (Details, LTI, etc.)" style="height: 100px; resize: none;"></textarea>
+
                 <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635;">SELECT IMAGE</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
                 <div id="img-preview" style="text-align:center; margin-bottom: 10px;"></div>
-                <button class="action-btn" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000;">PUBLISH ASSET</button>
+                <button class="action-btn" id="btn-publish" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000;">PUBLISH ASSET</button>
             </div>
         </section>
     </main>
@@ -263,13 +265,16 @@
         const { data: { session } } = await _supabase.auth.getSession();
         const chatBtn = document.getElementById('chat-btn');
         const recruitmentBanner = document.getElementById('recruitment-banner');
+        const publishContainer = document.getElementById('publish-container');
         
         if (session) {
             chatBtn.style.display = 'flex';
-            if(recruitmentBanner) recruitmentBanner.style.display = 'none'; // OCULTAR REGISTRO SI ESTÁ LOGUEADO
+            if(recruitmentBanner) recruitmentBanner.style.display = 'none';
+            if(publishContainer) publishContainer.style.display = 'block';
         } else {
             chatBtn.style.display = 'none';
-            if(recruitmentBanner) recruitmentBanner.style.display = 'flex'; // MOSTRAR REGISTRO SI NO HAY SESIÓN
+            if(recruitmentBanner) recruitmentBanner.style.display = 'flex';
+            if(publishContainer) publishContainer.style.display = 'none';
         }
     }
 
@@ -318,6 +323,7 @@
     }
 
     function processImg(input) {
+        if (!input.files[0]) return;
         const reader = new FileReader();
         reader.onload = (e) => {
             uploadedImgBase64 = e.target.result;
@@ -327,17 +333,36 @@
     }
 
     async function uploadToNet() {
+        // 1. Obtener sesión para inyectar seller_id automáticamente
+        const { data: { session } } = await _supabase.auth.getSession();
+        if(!session) return alert("Log in required");
+
         if(!uploadedImgBase64) return alert("Select image");
+
+        const btn = document.getElementById('btn-publish');
+        btn.innerText = "UPLOADING...";
+        btn.disabled = true;
+
         const payload = {
             item_name: document.getElementById('item-name').value,
             category: document.getElementById('item-cat').value,
             location: document.getElementById('item-location').value,
             price_auec: document.getElementById('item-price').value,
+            description: document.getElementById('item-description').value, // Se añade descripción
             image_1: uploadedImgBase64,
-            status: 'available'
+            status: 'available',
+            seller_id: session.user.id // SE INYECTA TU ID AUTOMÁTICAMENTE
         };
+
         const { error } = await _supabase.from('marketplace_items').insert([payload]);
-        if(error) alert("Error"); else location.reload();
+        
+        if(error) {
+            alert("Error: " + error.message);
+            btn.innerText = "PUBLISH ASSET";
+            btn.disabled = false;
+        } else {
+            location.reload();
+        }
     }
 
     function handleGlobalSearch() {
