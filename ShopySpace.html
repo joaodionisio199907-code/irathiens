@@ -70,7 +70,8 @@
             grid-template-columns: repeat(2, 1fr); /* 2 columnas en móvil siempre */
             gap: 12px; 
         }
-        .item-card { background: var(--bg-card); border-radius: 0 12px 0 12px; border: 1px solid #1a2635; overflow: hidden; position: relative; }
+        .item-card { background: var(--bg-card); border-radius: 0 12px 0 12px; border: 1px solid #1a2635; overflow: hidden; position: relative; cursor: pointer; transition: 0.3s; }
+        .item-card:hover { border-color: var(--blue-light); transform: translateY(-3px); }
         .item-card img { width: 100%; height: 120px; object-fit: cover; border-bottom: 1px solid #1a2635; }
         .item-card-info { padding: 10px; }
         .item-card-info h3 { margin: 0; font-size: 0.7rem; color: var(--blue-light); font-family: 'Orbitron'; height: 2.2em; overflow: hidden; }
@@ -220,16 +221,26 @@
         displayList.forEach(item => {
             const card = document.createElement('div');
             card.className = 'item-card';
+            // Al hacer clic en la tarjeta, guarda los datos y redirige
+            card.onclick = () => goToDetails(item);
+            
             card.innerHTML = `
-                ${(currentTab === 'my-items' && currentUser) ? `<button style="position:absolute;top:5px;right:5px;background:red;color:white;border:none;padding:5px;font-size:10px;z-index:10;" onclick="deleteAsset('${item.id}')">DEL</button>` : ''}
+                ${(currentTab === 'my-items' && currentUser) ? `<button style="position:absolute;top:5px;right:5px;background:red;color:white;border:none;padding:5px;font-size:10px;z-index:10;" onclick="event.stopPropagation(); deleteAsset('${item.id}')">DEL</button>` : ''}
                 <img src="${item.image_1 || ''}">
                 <div class="item-card-info">
                     <span style="font-size:0.55rem; color:var(--blue-light); opacity:0.6;">${item.category} / ${item.sub_category || ''}</span>
                     <h3>${item.item_name.toUpperCase()}</h3>
                     <div style="color:var(--yellow-accent); font-weight:bold; font-size:0.85rem;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
+                    <div style="margin-top:10px; text-align:center; background:var(--blue-light); color:black; font-size:0.6rem; font-weight:900; padding:5px; border-radius:2px;">VIEW DETAILS</div>
                 </div>`;
             grid.appendChild(card);
         });
+    }
+
+    // FUNCIÓN PARA REDIRIGIR A ITEM.HTML
+    function goToDetails(item) {
+        localStorage.setItem('selectedItem', JSON.stringify(item));
+        window.location.href = 'item.html';
     }
 
     function updateSubCatSelect() {
@@ -250,15 +261,12 @@
             alert("⚠️ DEBES ESTAR LOGUEADO");
             return;
         }
-
         const name = document.getElementById('item-name').value;
         const price = document.getElementById('item-price').value;
-        
         if(!name || !price) {
             alert("⚠️ NOMBRE Y PRECIO REQUERIDOS");
             return;
         }
-
         const payload = {
             item_name: name,
             category: document.getElementById('item-cat').value,
@@ -269,9 +277,7 @@
             image_1: uploadedImgBase64,
             seller_id: currentUser.id
         };
-
         const { error } = await _supabase.from('marketplace_items').insert([payload]);
-        
         if (error) {
             alert("❌ ERROR: " + error.message);
         } else {
