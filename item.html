@@ -18,9 +18,9 @@
             --grad-blue: linear-gradient(90deg, #00d2ff 0%, #0056ff 100%);
             --grad-yellow: linear-gradient(90deg, #ffb800 0%, #ffe600 100%);
             --success: #00ff88;
+            --font-impact: 'Barlow Condensed', sans-serif;
         }
 
-        /* Scrollbar Hidden */
         ::-webkit-scrollbar { display: none; }
         
         body {
@@ -46,25 +46,54 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            height: 70px;
+            box-sizing: border-box;
         }
 
         .logo-img {
-            height: 55px;
+            height: 45px;
             cursor: pointer;
             filter: drop-shadow(0 0 8px var(--blue-primary));
             transition: 0.3s;
         }
 
+        .nav-right { display: flex; align-items: center; gap: 15px; }
+
         .back-btn {
-            background: var(--grad-blue);
+            background: rgba(255,255,255,0.05);
             color: white;
             text-decoration: none;
-            font-family: 'Barlow Condensed', sans-serif;
+            font-family: var(--font-impact);
             padding: 8px 15px;
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
             font-weight: 800;
             text-transform: uppercase;
             font-size: 0.9rem;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+        }
+
+        /* BOTÓN DE CHATS (Estilo igual al Market) */
+        #chat-btn {
+            display: none; 
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid var(--blue-primary);
+            color: var(--blue-primary);
+            padding: 6px 12px;
+            border-radius: 4px;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            font-family: var(--font-impact);
+            font-size: 0.85rem;
+            transition: 0.3s;
+            position: relative;
+            font-style: italic;
+        }
+        .chat-icon { width: 16px; height: 16px; fill: currentColor; }
+        #chat-btn::after {
+            content: ''; position: absolute; top: 4px; right: 4px;
+            width: 5px; height: 5px; background: var(--yellow-bright);
+            border-radius: 50%; box-shadow: 0 0 8px var(--yellow-bright);
         }
 
         /* --- CONTENT --- */
@@ -161,7 +190,7 @@
             margin-top: auto;
         }
 
-        /* --- CHAT SYSTEM (MOBILE PERFECT) --- */
+        /* --- CHAT SYSTEM --- */
         #chat-window {
             display: none;
             position: fixed;
@@ -233,19 +262,11 @@
 
         .chat-send-btn { background: var(--blue-primary); border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; }
 
-        /* Mobile Viewport Fix */
         @media (max-width: 650px) {
             .main-card { grid-template-columns: 1fr; }
             h1 { font-size: 2.2rem; }
-            #chat-window {
-                width: 100%;
-                height: 100%;
-                bottom: 0;
-                right: 0;
-                border-radius: 0;
-                border: none;
-            }
-            .chat-input-area { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+            #chat-window { width: 100%; height: 100%; bottom: 0; right: 0; border-radius: 0; border: none; }
+            #chat-btn span { display: none; }
         }
 
         footer { text-align: center; padding: 40px; color: #444; font-family: 'Orbitron'; font-size: 0.7rem; }
@@ -255,7 +276,14 @@
 
 <nav>
     <img src="img/Shopy.png" alt="SHOPYSPACE" class="logo-img" onclick="window.location.href='https://irathiens.org/ShopySpace'">
-    <a href="https://irathiens.org/ShopySpace" class="back-btn">RETURN TO MARKET</a>
+    
+    <div class="nav-right">
+        <a href="Chats.html" id="chat-btn">
+            <svg class="chat-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+            <span>CHATS</span>
+        </a>
+        <a href="https://irathiens.org/ShopySpace" class="back-btn">RETURN TO MARKET</a>
+    </div>
 </nav>
 
 <div class="wrapper">
@@ -311,11 +339,21 @@
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    // Identidad del usuario
     let myId = localStorage.getItem('chat_uid') || 'U-' + Math.floor(Math.random()*9000);
     let myName = localStorage.getItem('chat_uname') || 'Citizen_' + Math.floor(Math.random()*999);
     localStorage.setItem('chat_uid', myId);
     localStorage.setItem('chat_uname', myName);
+
+    // FUNCIÓN PARA DETECTAR LOGIN
+    async function checkAuth() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        const chatBtn = document.getElementById('chat-btn');
+        if (session) {
+            chatBtn.style.display = 'flex';
+        } else {
+            chatBtn.style.display = 'none';
+        }
+    }
 
     async function loadItem() {
         const params = new URLSearchParams(window.location.search);
@@ -333,15 +371,11 @@
         }
     }
 
-    // --- CHAT FUNCTIONS ---
     function openChat() {
         const win = document.getElementById('chat-window');
         win.style.display = 'flex';
         if (window.innerWidth < 650) document.body.style.overflow = 'hidden';
-        
         loadMessages();
-        
-        // Suscribirse a mensajes nuevos
         _supabase.channel('public:mensajes').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
             appendMessage(payload.new);
         }).subscribe();
@@ -379,12 +413,13 @@
             user_name: myName,
             content: text
         }]);
-
         if (!error) input.value = '';
     }
 
-    window.onload = loadItem;
+    window.onload = () => {
+        loadItem();
+        checkAuth(); // Detecta sesión al cargar
+    };
 </script>
-
 </body>
 </html>
