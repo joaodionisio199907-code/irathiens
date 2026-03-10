@@ -39,65 +39,72 @@
             padding: 0 15px; display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); height: 70px;
         }
-        .logo-img { max-height: 80px; filter: drop-shadow(0 0 8px var(--blue-light)); cursor: pointer; }
+        .logo-img { max-height: 75px; filter: drop-shadow(0 0 8px var(--blue-light)); cursor: pointer; }
         .nav-links { display: flex; gap: 8px; align-items: center; }
         .nav-links a { 
-            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.85rem; 
+            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.8rem; 
             cursor: pointer; transition: 0.3s; text-transform: uppercase; font-style: italic;
             padding: 6px 10px; border-radius: 4px;
         }
+        
+        /* Estilos activos y especiales */
         #link-my-items.active { 
             background: rgba(255, 184, 0, 0.15); color: var(--yellow-bright); 
             border: 1px solid var(--yellow-accent); box-shadow: 0 0 15px rgba(255, 184, 0, 0.2);
         }
         .nav-links a.active:not(#link-my-items) { color: var(--blue-light); border-bottom: 2px solid var(--blue-light); }
+        
+        #chat-btn { 
+            color: var(--blue-light); border: 1px solid rgba(0, 210, 255, 0.4); 
+            background: rgba(0, 210, 255, 0.05); font-weight: bold;
+        }
 
         /* --- LAYOUT --- */
         .marketplace-wrapper { max-width: 1200px; margin: 10px auto; padding: 0 15px; display: grid; grid-template-columns: 180px 1fr; gap: 20px; }
 
         .sidebar { background: var(--bg-card); padding: 15px; border-radius: 0 15px 0 15px; border-left: 4px solid var(--blue-light); height: fit-content; position: sticky; top: 90px; }
-        .cat-item { display: block; padding: 12px; color: #8899af; text-decoration: none; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-bottom: 5px; border-radius: 4px; }
+        .cat-item { display: block; padding: 12px; color: #8899af; text-decoration: none; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-bottom: 5px; border-radius: 4px; }
         .cat-item.active { background: var(--grad-blue); color: white; clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%); }
 
         /* --- GRID & CARDS --- */
-        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 12px; }
         .item-card { background: var(--bg-card); border: 1px solid #1a2635; border-radius: 0 12px 0 12px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; position: relative; transition: 0.3s; }
-        .item-card img { width: 100%; height: 140px; object-fit: cover; border-bottom: 1px solid #1a2635; }
+        .item-card img { width: 100%; height: 145px; object-fit: cover; border-bottom: 1px solid #1a2635; }
         .item-card-info { padding: 10px; }
         .item-card-info h3 { margin: 0; font-size: 0.75rem; color: var(--blue-light); font-family: var(--font-logo); line-height: 1.2; height: 2.4em; overflow: hidden; }
 
-        .mgmt-controls { position: absolute; top: 5px; right: 5px; z-index: 50; }
+        .mgmt-controls { position: absolute; top: 6px; right: 6px; z-index: 50; }
         .btn-del { 
-            background: var(--danger); color: white; border: none; padding: 6px 10px; 
+            background: var(--danger); color: white; border: none; padding: 6px 12px; 
             border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 900;
-            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4);
+            box-shadow: 0 2px 10px rgba(255, 77, 77, 0.5);
         }
 
-        /* --- SELL SECTION REDESIGN --- */
+        /* --- SELL SECTION (CABIN INTERFACE) --- */
         #publish-container { 
-            background: var(--bg-card); padding: 20px; border-radius: 15px; 
-            border: 1px solid rgba(0, 210, 255, 0.3); max-width: 500px; margin: 0 auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            background: var(--bg-card); padding: 25px; border-radius: 15px; 
+            border: 1px solid rgba(0, 210, 255, 0.2); max-width: 500px; margin: 0 auto;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6);
         }
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-size: 0.7rem; color: var(--blue-light); font-family: var(--font-mono); text-transform: uppercase; margin-bottom: 5px; margin-left: 5px; }
+        .form-group { margin-bottom: 18px; }
+        .form-label { display: block; font-size: 0.65rem; color: var(--blue-light); font-family: var(--font-mono); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
         .search-bar { 
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #1a2635; 
-            padding: 12px; color: white; border-radius: 8px; box-sizing: border-box; 
-            font-family: var(--font-main); font-size: 0.95rem; transition: 0.3s;
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid #1a2635; 
+            padding: 14px; color: white; border-radius: 8px; box-sizing: border-box; 
+            font-family: var(--font-main); font-size: 1rem; transition: 0.3s;
         }
-        .search-bar:focus { border-color: var(--blue-light); outline: none; background: rgba(0, 210, 255, 0.05); }
+        .search-bar:focus { border-color: var(--blue-light); outline: none; box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
         
-        #img-preview { width: 100%; min-height: 150px; background: rgba(0,0,0,0.2); border: 2px dashed #1a2635; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; overflow: hidden; }
+        #img-preview { width: 100%; min-height: 160px; background: rgba(0,0,0,0.3); border: 2px dashed #1a2635; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; overflow: hidden; }
         #img-preview img { width: 100%; height: 100%; object-fit: contain; }
 
         .action-btn { 
-            background: var(--grad-blue); border: none; padding: 15px; color: #fff; 
-            font-family: var(--font-impact); font-size: 1rem; cursor: pointer; 
+            background: var(--grad-blue); border: none; padding: 16px; color: #fff; 
+            font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; 
             text-transform: uppercase; font-style: italic; width: 100%; 
-            clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%); margin-bottom: 10px;
+            clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); margin-bottom: 10px;
         }
-        .btn-secondary { background: #1a2635; font-size: 0.8rem; clip-path: none; border-radius: 6px; }
+        .btn-secondary { background: #1a2635; font-size: 0.85rem; clip-path: none; border-radius: 6px; color: #8899af; }
 
         /* --- MODAL --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 15px; }
@@ -109,14 +116,13 @@
             .sidebar { 
                 position: sticky; top: 70px; display: flex; overflow-x: auto; 
                 border-left: none; border-bottom: 1px solid var(--blue-light); 
-                background: var(--bg-deep); border-radius: 0; margin: 0 -15px 10px -15px; 
-                padding: 10px; gap: 5px; z-index: 900;
+                background: var(--bg-deep); border-radius: 0; margin: 0 -15px 15px -15px; 
+                padding: 10px; gap: 8px; z-index: 900;
             }
-            .cat-item { white-space: nowrap; margin-bottom: 0; padding: 8px 15px; font-size: 0.75rem; }
+            .cat-item { white-space: nowrap; margin-bottom: 0; padding: 10px 18px; font-size: 0.8rem; }
             .market-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .logo-img { max-height: 60px; }
-            #publish-container { padding: 15px; border: none; background: transparent; }
-            .action-btn { padding: 18px; }
+            #publish-container { padding: 20px; border: none; background: transparent; box-shadow: none; }
+            .nav-links a { font-size: 0.7rem; padding: 5px 8px; }
         }
     </style>
 </head>
@@ -130,6 +136,7 @@
         <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
         <a onclick="showTab('sell')" id="link-sell">SELL</a>
         <a onclick="showTab('my-items')" id="link-my-items" style="display:none;">MY ASSETS</a>
+        <a href="Chats.html" id="chat-btn" style="display:none;">CHATS</a>
     </div>
 </nav>
 
@@ -144,22 +151,22 @@
 
     <main>
         <section id="market">
-            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH ASSET..." oninput="handleGlobalSearch()" style="margin-bottom:15px;">
-            <h2 id="view-title" style="display:none; color: var(--yellow-accent); font-family: var(--font-impact); margin-bottom: 15px; text-align: center; letter-spacing: 2px; font-size: 1.2rem;">MANAGE YOUR INVENTORY</h2>
+            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH GALAXY ASSETS..." oninput="handleGlobalSearch()" style="margin-bottom:15px;">
+            <h2 id="view-title" style="display:none; color: var(--yellow-accent); font-family: var(--font-impact); margin-bottom: 15px; text-align: center; letter-spacing: 2px; font-size: 1.2rem;">PERSONAL INVENTORY</h2>
             <div id="market-grid" class="market-grid"></div>
         </section>
 
         <section id="sell" style="display:none;">
             <div id="publish-container">
-                <h2 style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 20px 0; text-align: center; letter-spacing: 1px;">ASSET REGISTRATION</h2>
+                <h2 style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 25px 0; text-align: center; letter-spacing: 2px; font-size: 1.5rem;">DATA UPLOAD</h2>
                 
                 <div class="form-group">
-                    <label class="form-label">Item Name</label>
-                    <input type="text" id="item-name" class="search-bar" placeholder="e.g. Aegis Titan">
+                    <label class="form-label">Asset Designation</label>
+                    <input type="text" id="item-name" class="search-bar" placeholder="e.g. RSI Scorpius">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Classification</label>
+                    <label class="form-label">Category</label>
                     <select id="item-cat" class="search-bar">
                         <option value="Armor">ARMOR</option>
                         <option value="Weapons">WEAPONS</option>
@@ -168,30 +175,30 @@
                     </select>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <div class="form-group">
-                        <label class="form-label">Price (aUEC)</label>
-                        <input type="number" id="item-price" class="search-bar" placeholder="000">
+                        <label class="form-label">Credits (aUEC)</label>
+                        <input type="number" id="item-price" class="search-bar" placeholder="Price">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Location</label>
-                        <input type="text" id="item-location" class="search-bar" placeholder="New Babbage">
+                        <label class="form-label">Current Sector</label>
+                        <input type="text" id="item-location" class="search-bar" placeholder="Location">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Technical Specs / Info</label>
-                    <textarea id="item-desc" class="search-bar" placeholder="Details about the item..." style="height: 80px; resize: none;"></textarea>
+                    <label class="form-label">Manifest Details</label>
+                    <textarea id="item-desc" class="search-bar" placeholder="Add technical descriptions..." style="height: 90px; resize: none;"></textarea>
                 </div>
                 
                 <div id="img-preview">
-                    <span style="color:#444; font-size: 0.8rem;">NO IMAGE SELECTED</span>
+                    <span style="color:#2a3a4d; font-size: 0.7rem; font-family: var(--font-mono);">NO IMAGE LINKED</span>
                 </div>
                 
                 <button class="action-btn btn-secondary" onclick="document.getElementById('file-input').click()">UPLOAD VISUAL DATA</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
                 
-                <button class="action-btn" id="btn-publish" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000; margin-top: 10px;">CONFIRM & PUBLISH</button>
+                <button class="action-btn" id="btn-publish" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000; margin-top: 15px;">PUBLISH TO MARKET</button>
             </div>
         </section>
     </main>
@@ -201,11 +208,11 @@
     <div class="modal-content">
         <img id="m-img" src="" style="width: 100%; height: 180px; object-fit: cover; border-bottom: 2px solid var(--blue-light);">
         <div style="padding: 20px;">
-            <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light); font-size: 0.9rem;"></h2>
-            <div id="m-price" style="font-size: 1.4rem; color: var(--yellow-bright); font-family: var(--font-mono); margin: 10px 0;"></div>
-            <p style="font-size: 0.75rem; color: #8899af; margin-bottom: 20px;">SECTOR: <span id="m-loc" style="color:white"></span></p>
-            <button class="action-btn" id="m-btn">VIEW FULL SPECS</button>
-            <button class="action-btn" onclick="closeModal()" style="background:transparent; border:1px solid #444; clip-path:none; font-size: 0.8rem;">BACK TO MARKET</button>
+            <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light); font-size: 0.95rem;"></h2>
+            <div id="m-price" style="font-size: 1.5rem; color: var(--yellow-bright); font-family: var(--font-mono); margin: 10px 0;"></div>
+            <p style="font-size: 0.75rem; color: #8899af; margin-bottom: 25px;">SECTOR: <span id="m-loc" style="color:white"></span></p>
+            <button class="action-btn" id="m-btn">OPEN FULL SPECS</button>
+            <button class="action-btn" onclick="closeModal()" style="background:transparent; border:1px solid #444; clip-path:none; font-size: 0.8rem; margin-top:5px;">CANCEL</button>
         </div>
     </div>
 </div>
@@ -251,14 +258,14 @@
                 <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}" loading="lazy">
                 <div class="item-card-info">
                     <h3>${item.item_name.toUpperCase()}</h3>
-                    <div style="color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 0.85rem; margin-top:5px;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
+                    <div style="color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 0.9rem; margin-top:5px;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
                 </div>`;
             grid.appendChild(card);
         });
     }
 
     async function uploadToNet() {
-        if(!currentUser) return alert("AUTH ERROR: LOG IN REQUIRED");
+        if(!currentUser) return alert("CRITICAL: LOGIN REQUIRED");
         
         const payload = {
             item_name: document.getElementById('item-name').value,
@@ -270,17 +277,17 @@
             seller_id: currentUser.id
         };
 
-        if(!payload.item_name || !payload.price_auec) return alert("NAME AND PRICE REQUIRED");
+        if(!payload.item_name || !payload.price_auec) return alert("MISSING DATA: NAME & PRICE REQUIRED");
 
         const { error } = await _supabase.from('marketplace_items').insert([payload]);
 
         if (!error) {
-            alert("ASSET PUBLISHED TO GALAXY MARKET");
+            alert("ASSET BROADCAST SUCCESSFUL");
             resetForm();
             await fetchMarket();
             showTab('market');
         } else {
-            alert("UPLOAD FAILED: " + error.message);
+            alert("BROADCAST FAILED: " + error.message);
         }
     }
 
@@ -289,7 +296,7 @@
         document.getElementById('item-price').value = "";
         document.getElementById('item-location').value = "";
         document.getElementById('item-desc').value = "";
-        document.getElementById('img-preview').innerHTML = '<span style="color:#444; font-size: 0.8rem;">NO IMAGE SELECTED</span>';
+        document.getElementById('img-preview').innerHTML = '<span style="color:#2a3a4d; font-size: 0.7rem;">NO IMAGE LINKED</span>';
         uploadedImgBase64 = null;
     }
 
@@ -305,7 +312,7 @@
     }
 
     async function deleteAsset(id) {
-        if (confirm("TERMINATE THIS LISTING PERMANENTLY?")) {
+        if (confirm("TERMINATE THIS LISTING?")) {
             const { error } = await _supabase.from('marketplace_items').delete().eq('id', id);
             if (!error) { fetchMarket(); }
         }
@@ -332,7 +339,7 @@
         document.getElementById('m-title').innerText = item.item_name.toUpperCase();
         document.getElementById('m-price').innerText = parseInt(item.price_auec).toLocaleString() + " aUEC";
         document.getElementById('m-img').src = item.image_1 || '';
-        document.getElementById('m-loc').innerText = (item.location || 'UNKNOWN').toUpperCase();
+        document.getElementById('m-loc').innerText = (item.location || 'UNKNOWN SECTOR').toUpperCase();
         document.getElementById('m-btn').onclick = () => { window.location.href = `item.html?id=${item.id}`; };
         document.getElementById('item-modal').style.display = 'flex';
         document.body.style.overflow = 'hidden'; 
@@ -361,6 +368,7 @@
         if (session) {
             currentUser = session.user;
             document.getElementById('link-my-items').style.display = 'inline-block';
+            document.getElementById('chat-btn').style.display = 'inline-block';
         }
     }
 
