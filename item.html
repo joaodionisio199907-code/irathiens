@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SHOPYSPACE | ASSET DETAILS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Barlow+Condensed:wght@700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <title>SHOPYSPACE | TRADING TERMINAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Barlow+Condensed:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -16,9 +16,8 @@
             --bg-dark: #050a12;
             --bg-card: #0e1621;
             --text-white: #ffffff;
-            --grad-blue: linear-gradient(90deg, #00d2ff 0%, #0056ff 100%);
-            --grad-yellow: linear-gradient(90deg, #ffb800 0%, #ffe600 100%);
             --success: #00ff88;
+            --danger: #ff4d4d;
             --font-impact: 'Barlow Condensed', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
@@ -29,89 +28,99 @@
             margin: 0; background-color: var(--bg-dark); color: var(--text-white);
             font-family: 'Rajdhani', sans-serif; min-height: 100vh; overflow-x: hidden;
             background-image: radial-gradient(circle at 50% 0%, #102a4d 0%, var(--bg-dark) 70%);
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* --- NAVEGACIÓN --- */
         nav {
-            background: rgba(0, 0, 0, 0.85); border-bottom: 2px solid var(--blue-primary);
+            background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--blue-primary);
             padding: 0 20px; display: flex; justify-content: space-between; align-items: center;
-            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; height: 70px;
+            backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1000; height: 70px;
         }
         .logo-img { height: 40px; cursor: pointer; filter: drop-shadow(0 0 8px var(--blue-primary)); }
-        .nav-right { display: flex; align-items: center; gap: 12px; }
-
+        
+        .nav-right { display: flex; align-items: center; gap: 10px; }
         .back-btn {
             background: rgba(255,255,255,0.05); color: white; text-decoration: none;
-            font-family: var(--font-impact); padding: 8px 12px; font-weight: 800;
+            font-family: var(--font-impact); padding: 8px 15px; font-weight: 800;
             text-transform: uppercase; font-size: 0.8rem; border: 1px solid rgba(0, 210, 255, 0.3);
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
         }
 
         #chat-btn {
             display: none; background: rgba(0, 210, 255, 0.1); border: 1px solid var(--blue-primary);
-            color: var(--blue-primary); padding: 6px 10px; border-radius: 4px; align-items: center;
-            gap: 5px; text-decoration: none; font-family: var(--font-impact); font-size: 0.85rem;
+            color: var(--blue-primary); padding: 6px 12px; border-radius: 4px; align-items: center;
+            text-decoration: none; font-family: var(--font-impact); font-size: 0.85rem; font-style: italic;
         }
 
-        /* --- CONTENIDO PRINCIPAL --- */
-        .wrapper { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        /* --- CONTENIDO --- */
+        .wrapper { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
 
         .main-card {
             display: grid; grid-template-columns: 1fr 1.2fr; background: var(--bg-card);
-            border-radius: 15px; border: 1px solid #1a2635; overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-radius: 20px; border: 1px solid #1a2635; overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7);
         }
 
-        .image-side { background: #000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .image-side img { width: 100%; border-radius: 8px; object-fit: contain; max-height: 400px; }
+        .image-side { background: #000; display: flex; align-items: center; justify-content: center; padding: 25px; position: relative; }
+        .image-side img { width: 100%; border-radius: 10px; object-fit: contain; max-height: 450px; filter: drop-shadow(0 0 20px rgba(0,210,255,0.2)); }
 
-        .info-side { padding: 30px; display: flex; flex-direction: column; }
+        .info-side { padding: 40px; display: flex; flex-direction: column; }
         .category-tag {
-            background: var(--grad-blue); padding: 3px 12px; font-family: 'Orbitron';
-            font-size: 0.6rem; clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
-            margin-bottom: 10px; width: fit-content; color: white;
+            background: var(--blue-primary); color: #000; padding: 2px 12px; font-family: 'Orbitron';
+            font-size: 0.6rem; font-weight: 900; clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+            margin-bottom: 12px; width: fit-content;
         }
 
-        h1 { font-family: var(--font-impact); font-size: 2.5rem; margin: 0; text-transform: uppercase; font-style: italic; color: #fff; }
+        h1 { font-family: var(--font-impact); font-size: 3rem; margin: 0; text-transform: uppercase; font-style: italic; line-height: 1; }
 
-        /* BINANCE STYLE PRICE BOX */
-        .price-binance {
-            background: #000; border-left: 4px solid var(--yellow-accent);
-            padding: 15px; margin: 20px 0; border-radius: 4px;
+        /* BINANCE TRADING BOX */
+        .binance-panel {
+            background: #000; padding: 20px; border-radius: 8px; margin: 25px 0;
+            border-left: 4px solid var(--yellow-accent); position: relative;
         }
-        .price-label { font-family: var(--font-mono); font-size: 0.7rem; color: #555; display: block; margin-bottom: 5px; }
-        .price-val { font-family: var(--font-mono); font-size: 2rem; color: var(--yellow-bright); font-weight: 900; }
+        .binance-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+        .label-mini { font-family: var(--font-mono); font-size: 0.65rem; color: #555; text-transform: uppercase; }
+        
+        .price-main { font-family: var(--font-mono); font-size: 2.2rem; color: var(--yellow-bright); font-weight: 700; line-height: 1; }
+        .change-tag { 
+            font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700;
+            padding: 2px 8px; border-radius: 4px;
+        }
+        .up { background: rgba(0, 255, 136, 0.1); color: var(--success); }
+        .down { background: rgba(255, 77, 77, 0.1); color: var(--danger); }
 
-        .item-desc { color: #8899af; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; border-top: 1px solid #1a2635; padding-top: 15px; }
+        .market-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid #111; pt: 10px; mt: 10px; padding-top: 15px; }
+        .stat-item span { display: block; }
+        .stat-label { font-size: 0.6rem; color: #444; font-family: 'Orbitron'; margin-bottom: 2px; }
+        .stat-value { font-family: var(--font-mono); font-size: 0.8rem; color: #aaa; }
 
-        .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .spec-item { background: rgba(0,0,0,0.3); padding: 10px; border: 1px solid #1a2635; }
-        .spec-item label { display: block; font-size: 0.6rem; color: var(--blue-primary); text-transform: uppercase; margin-bottom: 4px; }
-        .spec-item span { font-family: 'Orbitron'; font-size: 0.85rem; }
+        .item-desc { color: #8899af; font-size: 1rem; line-height: 1.6; margin-bottom: 30px; }
 
         .action-btn {
-            width: 100%; background: var(--grad-yellow); border: none; padding: 18px;
-            font-family: var(--font-impact); font-size: 1.4rem; font-weight: 800;
+            width: 100%; background: var(--grad-yellow, linear-gradient(90deg, #ffb800, #ffe600)); border: none; padding: 20px;
+            font-family: var(--font-impact); font-size: 1.6rem; font-weight: 800; color: #000;
             cursor: pointer; text-transform: uppercase; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+            transition: 0.3s;
         }
+        .action-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
 
-        /* --- SECCIÓN GRÁFICO --- */
-        .market-analysis {
-            margin-top: 20px; background: var(--bg-card); border-radius: 15px;
-            border: 1px solid #1a2635; padding: 20px;
+        /* --- GRÁFICO SECCIÓN --- */
+        .chart-box {
+            margin-top: 25px; background: var(--bg-card); border-radius: 20px;
+            border: 1px solid #1a2635; padding: 25px;
         }
-        .chart-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .live-status { display: flex; align-items: center; gap: 8px; font-family: 'Orbitron'; font-size: 0.7rem; color: var(--blue-primary); }
-        .dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); animation: pulse 1.5s infinite; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .live-label { display: flex; align-items: center; gap: 10px; font-family: 'Orbitron'; font-size: 0.75rem; color: var(--blue-primary); }
+        .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        
-        .chart-container { height: 250px; width: 100%; }
 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
+        .canvas-wrap { height: 280px; width: 100%; }
+
+        @media (max-width: 850px) {
             .main-card { grid-template-columns: 1fr; }
-            h1 { font-size: 1.8rem; }
-            .info-side { padding: 20px; }
+            h1 { font-size: 2.2rem; }
+            .info-side { padding: 25px; }
         }
     </style>
 </head>
@@ -120,48 +129,54 @@
 <nav>
     <img src="img/Shopy.png" class="logo-img" onclick="window.location.href='https://irathiens.org/ShopySpace'">
     <div class="nav-right">
-        <a href="Chats.html" id="chat-btn">CHATS</a>
-        <a href="https://irathiens.org/ShopySpace" class="back-btn">MARKET</a>
+        <a href="Chats.html" id="chat-btn">MY CHATS</a>
+        <a href="https://irathiens.org/ShopySpace" class="back-btn">RETURN</a>
     </div>
 </nav>
 
 <div class="wrapper">
     <div class="main-card">
         <div class="image-side">
-            <img id="item-img" src="" alt="Loading...">
+            <img id="item-img" src="" alt="Decrypting data...">
         </div>
+        
         <div class="info-side">
-            <span class="category-tag" id="item-cat">IDENTIFYING...</span>
+            <span class="category-tag" id="item-cat">IDENTIFYING</span>
             <h1 id="item-name">---</h1>
-            
-            <div class="price-binance">
-                <span class="price-label">CURRENT MARKET VALUE</span>
-                <span class="price-val" id="item-price">0 aUEC</span>
+
+            <div class="binance-panel">
+                <div class="binance-row">
+                    <div>
+                        <span class="label-mini">Price aUEC</span>
+                        <div class="price-main" id="item-price">0</div>
+                    </div>
+                    <div id="price-change" class="change-tag up">+0.00%</div>
+                </div>
+                
+                <div class="market-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">MARKET CAP</span>
+                        <span class="stat-value" id="stat-cap">---</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">LOCATION</span>
+                        <span class="stat-value" id="item-loc">---</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="item-desc" id="item-desc">Accessing UEE Data Network...</div>
-
-            <div class="specs-grid">
-                <div class="spec-item">
-                    <label>Location</label>
-                    <span id="item-loc">---</span>
-                </div>
-                <div class="spec-item">
-                    <label>Network Status</label>
-                    <span id="item-status" style="color: var(--success);">ENCRYPTED</span>
-                </div>
-            </div>
+            <div class="item-desc" id="item-desc">Establishing link to Stanton database...</div>
 
             <button class="action-btn" onclick="openChat()">CONTACT SELLER</button>
         </div>
     </div>
 
-    <div class="market-analysis">
+    <div class="chart-box">
         <div class="chart-header">
-            <div class="live-status"><div class="dot"></div> LIVE MARKET TRACKER</div>
-            <div style="font-family: var(--font-mono); font-size: 0.6rem; color: #444;">STANTON_V_DATA_LINK</div>
+            <div class="live-label"><div class="pulse-dot"></div> MARKET HISTORY (7D)</div>
+            <div style="font-family: var(--font-mono); font-size: 0.6rem; color: #444;">DATA_FEED: ENCRYPTED</div>
         </div>
-        <div class="chart-container">
+        <div class="canvas-wrap">
             <canvas id="marketChart"></canvas>
         </div>
     </div>
@@ -190,24 +205,40 @@
         const { data, error } = await _supabase.from('marketplace_items').select('*').eq('id', id).single();
         
         if (data) {
+            const price = parseInt(data.price_auec);
             document.getElementById('item-name').innerText = data.item_name.toUpperCase();
-            document.getElementById('item-price').innerText = parseInt(data.price_auec).toLocaleString() + " aUEC";
+            document.getElementById('item-price').innerText = price.toLocaleString();
             document.getElementById('item-img').src = data.image_1;
             document.getElementById('item-cat').innerText = (data.category || 'ASSET').toUpperCase();
             document.getElementById('item-loc').innerText = (data.location || 'UNKNOWN').toUpperCase();
-            document.getElementById('item-desc').innerText = data.description || 'No additional manifest details available.';
+            document.getElementById('item-desc').innerText = data.description || 'No additional technical specs found for this asset.';
             
-            // Generar Gráfico
-            initChart(data.price_auec);
+            // Simular Market Cap (Precio * Factor aleatorio)
+            document.getElementById('stat-cap').innerText = (price * 142).toLocaleString() + " aUEC";
+
+            // Simular % de Cambio 24h
+            const change = (Math.random() * 10 - 4).toFixed(2); // entre -4% y +6%
+            const changeEl = document.getElementById('price-change');
+            changeEl.innerText = (change >= 0 ? "+" : "") + change + "%";
+            changeEl.className = "change-tag " + (change >= 0 ? "up" : "down");
+
+            initChart(price);
         }
     }
 
-    function initChart(price) {
+    function initChart(basePrice) {
         const ctx = document.getElementById('marketChart').getContext('2d');
-        const p = parseInt(price);
         
-        // Simulación de fluctuación histórica
-        const dataPoints = [p*0.92, p*0.95, p*0.93, p*0.98, p*1.04, p*0.99, p];
+        // Generar historial de 7 días
+        const dataPoints = [
+            basePrice * 0.94, 
+            basePrice * 0.97, 
+            basePrice * 0.92, 
+            basePrice * 1.05, 
+            basePrice * 0.99, 
+            basePrice * 1.02, 
+            basePrice
+        ];
 
         new Chart(ctx, {
             type: 'line',
@@ -216,13 +247,14 @@
                 datasets: [{
                     data: dataPoints,
                     borderColor: '#00d2ff',
-                    borderWidth: 2,
-                    pointRadius: 0,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#ffe600',
                     tension: 0.4,
                     fill: true,
                     backgroundColor: (context) => {
-                        const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 250);
-                        gradient.addColorStop(0, 'rgba(0, 210, 255, 0.2)');
+                        const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 300);
+                        gradient.addColorStop(0, 'rgba(0, 210, 255, 0.15)');
                         gradient.addColorStop(1, 'rgba(0, 210, 255, 0)');
                         return gradient;
                     }
@@ -233,8 +265,8 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: '#444', font: { size: 10 } } },
-                    y: { grid: { color: '#1a2635' }, ticks: { color: '#444', font: { size: 10 } } }
+                    x: { grid: { display: false }, ticks: { color: '#444', font: { family: 'JetBrains Mono', size: 10 } } },
+                    y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#444', font: { family: 'JetBrains Mono', size: 10 } } }
                 }
             }
         });
@@ -256,7 +288,7 @@
             }));
             window.location.href = 'Chats.html';
         } else {
-            alert("This item has no seller linked.");
+            alert("No seller record found for this asset.");
         }
     }
 </script>
