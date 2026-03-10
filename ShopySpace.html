@@ -22,7 +22,7 @@
             --font-mono: 'JetBrains Mono', monospace;
         }
 
-        /* Ocultar scrollbars globales pero permitir scroll */
+        /* Ocultar barras de scroll globalmente */
         ::-webkit-scrollbar { display: none; }
         body { 
             -ms-overflow-style: none; scrollbar-width: none; 
@@ -32,7 +32,7 @@
             min-height: 100vh;
         }
 
-        /* --- NAV --- */
+        /* --- NAVEGACIÓN --- */
         nav {
             background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--blue-light);
             padding: 0 40px; display: flex; justify-content: space-between; align-items: center;
@@ -54,7 +54,7 @@
         }
         .nav-links a.active { color: var(--yellow-accent); border-bottom: 2px solid var(--yellow-accent); }
 
-        /* --- LAYOUT --- */
+        /* --- CUERPO --- */
         .marketplace-wrapper {
             display: grid; grid-template-columns: 250px 1fr; gap: 30px;
             max-width: 1400px; margin: 30px auto; padding: 0 20px;
@@ -70,10 +70,9 @@
             font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.3s;
             clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%); margin-bottom: 5px;
         }
-        .cat-item:hover { color: #fff; background: rgba(0, 210, 255, 0.1); }
         .cat-item.active { background: var(--grad-blue); color: white; }
 
-        /* --- GRID --- */
+        /* --- GRID DE PRODUCTOS --- */
         .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
         .item-card {
             background: var(--bg-card); border: 1px solid #1a2635; transition: 0.3s;
@@ -82,10 +81,9 @@
         .item-card:hover { transform: translateY(-5px); border-color: var(--blue-light); }
         .item-card img { width: 100%; height: 180px; object-fit: cover; }
         .item-card-info { padding: 15px; }
-        .item-card h3 { margin: 0; font-family: var(--font-logo); font-size: 0.8rem; color: var(--blue-light); }
-        .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1.2rem; margin-top: 5px; }
+        .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1.2rem; }
 
-        /* --- MODAL SIN BARRAS DE SCROLL --- */
+        /* --- MODAL (DETALLES RÁPIDOS) --- */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.92); display: none; justify-content: center; 
@@ -93,44 +91,36 @@
         }
         .modal-content { 
             background: var(--bg-card); border: 2px solid var(--blue-light); 
-            width: 95%; max-width: 850px; display: grid; grid-template-columns: 1fr 1fr; 
-            position: relative; border-radius: 0 30px 0 30px; 
-            max-height: 90vh; overflow-y: auto;
-            -ms-overflow-style: none; scrollbar-width: none; /* Ocultar en Firefox/IE */
+            width: 95%; max-width: 800px; display: grid; grid-template-columns: 1fr 1fr; 
+            position: relative; border-radius: 0 30px 0 30px; max-height: 90vh; overflow-y: auto;
+            scrollbar-width: none; -ms-overflow-style: none;
         }
-        .modal-content::-webkit-scrollbar { display: none; } /* Ocultar en Chrome/Safari */
+        .modal-content::-webkit-scrollbar { display: none; }
 
-        .modal-img-side { background: #000; display: flex; align-items: center; justify-content: center; min-height: 300px; }
-        .modal-img-side img { max-width: 100%; height: auto; max-height: 100%; }
+        .modal-img-side { background: #000; display: flex; align-items: center; justify-content: center; }
+        .modal-img-side img { width: 100%; height: auto; }
         .modal-info-side { padding: 30px; display: flex; flex-direction: column; gap: 15px; }
         .modal-close { position: absolute; top: 15px; right: 20px; color: var(--yellow-accent); cursor: pointer; font-family: var(--font-logo); font-weight: bold; z-index: 10; }
 
-        /* --- RESPONSIVE MÓVIL --- */
+        /* --- RESPONSIVE --- */
         @media (max-width: 850px) {
             nav { height: 90px; padding: 0 15px; }
             .logo-img { max-height: 65px; }
-            .nav-links a { font-size: 0.9rem; }
-            .marketplace-wrapper { grid-template-columns: 1fr; margin: 15px auto; }
+            .marketplace-wrapper { grid-template-columns: 1fr; }
             .sidebar { 
-                position: sticky; top: 90px; z-index: 900;
-                display: flex; overflow-x: auto; padding: 10px; gap: 10px; 
-                border-left: none; border-bottom: 2px solid var(--blue-light);
-                background: var(--bg-deep); border-radius: 0;
+                position: sticky; top: 90px; z-index: 900; display: flex; 
+                overflow-x: auto; padding: 10px; gap: 10px; border-left: none; 
+                border-bottom: 2px solid var(--blue-light); background: var(--bg-deep);
             }
-            .cat-item { margin-bottom: 0; white-space: nowrap; padding: 8px 15px; }
             .modal-content { grid-template-columns: 1fr; }
-            .modal-img-side { min-height: 200px; }
         }
 
-        .search-bar {
-            width: 100%; background: #000; border: 1px solid #1a2635; padding: 15px;
-            color: white; font-family: var(--font-mono); margin-bottom: 20px; box-sizing: border-box;
-        }
+        /* --- BOTONES / INPUTS --- */
+        .search-bar { width: 100%; background: #000; border: 1px solid #1a2635; padding: 15px; color: white; margin-bottom: 20px; box-sizing: border-box; }
         .action-btn {
             background: var(--grad-blue); border: none; padding: 15px; color: #fff;
             font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer;
-            text-transform: uppercase; font-style: italic;
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+            text-transform: uppercase; font-style: italic; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
         }
     </style>
 </head>
@@ -164,8 +154,8 @@
         </section>
 
         <section id="sell" style="display:none;">
-            <div style="max-width: 500px; margin: auto; background: var(--bg-card); padding: 30px; border: 1px solid #1a2635; border-radius: 0 20px 0 20px;">
-                <h2 style="color: var(--yellow-accent); font-family: var(--font-impact); margin-top:0;">NEW MANIFEST</h2>
+            <div style="max-width: 500px; margin: auto; background: var(--bg-card); padding: 30px; border-radius: 0 20px 0 20px;">
+                <h2 style="color: var(--yellow-accent); font-family: var(--font-impact);">NEW MANIFEST</h2>
                 <input type="text" id="item-name" class="search-bar" placeholder="ITEM NAME">
                 <select id="item-cat" class="search-bar">
                     <option value="Armor">ARMOR</option>
@@ -173,12 +163,12 @@
                     <option value="Ships">SHIPS</option>
                     <option value="Medical">MEDICAL</option>
                 </select>
-                <input type="text" id="item-location" class="search-bar" placeholder="LOCATION (e.g. Area18)">
+                <input type="text" id="item-location" class="search-bar" placeholder="LOCATION">
                 <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC">
-                <button class="action-btn" onclick="document.getElementById('file-input').click()" style="margin-bottom:10px; background:#1a2635">SELECT IMAGE</button>
+                <button class="action-btn" onclick="document.getElementById('file-input').click()" style="width:100%; background:#1a2635; margin-bottom:10px;">SELECT IMAGE</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
-                <div id="img-preview" style="text-align:center; margin-bottom:10px;"></div>
-                <button class="action-btn" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000; width:100%">TRANSMIT DATA</button>
+                <div id="img-preview" style="text-align:center"></div>
+                <button class="action-btn" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000; width:100%">PUBLISH</button>
             </div>
         </section>
     </main>
@@ -186,16 +176,16 @@
 
 <div class="modal-overlay" id="item-modal" onclick="if(event.target == this) closeModal()">
     <div class="modal-content">
-        <div class="modal-close" onclick="closeModal()">CLOSE [X]</div>
-        <div class="modal-img-side"><img id="m-img"></div>
+        <div class="modal-close" onclick="closeModal()">[X]</div>
+        <div class="modal-img-side"><img id="m-img" src=""></div>
         <div class="modal-info-side">
-            <h2 id="m-title" style="font-family: var(--font-logo); color: var(--blue-light); margin:0;"></h2>
-            <div id="m-price" style="font-family: var(--font-mono); color: var(--yellow-bright); font-size: 2rem; font-weight: bold;"></div>
-            <div style="border-top: 1px solid #333; padding-top: 15px; font-size: 0.9rem;">
-                <p><strong>SECTOR:</strong> <span id="m-cat" style="color:var(--blue-light)"></span></p>
-                <p><strong>LOCATION:</strong> <span id="m-loc" style="color:var(--blue-light)"></span></p>
+            <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light);"></h2>
+            <div id="m-price" style="font-size: 2rem; color: var(--yellow-bright); font-family: var(--font-mono);"></div>
+            <div style="font-size: 0.9rem; border-top: 1px solid #333; padding-top: 10px;">
+                <p>SECTOR: <span id="m-cat" style="color:var(--blue-light)"></span></p>
+                <p>LOCATION: <span id="m-loc" style="color:var(--blue-light)"></span></p>
             </div>
-            <button class="action-btn" style="margin-top:20px;">CONTACT SELLER</button>
+            <button class="action-btn" style="margin-top:auto">CONTACT SELLER</button>
         </div>
     </div>
 </div>
@@ -223,9 +213,9 @@
             card.className = 'item-card';
             card.onclick = () => openDetails(item);
             card.innerHTML = `
-                <img src="${item.image_1 || 'https://via.placeholder.com/400x200?text=NO+IMAGE'}">
+                <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}">
                 <div class="item-card-info">
-                    <h3>${item.item_name.toUpperCase()}</h3>
+                    <h3 style="margin:0; font-size:0.85rem; font-family:var(--font-logo); color:var(--blue-light)">${item.item_name.toUpperCase()}</h3>
                     <div class="price-tag">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
                 </div>
             `;
@@ -239,13 +229,20 @@
         document.getElementById('m-img').src = item.image_1 || '';
         document.getElementById('m-cat').innerText = (item.category || 'GENERAL').toUpperCase();
         document.getElementById('m-loc').innerText = (item.location || 'UNKNOWN').toUpperCase();
+        
+        // ACCIÓN: Redirigir a la página de detalles individual
+        const contactBtn = document.querySelector('#item-modal .action-btn');
+        contactBtn.onclick = () => {
+            window.location.href = `item.html?id=${item.id}`;
+        };
+
         document.getElementById('item-modal').style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Bloquea scroll del body al abrir
+        document.body.style.overflow = 'hidden'; 
     }
 
     function closeModal() { 
         document.getElementById('item-modal').style.display = 'none'; 
-        document.body.style.overflow = 'auto'; // Devuelve scroll al cerrar
+        document.body.style.overflow = 'auto';
     }
 
     function showTab(t) {
@@ -259,13 +256,13 @@
         const reader = new FileReader();
         reader.onload = (e) => {
             uploadedImgBase64 = e.target.result;
-            document.getElementById('img-preview').innerHTML = `<img src="${e.target.result}" style="width:80px; height:80px; object-fit:cover; border:2px solid var(--blue-light)">`;
+            document.getElementById('img-preview').innerHTML = `<img src="${e.target.result}" style="width:80px; height:80px; object-fit:cover; margin-top:10px; border:2px solid var(--blue-light)">`;
         };
         reader.readAsDataURL(input.files[0]);
     }
 
     async function uploadToNet() {
-        if(!uploadedImgBase64) { alert("Please select an image first"); return; }
+        if(!uploadedImgBase64) return alert("Select image");
         const payload = {
             item_name: document.getElementById('item-name').value,
             category: document.getElementById('item-cat').value,
@@ -275,7 +272,7 @@
             status: 'available'
         };
         const { error } = await _supabase.from('marketplace_items').insert([payload]);
-        if(error) alert("Error: " + error.message); else location.reload();
+        if(error) alert("Error"); else location.reload();
     }
 
     function handleGlobalSearch() {
