@@ -11,94 +11,126 @@
             --blue-light: #00d2ff;
             --blue-dark: #0056ff;
             --yellow-accent: #ffb800;
+            --yellow-bright: #ffe600;
             --bg-deep: #050a12;
-            --bg-card: rgba(14, 22, 33, 0.95);
+            --bg-card: #0e1621;
             --text-white: #ffffff;
             --font-main: 'Rajdhani', sans-serif;
+            --font-logo: 'Orbitron', sans-serif;
             --font-impact: 'Barlow Condensed', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --danger: #ff4d4d;
         }
 
-        /* Base Reset */
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
         ::-webkit-scrollbar { display: none; }
         
         body { 
-            background-color: var(--bg-deep); color: var(--text-white); 
-            font-family: var(--font-main); overflow-x: hidden; min-height: 100vh;
-            background-image: radial-gradient(circle at 50% 0%, #102a4d 0%, var(--bg-deep) 100%);
+            margin: 0; background-color: var(--bg-deep); color: var(--text-white);
+            font-family: var(--font-main); overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #102a4d 0%, var(--bg-deep) 80%);
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- VIDEOS (Solo PC) --- */
-        .video-side-container { position: fixed; top: 70px; bottom: 0; width: calc((100vw - 1200px) / 2); z-index: -1; overflow: hidden; opacity: 0.3; display: none; }
-        .side-video-element { width: 100%; height: 100%; object-fit: cover; }
-
-        /* --- NAV --- */
-        nav { 
-            background: rgba(0, 0, 0, 0.95); border-bottom: 2px solid var(--blue-light); 
-            padding: 0 15px; display: flex; justify-content: space-between; align-items: center; 
-            position: sticky; top: 0; z-index: 1000; height: 70px; backdrop-filter: blur(10px); 
+        /* --- NAVEGACIÓN --- */
+        nav {
+            background: rgba(0, 0, 0, 0.95); border-bottom: 2px solid var(--blue-light);
+            padding: 0 15px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000; height: 70px; backdrop-filter: blur(10px);
         }
-        .logo-img { max-height: 100px; cursor: pointer; }
-        .nav-links { display: flex; gap: 10px; }
-        .nav-links a { color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.75rem; cursor: pointer; text-transform: uppercase; font-style: italic; }
+        .logo-img { max-height: 70px; cursor: pointer; filter: drop-shadow(0 0 5px var(--blue-light)); }
+        .nav-links { display: flex; gap: 8px; }
+        .nav-links a { 
+            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.75rem; 
+            cursor: pointer; padding: 6px 10px; border-radius: 4px; text-transform: uppercase; font-style: italic;
+        }
         .nav-links a.active { color: var(--blue-light); border-bottom: 2px solid var(--blue-light); }
+        #chat-btn { border: 1px solid var(--blue-light); background: rgba(0, 210, 255, 0.1); font-weight: bold; }
 
-        /* --- ESTRUCTURA --- */
-        .main-container { max-width: 1200px; margin: 0 auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        /* --- ESTRUCTURA PRINCIPAL --- */
+        .main-container { 
+            max-width: 1200px; margin: 15px auto; padding: 0 15px; 
+            display: flex; gap: 20px; align-items: flex-start;
+        }
 
-        /* Sidebar adaptado para móvil por defecto (Scroll horizontal) */
+        /* --- SIDEBAR --- */
         .sidebar { 
-            width: 100%; display: flex; overflow-x: auto; background: var(--bg-card); 
-            padding: 10px; border-bottom: 2px solid var(--blue-light); gap: 10px;
-            scrollbar-width: none;
+            width: 180px; flex-shrink: 0; background: var(--bg-card); padding: 15px; 
+            border-radius: 0 15px 0 15px; border-left: 4px solid var(--blue-light);
         }
         .cat-item { 
-            white-space: nowrap; padding: 10px 18px; color: #8899af; cursor: pointer; 
-            font-weight: 700; border-radius: 4px; text-transform: uppercase; font-size: 0.8rem; 
+            display: block; padding: 12px; color: #8899af; cursor: pointer; 
+            font-weight: 700; margin-bottom: 5px; border-radius: 4px; transition: 0.2s;
+            text-transform: uppercase; font-size: 0.85rem;
         }
         .cat-item.active { background: linear-gradient(90deg, #00d2ff, #0056ff); color: white; }
+        /* Estilo especial para Medals */
+        .cat-medals { color: var(--yellow-accent); border: 1px solid rgba(255, 184, 0, 0.2); margin-top: 10px; }
 
-        .content-area { width: 100%; }
+        .content-area { flex-grow: 1; width: 100%; }
 
-        /* --- MARKET --- */
-        .sub-nav { display: none; gap: 8px; padding: 10px 0; overflow-x: auto; margin-bottom: 10px; }
-        .sub-item { background: rgba(0, 210, 255, 0.1); color: var(--blue-light); padding: 8px 15px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; border: 1px solid var(--blue-light); white-space: nowrap; }
-        .sub-item.active { background: var(--blue-light); color: black; }
-
-        .market-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 12px; 
-        }
-        .item-card { background: var(--bg-card); border-radius: 0 12px 0 12px; border: 1px solid #1a2635; overflow: hidden; position: relative; }
-        .item-card img { width: 100%; height: 120px; object-fit: cover; border-bottom: 1px solid #1a2635; }
-        .item-card-info { padding: 10px; }
-        .item-card-info h3 { margin: 0; font-size: 0.7rem; color: var(--blue-light); font-family: 'Orbitron'; height: 2.2em; overflow: hidden; }
-
-        /* --- SELL --- */
+        /* --- SECCIÓN SELL --- */
         .sell-wrapper { width: 100%; display: none; justify-content: center; padding: 10px 0; }
-        #publish-container { background: var(--bg-card); padding: 25px; border-radius: 15px; border: 1px solid var(--blue-light); width: 100%; max-width: 480px; }
-        .input-field { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #1a2635; padding: 12px; color: white; border-radius: 8px; margin-bottom: 12px; font-size: 1rem; }
-        .btn-main { 
-            background: var(--yellow-accent); color: #000; border: none; padding: 18px; 
-            font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; width: 100%; 
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); font-weight: 900; text-transform: uppercase; 
+        #publish-container { 
+            background: var(--bg-card); padding: 30px; border-radius: 20px; 
+            border: 1px solid rgba(0, 210, 255, 0.2); width: 100%; max-width: 480px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.8);
         }
 
-        /* --- DESKTOP ADJUSTS --- */
-        @media (min-width: 1024px) {
-            .main-container { flex-direction: row; padding-top: 20px; }
-            .sidebar { width: 200px; flex-direction: column; overflow: hidden; border-radius: 0 15px 0 15px; border-left: 4px solid var(--blue-light); border-bottom: none; }
-            .market-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
-            .video-side-container { display: block; }
-            .left-video { left: 0; } .right-video { right: 0; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.65rem; color: var(--blue-light); font-family: var(--font-mono); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .input-field { 
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid #1a2635; 
+            padding: 12px; color: white; border-radius: 8px; box-sizing: border-box; 
+            font-family: var(--font-main); font-size: 1rem; transition: 0.3s;
+        }
+        .input-field:focus { border-color: var(--blue-light); outline: none; background: rgba(0, 210, 255, 0.05); }
+
+        #img-preview { 
+            width: 100%; height: 180px; background: rgba(0,0,0,0.5); border: 2px dashed #1a2635; 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; 
+            margin-bottom: 12px; overflow: hidden; color: #2a3a4d; font-family: var(--font-mono); font-size: 0.8rem;
+        }
+        #img-preview img { width: 100%; height: 100%; object-fit: contain; }
+
+        .btn-main { 
+            background: var(--yellow-accent); color: #000; border: none; padding: 16px; 
+            font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; width: 100%; 
+            clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%); font-weight: 900; text-transform: uppercase;
+        }
+
+        /* --- MARKET GRID --- */
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+        .item-card { background: var(--bg-card); border-radius: 0 12px 0 12px; overflow: hidden; border: 1px solid #1a2635; position: relative; cursor: pointer; transition: 0.3s; }
+        .item-card:hover { border-color: var(--blue-light); transform: translateY(-3px); }
+        .item-card img { width: 100%; height: 140px; object-fit: cover; }
+        .item-card-info { padding: 10px; }
+        .item-card-info h3 { margin: 0; font-size: 0.75rem; color: var(--blue-light); font-family: var(--font-logo); height: 2.4em; overflow: hidden; }
+        
+        /* Clase especial para items tipo Medalla en el grid */
+        .item-card.is-medal { border: 1px solid var(--yellow-accent); box-shadow: inset 0 0 15px rgba(255, 184, 0, 0.1); }
+        .item-card.is-medal h3 { color: var(--yellow-accent); }
+
+        .btn-del { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 10px; font-weight: 900; cursor: pointer; z-index: 10; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+
+        /* --- MODAL --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 15px; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--blue-light); width: 100%; max-width: 380px; border-radius: 15px; overflow: hidden; animation: zoomIn 0.2s ease-out; }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; margin-top: 0; }
+            .sidebar { width: 100%; display: flex; overflow-x: auto; padding: 10px; border-left: none; border-bottom: 1px solid var(--blue-light); border-radius: 0; margin: 0 -15px 15px -15px; }
+            .cat-item { white-space: nowrap; padding: 8px 15px; font-size: 0.8rem; }
+            #publish-container { padding: 20px; border: none; background: transparent; box-shadow: none; }
+            .market-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-links a { font-size: 0.65rem; padding: 5px 8px; }
         }
     </style>
 </head>
 <body>
-
-<div class="video-side-container left-video"><video class="side-video-element" autoplay muted loop playsinline><source src="https://exitframe.com/assets/videos/sc_starfield_loop.mp4" type="video/mp4"></video></div>
-<div class="video-side-container right-video"><video class="side-video-element" autoplay muted loop playsinline><source src="https://exitframe.com/assets/videos/sc_ui_loop.mp4" type="video/mp4"></video></div>
 
 <nav>
     <img src="img/Shopy.png" class="logo-img" onclick="showTab('market')">
@@ -106,54 +138,86 @@
         <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
         <a onclick="showTab('sell')" id="link-sell">SELL</a>
         <a onclick="showTab('my-items')" id="link-my-items" style="display:none;">MY ASSETS</a>
+        <a href="Chats.html" id="chat-btn" style="display:none;">CHATS</a>
     </div>
 </nav>
 
 <div class="main-container">
     <aside class="sidebar" id="sidebar-filter">
-        <div class="cat-item active" onclick="selectMainCategory('all', this)">ALL</div>
-        <div class="cat-item" onclick="selectMainCategory('Armor', this)">ARMOR</div>
-        <div class="cat-item" onclick="selectMainCategory('Weapons', this)">WEAPONS</div>
-        <div class="cat-item" onclick="selectMainCategory('Ships', this)">SHIPS</div>
-        <div class="cat-item" onclick="selectMainCategory('Components', this)">COMPONENTS</div>
-        <div class="cat-item" onclick="selectMainCategory('Medical', this)">MEDICAL</div>
-        <div class="cat-item" style="color:var(--yellow-accent)" onclick="selectMainCategory('Medals', this)">🎖️ MEDALS</div>
+        <a class="cat-item active" onclick="filterByCategory('all', this)">ALL</a>
+        <a class="cat-item" onclick="filterByCategory('Armor', this)">ARMOR</a>
+        <a class="cat-item" onclick="filterByCategory('Weapons', this)">WEAPONS</a>
+        <a class="cat-item" onclick="filterByCategory('Ships', this)">SHIPS</a>
+        <a class="cat-item" onclick="filterByCategory('Components', this)">COMPONENTS</a>
+        <a class="cat-item" onclick="filterByCategory('Medical', this)">MEDICAL</a>
+        <a class="cat-item cat-medals" onclick="filterByCategory('Medals', this)">🎖️ MEDALS</a>
     </aside>
 
     <div class="content-area">
         <section id="market-section">
-            <input type="text" id="main-search" class="input-field" placeholder="SEARCH items..." oninput="handleGlobalSearch()">
-            <div id="sub-nav" class="sub-nav"></div>
-            <h2 id="view-title" style="display:none; color: var(--yellow-accent); text-align: center; margin-bottom: 15px;">MY INVENTORY</h2>
+            <input type="text" id="main-search" class="input-field" placeholder="SEARCH GALAXY ASSETS..." oninput="handleGlobalSearch()" style="margin-bottom: 15px;">
+            <h2 id="view-title" style="display:none; color: var(--yellow-accent); font-family: var(--font-impact); text-align: center; margin-bottom: 20px;">PERSONAL INVENTORY</h2>
             <div id="market-grid" class="market-grid"></div>
         </section>
 
         <section id="sell-section" class="sell-wrapper">
             <div id="publish-container">
-                <h2 style="text-align:center; color: var(--blue-light); font-family: var(--font-impact); margin-bottom: 20px;">DATA UPLOAD</h2>
-                <input type="text" id="item-name" class="input-field" placeholder="Asset Name">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <select id="item-cat" class="input-field" onchange="updateSubCatSelect()">
-                        <option value="Armor">ARMOR</option>
-                        <option value="Weapons">WEAPONS</option>
-                        <option value="Ships">SHIPS</option>
-                        <option value="Components">COMPONENTS</option>
-                        <option value="Medical">MEDICAL</option>
-                        <option value="Medals">MEDALS</option>
-                    </select>
-                    <select id="item-subcat" class="input-field"></select>
+                <h2 style="text-align:center; color: var(--blue-light); font-family: var(--font-impact); margin-top:0; letter-spacing: 2px;">DATA UPLOAD</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Asset Designation</label>
+                    <input type="text" id="item-name" class="input-field" placeholder="e.g. 6th Platoon Medal / Quantum Drive">
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <input type="number" id="item-price" class="input-field" placeholder="aUEC Price">
-                    <input type="text" id="item-location" class="input-field" placeholder="Location">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="form-group">
+                    <div>
+                        <label class="form-label">Price (aUEC)</label>
+                        <input type="number" id="item-price" class="input-field" placeholder="0">
+                    </div>
+                    <div>
+                        <label class="form-label">Category</label>
+                        <select id="item-cat" class="input-field">
+                            <option value="Armor">ARMOR</option>
+                            <option value="Weapons">WEAPONS</option>
+                            <option value="Ships">SHIPS</option>
+                            <option value="Components">COMPONENTS</option>
+                            <option value="Medical">MEDICAL</option>
+                            <option value="Medals">MEDALS</option>
+                        </select>
+                    </div>
                 </div>
-                <textarea id="item-desc" class="input-field" style="height: 80px; resize: none;" placeholder="Manifest Details..."></textarea>
-                <div id="img-preview" style="height: 150px; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">NO IMAGE</div>
-                <button class="input-field" style="background: #1a2635; cursor: pointer;" onclick="document.getElementById('file-input').click()">UPLOAD VISUAL</button>
+
+                <div class="form-group">
+                    <label class="form-label">Current Sector</label>
+                    <input type="text" id="item-location" class="input-field" placeholder="Station or Planet">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Manifest Details</label>
+                    <textarea id="item-desc" class="input-field" placeholder="Specifications, insurance info, medal history..." style="height: 100px; resize: none; font-size: 0.9rem;"></textarea>
+                </div>
+
+                <div id="img-preview">NO VISUAL DATA LINKED</div>
+                
+                <button class="input-field" style="margin-bottom:10px; cursor:pointer; background: #1a2635;" onclick="document.getElementById('file-input').click()">UPLOAD VISUAL DATA</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
+                
                 <button class="btn-main" onclick="uploadToNet()">CONFIRM BROADCAST</button>
             </div>
         </section>
+    </div>
+</div>
+
+<div class="modal-overlay" id="item-modal" onclick="if(event.target == this) closeModal()">
+    <div class="modal-content">
+        <img id="m-img" src="" style="width: 100%; height: 180px; object-fit: cover; border-bottom: 2px solid var(--blue-light);">
+        <div style="padding: 20px;">
+            <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light); font-size: 0.9rem;"></h2>
+            <div id="m-price" style="font-size: 1.5rem; color: var(--yellow-bright); font-family: var(--font-mono); margin: 10px 0;"></div>
+            <p id="m-loc" style="font-size: 0.7rem; color: #8899af; text-transform: uppercase; margin-bottom: 20px;"></p>
+            <button class="btn-main" id="m-btn">VIEW FULL DETAILS</button>
+            <button class="btn-main" onclick="closeModal()" style="background:transparent; color:#8899af; font-size:0.8rem; margin-top:5px; clip-path:none; border: 1px solid #333;">CANCEL</button>
+        </div>
     </div>
 </div>
 
@@ -165,143 +229,117 @@
     let allItems = [];
     let currentUser = null;
     let currentTab = 'market';
-    let selectedMainCat = 'all';
     let uploadedImgBase64 = null;
 
-    const SUB_DATA = {
-        'Armor': ['Helmet', 'Core', 'Arms', 'Legs', 'Backpack', 'Undersuit', 'Clothes'],
-        'Components': ['Power Plant', 'Cooler', 'Quantum Drive', 'Shield Gen'],
-        'Ships': ['Fighter', 'Industrial', 'Transport', 'Exploration'],
-        'Weapons': ['Pistol', 'SMG', 'Rifle', 'Sniper', 'Shotgun'],
-        'Medical': ['MedPen', 'ParaMed', 'Medical Bed'],
-        'Medals': ['Combat', 'Service', 'Bravery']
-    };
-
     async function fetchMarket() {
-        const { data } = await _supabase.from('marketplace_items').select('*').order('created_at', {ascending: false});
-        if (data) { allItems = data; renderGrid(allItems); }
-    }
-
-    function selectMainCategory(cat, el) {
-        selectedMainCat = cat;
-        document.querySelectorAll('.cat-item').forEach(x => x.classList.remove('active'));
-        el.classList.add('active');
-        const subNav = document.getElementById('sub-nav');
-        subNav.innerHTML = '';
-        if (SUB_DATA[cat]) {
-            subNav.style.display = 'flex';
-            const btnAll = document.createElement('div');
-            btnAll.className = 'sub-item active'; btnAll.innerText = 'ALL ' + cat.toUpperCase();
-            btnAll.onclick = () => filterBySub('all', btnAll);
-            subNav.appendChild(btnAll);
-            SUB_DATA[cat].forEach(sub => {
-                const btn = document.createElement('div');
-                btn.className = 'sub-item'; btn.innerText = sub.toUpperCase();
-                btn.onclick = () => filterBySub(sub, btn);
-                subNav.appendChild(btn);
-            });
-        } else { subNav.style.display = 'none'; }
-        renderGrid(cat === 'all' ? allItems : allItems.filter(i => i.category === cat));
-    }
-
-    function filterBySub(sub, el) {
-        document.querySelectorAll('.sub-item').forEach(x => x.classList.remove('active'));
-        el.classList.add('active');
-        let list = allItems.filter(i => i.category === selectedMainCat);
-        if (sub !== 'all') list = list.filter(i => i.sub_category === sub);
-        renderGrid(list);
+        const { data, error } = await _supabase.from('marketplace_items').select('*').order('created_at', {ascending: false});
+        if (!error) { 
+            allItems = data; 
+            renderGrid(allItems); 
+        }
     }
 
     function renderGrid(list) {
         const grid = document.getElementById('market-grid');
         grid.innerHTML = "";
-        const displayList = (currentTab === 'my-items') ? list.filter(i => i.seller_id === currentUser?.id) : list;
+        
+        const displayList = (currentTab === 'my-items') 
+            ? list.filter(i => i.seller_id === currentUser?.id) 
+            : list;
 
         displayList.forEach(item => {
             const card = document.createElement('div');
-            card.className = 'item-card';
+            // Añadimos clase especial si es medalla
+            const isMedal = item.category === 'Medals';
+            card.className = `item-card ${isMedal ? 'is-medal' : ''}`;
+            card.onclick = (e) => { if(!e.target.closest('.btn-del')) openDetails(item); };
             
+            let delBtn = "";
+            if(currentTab === 'my-items' && currentUser && item.seller_id === currentUser.id) {
+                delBtn = `<button class="btn-del" onclick="deleteAsset('${item.id}')">DEL</button>`;
+            }
+
             card.innerHTML = `
-                ${(currentTab === 'my-items' && currentUser) ? `<button style="position:absolute;top:5px;right:5px;background:red;color:white;border:none;padding:5px;font-size:10px;z-index:10;cursor:pointer;" onclick="event.stopPropagation(); deleteAsset('${item.id}')">DEL</button>` : ''}
-                <img src="${item.image_1 || ''}">
+                ${delBtn}
+                <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}" loading="lazy">
                 <div class="item-card-info">
-                    <span style="font-size:0.55rem; color:var(--blue-light); opacity:0.6;">${item.category} / ${item.sub_category || ''}</span>
                     <h3>${item.item_name.toUpperCase()}</h3>
-                    <div style="color:var(--yellow-accent); font-weight:bold; font-size:0.85rem;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
-                    <div style="margin-top:10px; text-align:center; background:var(--blue-light); color:black; font-size:0.6rem; font-weight:900; padding:8px; border-radius:2px; cursor:pointer;" onclick="goToDetails(${JSON.stringify(item).replace(/"/g, '&quot;')})">VIEW DETAILS</div>
+                    <div style="color:${isMedal ? 'var(--yellow-bright)' : 'var(--yellow-accent)'}; font-weight:bold; font-family:var(--font-mono); font-size:0.95rem; margin-top:5px;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
                 </div>`;
             grid.appendChild(card);
         });
     }
 
-    function goToDetails(item) {
-        localStorage.setItem('selectedItem', JSON.stringify(item));
-        window.location.href = 'item.html';
+    function openDetails(item) {
+        document.getElementById('m-title').innerText = item.item_name.toUpperCase();
+        document.getElementById('m-price').innerText = parseInt(item.price_auec).toLocaleString() + " aUEC";
+        document.getElementById('m-img').src = item.image_1 || '';
+        document.getElementById('m-loc').innerText = "LOCATION: " + (item.location || "UNKNOWN SECTOR");
+        document.getElementById('m-btn').onclick = () => { window.location.href = `item.html?id=${item.id}`; };
+        document.getElementById('item-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     }
 
-    async function deleteAsset(id) {
-        if(!confirm("¿CONFIRM DATA PURGE?")) return;
-        const { error } = await _supabase.from('marketplace_items').delete().eq('id', id);
-        if(error) {
-            alert("ERROR: " + error.message);
-        } else {
-            alert("ASSET REMOVED");
-            fetchMarket();
-        }
-    }
-
-    function updateSubCatSelect() {
-        const cat = document.getElementById('item-cat').value;
-        const subSelect = document.getElementById('item-subcat');
-        subSelect.innerHTML = '';
-        if (SUB_DATA[cat]) {
-            SUB_DATA[cat].forEach(sub => {
-                const opt = document.createElement('option');
-                opt.value = sub; opt.innerText = sub.toUpperCase();
-                subSelect.appendChild(opt);
-            });
-        }
-    }
-
-    async function uploadToNet() {
-        if(!currentUser) {
-            alert("⚠️ DEBES ESTAR LOGUEADO");
-            return;
-        }
-        const name = document.getElementById('item-name').value;
-        const price = document.getElementById('item-price').value;
-        if(!name || !price) {
-            alert("⚠️ NOMBRE Y PRECIO REQUERIDOS");
-            return;
-        }
-        const payload = {
-            item_name: name,
-            category: document.getElementById('item-cat').value,
-            sub_category: document.getElementById('item-subcat').value,
-            location: document.getElementById('item-location').value,
-            price_auec: parseInt(price),
-            description: document.getElementById('item-desc').value,
-            image_1: uploadedImgBase64,
-            seller_id: currentUser.id
-        };
-        const { error } = await _supabase.from('marketplace_items').insert([payload]);
-        if (error) {
-            alert("❌ ERROR: " + error.message);
-        } else {
-            alert("🚀 TRANSMISIÓN COMPLETADA");
-            location.reload();
-        }
+    function closeModal() { 
+        document.getElementById('item-modal').style.display = 'none'; 
+        document.body.style.overflow = 'auto';
     }
 
     function showTab(t) {
         currentTab = t;
         document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
         if(document.getElementById('link-'+t)) document.getElementById('link-'+t).classList.add('active');
-        document.getElementById('market-section').style.display = (t === 'market' || t === 'my-items') ? 'block' : 'none';
+        if(t === 'market') document.getElementById('link-market').classList.add('active');
+
+        const isMarketView = (t === 'market' || t === 'my-items');
+        document.getElementById('market-section').style.display = isMarketView ? 'block' : 'none';
         document.getElementById('sell-section').style.display = (t === 'sell') ? 'flex' : 'none';
-        document.getElementById('sidebar-filter').style.display = (t === 'market') ? 'flex' : 'none';
+        document.getElementById('sidebar-filter').style.display = (t === 'market') ? 'block' : 'none';
         document.getElementById('view-title').style.display = (t === 'my-items') ? 'block' : 'none';
+        
         renderGrid(allItems);
+        window.scrollTo(0,0);
+    }
+
+    async function deleteAsset(id) {
+        if (confirm("TERMINATE THIS LISTING?")) {
+            const { error } = await _supabase.from('marketplace_items').delete().eq('id', id);
+            if (!error) { fetchMarket(); }
+        }
+    }
+
+    async function uploadToNet() {
+        if(!currentUser) return alert("CRITICAL: LOGIN REQUIRED");
+        const payload = {
+            item_name: document.getElementById('item-name').value,
+            category: document.getElementById('item-cat').value,
+            location: document.getElementById('item-location').value,
+            price_auec: document.getElementById('item-price').value,
+            description: document.getElementById('item-desc').value,
+            image_1: uploadedImgBase64,
+            seller_id: currentUser.id
+        };
+        
+        if(!payload.item_name || !payload.price_auec) return alert("MISSING DATA: NAME & PRICE REQUIRED");
+
+        const { error } = await _supabase.from('marketplace_items').insert([payload]);
+        if (!error) { 
+            alert("BROADCAST SUCCESSFUL"); 
+            resetForm();
+            showTab('market'); 
+            fetchMarket(); 
+        } else {
+            alert("BROADCAST FAILED: " + error.message);
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('item-name').value = "";
+        document.getElementById('item-price').value = "";
+        document.getElementById('item-location').value = "";
+        document.getElementById('item-desc').value = "";
+        document.getElementById('img-preview').innerHTML = "NO VISUAL DATA LINKED";
+        uploadedImgBase64 = null;
     }
 
     function processImg(input) {
@@ -309,7 +347,7 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 uploadedImgBase64 = e.target.result;
-                document.getElementById('img-preview').innerHTML = `<img src="${uploadedImgBase64}" style="width:100%;height:100%;object-fit:contain;">`;
+                document.getElementById('img-preview').innerHTML = `<img src="${uploadedImgBase64}">`;
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -320,20 +358,24 @@
         if (session) {
             currentUser = session.user;
             document.getElementById('link-my-items').style.display = 'inline-block';
+            document.getElementById('chat-btn').style.display = 'inline-block';
         }
     }
 
     function handleGlobalSearch() {
-        const term = document.getElementById('main-search').value.toLowerCase();
-        const filtered = allItems.filter(i => 
-            i.item_name.toLowerCase().includes(term) || 
-            i.category.toLowerCase().includes(term) ||
-            (i.sub_category && i.sub_category.toLowerCase().includes(term))
-        );
+        const q = document.getElementById('main-search').value.toLowerCase();
+        const filtered = allItems.filter(i => i.item_name.toLowerCase().includes(q));
         renderGrid(filtered);
     }
 
-    window.onload = () => { fetchMarket(); checkAuth(); updateSubCatSelect(); };
+    function filterByCategory(cat, el) {
+        document.querySelectorAll('.cat-item').forEach(x => x.classList.remove('active'));
+        el.classList.add('active');
+        const list = (cat === 'all') ? allItems : allItems.filter(i => i.category === cat);
+        renderGrid(list);
+    }
+
+    window.onload = () => { fetchMarket(); checkAuth(); };
 </script>
 </body>
 </html>
