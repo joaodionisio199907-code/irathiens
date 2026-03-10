@@ -86,6 +86,29 @@
             font-weight: bold; cursor: pointer; transition: 0.4s;
         }
 
+        /* ESTILOS DISCORD */
+        .divider {
+            margin: 20px 0;
+            color: var(--border);
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+        }
+        .divider::before, .divider::after {
+            content: ""; flex: 1; height: 1px; background: var(--border);
+        }
+
+        .btn-discord {
+            width: 100%; padding: 12px; background: #5865F2;
+            color: white; border: none; font-family: 'Orbitron';
+            font-weight: bold; cursor: pointer; transition: 0.4s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+        }
+        .btn-discord:hover { background: #4752c4; box-shadow: 0 0 15px rgba(88, 101, 242, 0.4); }
+
         .switch-mode {
             margin-top: 20px; color: var(--border); font-size: 0.8rem;
             cursor: pointer; text-transform: uppercase;
@@ -112,6 +135,14 @@
             <button type="submit" class="btn-login">Acceder al Sistema</button>
             <p id="error" style="color:red; display:none; margin-top:10px;">ACCESO DENEGADO</p>
         </form>
+
+        <div class="divider">Ó ESTABLECER VÍNCULO</div>
+
+        <button type="button" class="btn-discord" onclick="signInWithDiscord()">
+            <img src="https://cdn.prod.website-files.com/6257adef93867e3d0394e364/6257b42007050d2432a58b8f_White-Discord-Logo.svg" width="20">
+            DISCORD LOGIN
+        </button>
+
         <div class="switch-mode" onclick="toggleForm()">¿No tienes cuenta? Registrar Ciudadano</div>
     </div>
 
@@ -141,7 +172,18 @@
             document.getElementById('registerBox').classList.toggle('hidden');
         }
 
-        // LÓGICA DE LOGIN ARREGLADA
+        // LOGIN CON DISCORD
+        async function signInWithDiscord() {
+            const { data, error } = await _supabase.auth.signInWithOAuth({
+                provider: 'discord',
+                options: {
+                    redirectTo: window.location.origin + '/perfil'
+                }
+            });
+            if (error) alert("ERROR DE VÍNCULO: " + error.message);
+        }
+
+        // LÓGICA DE LOGIN
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('username').value;
@@ -161,7 +203,7 @@
             }
         });
 
-        // LÓGICA DE REGISTRO ARREGLADA (ESTO ERA LO QUE NO TENÍAS)
+        // LÓGICA DE REGISTRO
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('regEmail').value;
@@ -183,7 +225,7 @@
             }
         });
 
-        // MOTOR DE ESTRELLAS (SIN TOCAR)
+        // MOTOR DE ESTRELLAS
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
