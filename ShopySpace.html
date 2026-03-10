@@ -108,7 +108,6 @@
         .item-card-info h3 { margin: 0; font-size: 0.8rem; color: var(--blue-light); font-family: var(--font-logo); line-height: 1.2; height: 2em; overflow: hidden; }
         .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1rem; margin-top: 8px; }
 
-        /* SECCIÓN RECLUTAMIENTO */
         .seller-recruitment {
             display: flex; flex-direction: column; 
             background: linear-gradient(135deg, #0e1621 0%, #050a12 100%);
@@ -209,7 +208,7 @@
                     <a href="https://www.irathiens.org/login" class="action-btn seller-btn">REGISTER AS SELLER</a>
                 </div>
             </div>
-            
+
             <div id="publish-container" style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid #1a2635;">
                 <h2 style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 15px 0;">NEW MANIFEST</h2>
                 <input type="text" id="item-name" class="search-bar" placeholder="ITEM NAME">
@@ -222,11 +221,12 @@
                 <input type="text" id="item-location" class="search-bar" placeholder="LOCATION">
                 <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC" inputmode="numeric">
                 
-                <textarea id="item-description" class="search-bar" placeholder="DESCRIPTION (Details, LTI, etc.)" style="height: 100px; resize: none;"></textarea>
+                <textarea id="item-desc" class="search-bar" placeholder="ITEM DESCRIPTION (LTI, SKINS, SPECS...)" style="height: 100px; resize: none;"></textarea>
 
                 <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635;">SELECT IMAGE</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
                 <div id="img-preview" style="text-align:center; margin-bottom: 10px;"></div>
+                
                 <button class="action-btn" id="btn-publish" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000;">PUBLISH ASSET</button>
             </div>
         </section>
@@ -333,34 +333,39 @@
     }
 
     async function uploadToNet() {
-        // 1. Obtener sesión para inyectar seller_id automáticamente
+        // --- AQUÍ SE GESTIONA EL ID DEL MENSAJE/VENDEDOR AUTOMÁTICAMENTE ---
         const { data: { session } } = await _supabase.auth.getSession();
-        if(!session) return alert("Log in required");
+        
+        if(!session) {
+            alert("SECURE ERROR: No session detected.");
+            return;
+        }
 
-        if(!uploadedImgBase64) return alert("Select image");
+        if(!uploadedImgBase64) return alert("Select image first");
 
         const btn = document.getElementById('btn-publish');
-        btn.innerText = "UPLOADING...";
+        btn.innerText = "TRANSMITTING...";
         btn.disabled = true;
 
         const payload = {
             item_name: document.getElementById('item-name').value,
             category: document.getElementById('item-cat').value,
             location: document.getElementById('item-location').value,
-            price_auec: document.getElementById('item-price').value,
-            description: document.getElementById('item-description').value, // Se añade descripción
+            price_auec: parseInt(document.getElementById('item-price').value),
+            description: document.getElementById('item-desc').value, // CAPTURA LA DESCRIPCIÓN
             image_1: uploadedImgBase64,
             status: 'available',
-            seller_id: session.user.id // SE INYECTA TU ID AUTOMÁTICAMENTE
+            seller_id: session.user.id // ASIGNA TU ID AUTOMÁTICAMENTE
         };
 
         const { error } = await _supabase.from('marketplace_items').insert([payload]);
         
         if(error) {
-            alert("Error: " + error.message);
-            btn.innerText = "PUBLISH ASSET";
+            alert("UEE DATABASE ERROR: " + error.message);
+            btn.innerText = "RETRY";
             btn.disabled = false;
         } else {
+            alert("ASSET PUBLISHED IN GALAXY MARKET");
             location.reload();
         }
     }
