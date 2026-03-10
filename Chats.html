@@ -15,6 +15,7 @@
             --bg-card: #0e1621;
             --text-white: #ffffff;
             --border-color: #1a2635;
+            --danger: #ff4444;
             --grad-blue: linear-gradient(90deg, #00d2ff 0%, #0056ff 100%);
         }
 
@@ -28,7 +29,6 @@
             overflow: hidden;
         }
 
-        /* --- NAV --- */
         nav {
             background: #000; border-bottom: 2px solid var(--blue-primary);
             padding: 5px 15px; display: flex; justify-content: space-between; align-items: center;
@@ -42,10 +42,8 @@
             color: var(--blue-primary); cursor: pointer; display: flex; align-items: center; gap: 5px;
         }
 
-        /* --- LAYOUT --- */
         .chat-container { display: flex; flex: 1; overflow: hidden; position: relative; }
 
-        /* --- SIDEBAR --- */
         .sidebar { 
             width: 300px; background: var(--bg-card); border-right: 1px solid var(--border-color); 
             display: flex; flex-direction: column; transition: all 0.3s ease;
@@ -63,13 +61,14 @@
         .contact-list { flex: 1; overflow-y: auto; }
         .contact-item { 
             padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); 
-            cursor: pointer; position: relative;
+            cursor: pointer; position: relative; display: flex; justify-content: space-between; align-items: center;
         }
         .contact-item.active { background: rgba(0, 210, 255, 0.08); border-left: 3px solid var(--blue-primary); }
         .contact-name { display: block; font-family: 'Orbitron'; font-size: 0.75rem; color: var(--blue-primary); }
         .contact-status { font-size: 0.6rem; color: #555; }
+        .delete-contact { color: var(--danger); font-size: 0.8rem; opacity: 0.5; padding: 5px; }
+        .delete-contact:hover { opacity: 1; }
 
-        /* --- CHAT AREA --- */
         .chat-main { 
             flex: 1; display: flex; flex-direction: column; 
             background: radial-gradient(circle at center, #0e1621 0%, #050a12 100%);
@@ -84,23 +83,27 @@
 
         .messages-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         
-        .msg { max-width: 85%; padding: 10px 12px; border-radius: 10px; font-size: 0.9rem; line-height: 1.3; }
+        .msg { max-width: 85%; padding: 10px 12px; border-radius: 10px; font-size: 0.9rem; line-height: 1.3; position: relative; }
         .msg.sent { align-self: flex-end; background: var(--blue-dark); color: white; border-bottom-right-radius: 2px; }
         .msg.received { align-self: flex-start; background: #1a2635; border: 1px solid #222; border-bottom-left-radius: 2px; }
         .msg-info { font-size: 0.5rem; color: var(--yellow-accent); margin-bottom: 4px; font-family: 'Orbitron'; display: block; opacity: 0.8; }
+        
+        .msg-actions { display: none; position: absolute; top: -20px; right: 0; background: #000; border: 1px solid var(--blue-primary); border-radius: 4px; font-size: 0.6rem; }
+        .msg.sent:hover .msg-actions { display: flex; gap: 5px; padding: 2px 5px; }
+        .action-btn { cursor: pointer; color: white; padding: 2px; }
+        .action-btn:hover { color: var(--blue-primary); }
 
-        /* --- INPUT --- */
         .input-container { padding: 10px; background: var(--bg-card); border-top: 1px solid var(--border-color); }
+        .emoji-bar { padding-bottom: 8px; display: flex; gap: 10px; overflow-x: auto; }
+        .emoji-btn { cursor: pointer; font-size: 1.2rem; filter: grayscale(0.5); transition: 0.2s; }
+        .emoji-btn:hover { filter: grayscale(0); transform: scale(1.2); }
+        
         .input-wrapper { display: flex; gap: 6px; background: #000; border: 1px solid #333; padding: 4px; border-radius: 8px; align-items: center; }
         .input-wrapper input { flex: 1; background: transparent; border: none; color: white; padding: 10px; outline: none; font-size: 0.9rem; }
         .send-btn { background: var(--grad-blue); border: none; padding: 10px 18px; color: white; font-family: 'Orbitron'; font-size: 0.7rem; border-radius: 6px; font-weight: bold; }
 
-        /* --- MOBILE ADAPTATION --- */
         @media (max-width: 768px) {
-            .sidebar { 
-                position: absolute; width: 100%; height: 100%; z-index: 1000;
-                left: 0;
-            }
+            .sidebar { position: absolute; width: 100%; height: 100%; z-index: 1000; left: 0; }
             .sidebar.hidden { left: -100%; }
             .back-btn { display: block; }
             .msg { max-width: 90%; }
@@ -128,8 +131,10 @@
         <div class="sidebar-header">
             <span class="sidebar-label">NETWORK BROADCAST</span>
             <div class="contact-item active" id="global-item" onclick="selectContact('Global Hub', null, this)">
-                <span class="contact-name"># BROADCAST_HUB</span>
-                <span class="contact-status">Public Unencrypted Frequency</span>
+                <div>
+                    <span class="contact-name"># BROADCAST_HUB</span>
+                    <span class="contact-status">Public Unencrypted Frequency</span>
+                </div>
             </div>
             <span class="sidebar-label">PRIVATE ENCRYPTED LINKS</span>
             <button class="add-friend-btn" onclick="openModal()">+ LINK NEW CITIZEN</button>
@@ -144,13 +149,25 @@
         </div>
         <div class="messages-area" id="messages-area"></div>
         <div class="input-container">
+            <div class="emoji-bar">
+                <span class="emoji-btn" onclick="addEmoji('🚀')">🚀</span>
+                <span class="emoji-btn" onclick="addEmoji('🛸')">🛸</span>
+                <span class="emoji-btn" onclick="addEmoji('👨‍🚀')">👨‍🚀</span>
+                <span class="emoji-btn" onclick="addEmoji('💰')">💰</span>
+                <span class="emoji-btn" onclick="addEmoji('📦')">📦</span>
+                <span class="emoji-btn" onclick="addEmoji('🔫')">🔫</span>
+                <span class="emoji-btn" onclick="addEmoji('🌌')">🌌</span>
+                <span class="emoji-btn" onclick="addEmoji('✅')">✅</span>
+            </div>
             <div class="input-wrapper">
                 <input type="text" id="chat-input" placeholder="Enter secure message..." onkeypress="if(event.key==='Enter') sendMessage()">
-                <button class="send-btn" onclick="sendMessage()">SEND</button>
+                <button class="send-btn" id="main-send-btn" onclick="sendMessage()">SEND</button>
             </div>
         </div>
     </main>
 </div>
+
+<audio id="notif-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
 
 <div id="modal-add" class="modal-overlay">
     <div class="modal-content">
@@ -168,7 +185,7 @@
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    let myId, myName, currentTarget = 'Global Hub', targetUserId = null;
+    let myId, myName, currentTarget = 'Global Hub', targetUserId = null, editingMessageId = null;
 
     async function init() {
         const { data: { session } } = await _supabase.auth.getSession();
@@ -180,7 +197,6 @@
         
         loadSavedContacts();
 
-        // LÓGICA DE PERSISTENCIA AL VENIR DESDE PRODUCTO
         const pending = localStorage.getItem('pending_contact');
         if (pending) {
             const contact = JSON.parse(pending);
@@ -193,18 +209,35 @@
         }
 
         _supabase.channel('main_room')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
-                const m = payload.new;
-                if (m.channel === currentTarget) appendMessage(m);
-                else if (m.receiver_id === myId) {
-                    autoCreateContact(m.user_name, m.user_id);
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'mensajes' }, payload => {
+                if (payload.eventType === 'INSERT') {
+                    const m = payload.new;
+                    if (m.channel === currentTarget) {
+                        appendMessage(m);
+                    } else if (m.receiver_id === myId) {
+                        autoCreateContact(m.user_name, m.user_id);
+                        playNotif();
+                    } else if (m.channel === 'Global Hub') {
+                        playNotif();
+                    }
+                } else if (payload.eventType === 'DELETE' || payload.eventType === 'UPDATE') {
+                    loadMessages(); // Recargar para ver cambios/borrados
                 }
             }).subscribe();
+    }
+
+    function playNotif() {
+        document.getElementById('notif-sound').play().catch(() => {});
     }
 
     function copyMyID() {
         navigator.clipboard.writeText(myId);
         alert("ID COPIED: " + myId);
+    }
+
+    function addEmoji(emoji) {
+        document.getElementById('chat-input').value += emoji;
+        document.getElementById('chat-input').focus();
     }
 
     function getChannelID(id1, id2) {
@@ -227,6 +260,16 @@
         }
     }
 
+    function removeContact(id, event) {
+        event.stopPropagation();
+        if(!confirm("TERMINAR ENLACE ENCRIPTADO?")) return;
+        let contacts = JSON.parse(localStorage.getItem('shopy_contacts_' + myId) || '[]');
+        contacts = contacts.filter(c => c.id !== id);
+        localStorage.setItem('shopy_contacts_' + myId, JSON.stringify(contacts));
+        document.getElementById(`contact-${id}`).remove();
+        if (targetUserId === id) selectContact('Global Hub', null, document.getElementById('global-item'));
+    }
+
     function renderContactUI(name, id) {
         const list = document.getElementById('contact-list');
         if (!document.getElementById(`contact-${id}`)) {
@@ -234,7 +277,13 @@
             div.className = 'contact-item';
             div.id = `contact-${id}`;
             div.onclick = () => selectContact(name, id, div);
-            div.innerHTML = `<span class="contact-name">${name}</span><span class="contact-status">● P2P ENCRYPTED</span>`;
+            div.innerHTML = `
+                <div>
+                    <span class="contact-name">${name}</span>
+                    <span class="contact-status">● P2P ENCRYPTED</span>
+                </div>
+                <span class="delete-contact" onclick="removeContact('${id}', event)">✕</span>
+            `;
             list.prepend(div);
         }
     }
@@ -252,6 +301,8 @@
         document.querySelectorAll('.contact-item').forEach(i => i.classList.remove('active'));
         if (el) el.classList.add('active');
         if (window.innerWidth <= 768) document.getElementById('sidebar').classList.add('hidden');
+        editingMessageId = null;
+        document.getElementById('main-send-btn').innerText = "SEND";
         loadMessages();
     }
 
@@ -261,17 +312,28 @@
         const box = document.getElementById('messages-area');
         box.innerHTML = '';
         let query = _supabase.from('mensajes').select('*').eq('channel', currentTarget);
-        if (targetUserId) query = query.or(`user_id.eq.${myId},receiver_id.eq.${myId}`);
+        // El filtro de canal ya separa Global de Privados, no hace falta el .or para cargarlos
         const { data } = await query.order('created_at', { ascending: true });
         if (data) data.forEach(m => appendMessage(m));
     }
 
     function appendMessage(m) {
         const box = document.getElementById('messages-area');
+        if(document.getElementById(`msg-${m.id}`)) return; // Evitar duplicados por realtime
+
         const isMe = m.user_id === myId;
         const div = document.createElement('div');
         div.className = `msg ${isMe ? 'sent' : 'received'}`;
-        div.innerHTML = `<span class="msg-info">${m.user_name}</span>${m.content}`;
+        div.id = `msg-${m.id}`;
+        
+        let actions = isMe ? `
+            <div class="msg-actions">
+                <span class="action-btn" onclick="prepareEdit('${m.id}', '${m.content.replace(/'/g, "\\'")}')">EDIT</span>
+                <span class="action-btn" onclick="deleteMessage('${m.id}')">DEL</span>
+            </div>
+        ` : '';
+
+        div.innerHTML = `<span class="msg-info">${m.user_name}</span>${m.content}${actions}`;
         box.appendChild(div);
         box.scrollTop = box.scrollHeight;
     }
@@ -280,11 +342,35 @@
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if (!text) return;
-        const { error } = await _supabase.from('mensajes').insert([{
-            user_id: myId, user_name: myName, content: text, 
-            channel: currentTarget, receiver_id: targetUserId
-        }]);
-        if (!error) input.value = '';
+
+        if (editingMessageId) {
+            const { error } = await _supabase.from('mensajes').update({ content: text }).eq('id', editingMessageId);
+            if (!error) {
+                editingMessageId = null;
+                document.getElementById('main-send-btn').innerText = "SEND";
+                input.value = '';
+            }
+        } else {
+            const { error } = await _supabase.from('mensajes').insert([{
+                user_id: myId, user_name: myName, content: text, 
+                channel: currentTarget, receiver_id: targetUserId
+            }]);
+            if (!error) input.value = '';
+        }
+    }
+
+    function prepareEdit(id, content) {
+        editingMessageId = id;
+        const input = document.getElementById('chat-input');
+        input.value = content;
+        input.focus();
+        document.getElementById('main-send-btn').innerText = "SAVE";
+    }
+
+    async function deleteMessage(id) {
+        if(!confirm("BORRAR MENSAJE DEFINITIVAMENTE?")) return;
+        await _supabase.from('mensajes').delete().eq('id', id);
+        document.getElementById(`msg-${id}`).remove();
     }
 
     function openModal() { document.getElementById('modal-add').style.display = 'flex'; }
