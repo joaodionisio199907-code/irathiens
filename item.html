@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SHOPYSPACE | ASSET DETAILS</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,8 +20,9 @@
             --success: #00ff88;
         }
 
-        /* Hide scrollbars but allow scrolling */
+        /* Scrollbar Hidden */
         ::-webkit-scrollbar { display: none; }
+        
         body {
             margin: 0;
             background-color: var(--bg-dark);
@@ -29,7 +30,7 @@
             font-family: 'Rajdhani', sans-serif;
             background-image: radial-gradient(circle at 50% 0%, #102a4d 0%, var(--bg-dark) 70%);
             min-height: 100vh;
-            -ms-overflow-style: none;  scrollbar-width: none;
+            overflow-x: hidden;
         }
 
         /* --- NAVIGATION --- */
@@ -37,7 +38,7 @@
             background: rgba(0, 0, 0, 0.8);
             border-bottom: 4px solid;
             border-image: var(--grad-blue) 1;
-            padding: 5px 50px;
+            padding: 5px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -48,29 +49,26 @@
         }
 
         .logo-img {
-            height: 65px;
+            height: 55px;
             cursor: pointer;
             filter: drop-shadow(0 0 8px var(--blue-primary));
             transition: 0.3s;
         }
-        .logo-img:hover { transform: scale(1.05); }
 
         .back-btn {
             background: var(--grad-blue);
             color: white;
             text-decoration: none;
             font-family: 'Barlow Condensed', sans-serif;
-            padding: 8px 25px;
+            padding: 8px 15px;
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            transition: 0.3s;
             font-weight: 800;
             text-transform: uppercase;
+            font-size: 0.9rem;
         }
 
-        .back-btn:hover { transform: scale(1.1); filter: brightness(1.2); }
-
-        /* --- MAIN WRAPPER --- */
-        .wrapper { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        /* --- CONTENT --- */
+        .wrapper { max-width: 1100px; margin: 30px auto; padding: 0 15px; }
 
         .main-card {
             display: grid;
@@ -80,149 +78,177 @@
             border-left: 5px solid var(--blue-primary);
             border-right: 5px solid var(--yellow-accent);
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
         }
 
-        /* --- VISUALIZER --- */
         .image-container {
             background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            border-bottom: 5px solid var(--blue-primary);
+            padding: 15px;
+            border-bottom: 4px solid var(--blue-primary);
         }
 
         .image-container img {
             width: 100%;
             border-radius: 10px;
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
             object-fit: contain;
-            max-height: 500px;
+            max-height: 450px;
         }
 
-        /* --- INFO PANEL --- */
-        .info-panel { padding: 40px; position: relative; display: flex; flex-direction: column; }
+        .info-panel { padding: 30px; display: flex; flex-direction: column; }
 
         .category-tag {
-            display: inline-block;
             background: var(--grad-blue);
-            padding: 5px 20px;
+            padding: 4px 15px;
             font-family: 'Orbitron';
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             width: fit-content;
         }
 
         h1 {
             font-family: 'Barlow Condensed', sans-serif;
-            font-size: 3.5rem;
+            font-size: 3rem;
             margin: 0;
             line-height: 0.9;
             text-transform: uppercase;
             font-style: italic;
-            color: #fff;
-        }
-
-        .seller-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 15px 0;
-            color: var(--yellow-accent);
-            font-family: 'Orbitron';
-            font-size: 0.8rem;
         }
 
         .price-box {
             font-family: 'Orbitron';
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--yellow-bright);
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin: 15px 0;
         }
 
-        /* --- DESCRIPTION AND SPECS --- */
         .item-desc {
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
             border-left: 3px solid var(--blue-primary);
-            line-height: 1.5;
+            font-size: 0.95rem;
             color: #ccc;
-            font-size: 1rem;
         }
 
         .specs-list {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .spec-box {
-            background: #162130;
-            padding: 10px 15px;
-            border-bottom: 2px solid var(--blue-dark);
-        }
+        .spec-box { background: #162130; padding: 10px; border-bottom: 2px solid var(--blue-dark); }
+        .spec-label { font-size: 0.6rem; color: var(--blue-primary); text-transform: uppercase; font-weight: bold; }
+        .spec-val { display: block; font-size: 1rem; font-family: 'Orbitron'; }
 
-        .spec-label { font-size: 0.7rem; color: var(--blue-primary); text-transform: uppercase; font-weight: bold; }
-        .spec-val { display: block; font-size: 1.1rem; font-family: 'Orbitron'; }
-
-        /* --- ACTION BUTTONS --- */
         .buy-btn {
             width: 100%;
             background: var(--grad-yellow);
             border: none;
-            padding: 20px;
+            padding: 18px;
             font-family: 'Barlow Condensed';
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
             cursor: pointer;
             text-transform: uppercase;
             clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
-            transition: 0.3s;
+            transition: 0.2s;
             margin-top: auto;
         }
 
-        .buy-btn:hover { filter: brightness(1.2); transform: translateY(-3px); }
-
-        /* --- KO-FI SECTION --- */
-        .support-box {
-            margin-top: 30px;
-            background: linear-gradient(45deg, #0e1621, #1a2635);
-            padding: 30px;
-            text-align: center;
-            border: 2px dashed var(--yellow-accent);
-            border-radius: 20px;
+        /* --- CHAT SYSTEM (MOBILE PERFECT) --- */
+        #chat-window {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 360px;
+            height: 500px;
+            background: var(--bg-card);
+            border: 2px solid var(--blue-primary);
+            border-radius: 15px;
+            flex-direction: column;
+            z-index: 10001;
+            box-shadow: 0 0 40px #000;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
         }
 
-        .kofi-link {
-            display: inline-block;
-            background: #ff5e5b;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .chat-header {
+            background: var(--grad-blue);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-family: 'Orbitron';
-            box-shadow: 0 10px 20px rgba(255, 94, 91, 0.3);
+            font-size: 0.8rem;
         }
 
-        footer { text-align: center; padding: 50px; color: #444; font-family: 'Orbitron'; font-size: 0.8rem; }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(0,0,0,0.4);
+        }
 
-        /* --- MOBILE OPTIMIZATION --- */
-        @media (max-width: 900px) {
-            nav { padding: 10px 20px; }
-            .logo-img { height: 50px; }
+        .msg-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 85%;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .msg-sent { background: var(--blue-dark); align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg-received { background: #1a2635; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #333; }
+        .msg-info { font-size: 0.6rem; color: var(--yellow-accent); display: block; font-family: 'Orbitron'; margin-bottom: 3px; }
+
+        .chat-input-area {
+            padding: 12px;
+            background: #050a12;
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #222;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #333;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .chat-send-btn { background: var(--blue-primary); border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; }
+
+        /* Mobile Viewport Fix */
+        @media (max-width: 650px) {
             .main-card { grid-template-columns: 1fr; }
-            h1 { font-size: 2.5rem; }
-            .info-panel { padding: 25px; }
+            h1 { font-size: 2.2rem; }
+            #chat-window {
+                width: 100%;
+                height: 100%;
+                bottom: 0;
+                right: 0;
+                border-radius: 0;
+                border: none;
+            }
+            .chat-input-area { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
         }
+
+        footer { text-align: center; padding: 40px; color: #444; font-family: 'Orbitron'; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -240,21 +266,10 @@
 
         <div class="info-panel">
             <span class="category-tag" id="item-cat">LOADING...</span>
-            <h1 id="item-name">ITEM NAME</h1>
+            <h1 id="item-name">ASSET NAME</h1>
+            <div class="price-box" id="item-price">0 aUEC</div>
             
-            <div class="seller-info">
-                <span>SELLER:</span>
-                <span id="item-seller" style="color: #fff;">UNKNOWN</span>
-                <span id="verified-icon" style="color: var(--blue-primary);">[✔ VERIFIED]</span>
-            </div>
-
-            <div class="price-box">
-                <span id="item-price">0 aUEC</span>
-            </div>
-
-            <div class="item-desc" id="item-desc">
-                Retrieving manifest description from UEE data network...
-            </div>
+            <div class="item-desc" id="item-desc">Establishing secure link to UEE manifest...</div>
 
             <div class="specs-list">
                 <div class="spec-box">
@@ -267,19 +282,28 @@
                 </div>
             </div>
 
-            <button class="buy-btn" onclick="contactSeller()">CONTACT SELLER</button>
+            <button class="buy-btn" onclick="openChat()">CONTACT SELLER</button>
         </div>
     </div>
+</div>
 
-    <div class="support-box">
-        <h2 style="font-family: 'Barlow Condensed'; font-size: 2rem; color: var(--yellow-accent);">ENJOYING SHOPYSPACE?</h2>
-        <p>Help us keep the network pirate-free and the servers running at 30 FPS.</p>
-        <a href="https://ko-fi.com/TU_USUARIO" target="_blank" class="kofi-link">DONATE ON KO-FI</a>
+<div id="chat-window">
+    <div class="chat-header">
+        <span>ENCRYPTED COMMS</span>
+        <div style="display:flex; gap:15px; align-items:center;">
+            <span style="color:red; font-size:0.7rem; cursor:pointer;" onclick="closeChat()">BLOCK</span>
+            <span style="cursor:pointer; font-size:1.2rem;" onclick="closeChat()">×</span>
+        </div>
+    </div>
+    <div class="chat-messages" id="chat-box"></div>
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Type message..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <button class="chat-send-btn" onclick="sendMessage()">SEND</button>
     </div>
 </div>
 
 <footer>
-    SHOPYSPACE NETWORK &copy; 2956 | STANTON SYSTEM TRADING HUB
+    SHOPYSPACE NETWORK &copy; 2956 | STANTON HUB
 </footer>
 
 <script>
@@ -287,43 +311,76 @@
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
+    // Identidad del usuario
+    let myId = localStorage.getItem('chat_uid') || 'U-' + Math.floor(Math.random()*9000);
+    let myName = localStorage.getItem('chat_uname') || 'Citizen_' + Math.floor(Math.random()*999);
+    localStorage.setItem('chat_uid', myId);
+    localStorage.setItem('chat_uname', myName);
+
     async function loadItem() {
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
-        
-        // If no ID is provided, we show a default message or redirect
-        if (!id) {
-            document.getElementById('item-name').innerText = "NO ASSET SELECTED";
-            return;
-        }
+        if (!id) return;
 
-        const { data, error } = await _supabase.from('marketplace_items').select('*').eq('id', id).single();
-        
+        const { data } = await _supabase.from('marketplace_items').select('*').eq('id', id).single();
         if (data) {
             document.getElementById('item-name').innerText = data.item_name.toUpperCase();
             document.getElementById('item-price').innerText = parseInt(data.price_auec).toLocaleString() + " aUEC";
-            document.getElementById('item-img').src = data.image_1 || 'https://via.placeholder.com/800x600?text=NO_IMAGE';
-            document.getElementById('item-cat').innerText = (data.category || 'GENERAL').toUpperCase();
+            document.getElementById('item-img').src = data.image_1 || '';
+            document.getElementById('item-cat').innerText = (data.category || 'ASSET').toUpperCase();
             document.getElementById('item-loc').innerText = (data.location || 'UNKNOWN').toUpperCase();
-            
-            if(data.seller_name) document.getElementById('item-seller').innerText = data.seller_name.toUpperCase();
-            if(data.description) document.getElementById('item-desc').innerText = data.description;
-
-            if(data.status !== 'available') {
-                const status = document.getElementById('item-status');
-                status.innerText = "SOLD OUT";
-                status.style.color = "#ff3e3e";
-            }
-        } else {
-            document.getElementById('item-name').innerText = "ASSET NOT FOUND";
+            document.getElementById('item-desc').innerText = data.description || 'No additional data.';
         }
     }
 
-    function contactSeller() {
-        const name = document.getElementById('item-name').innerText;
-        alert("Establishing secure Spectrum link for: " + name);
-        // Add your Discord link here
-        window.open("https://discord.gg/TU_LINK", "_blank");
+    // --- CHAT FUNCTIONS ---
+    function openChat() {
+        const win = document.getElementById('chat-window');
+        win.style.display = 'flex';
+        if (window.innerWidth < 650) document.body.style.overflow = 'hidden';
+        
+        loadMessages();
+        
+        // Suscribirse a mensajes nuevos
+        _supabase.channel('public:mensajes').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
+            appendMessage(payload.new);
+        }).subscribe();
+    }
+
+    function closeChat() {
+        document.getElementById('chat-window').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    async function loadMessages() {
+        const { data } = await _supabase.from('mensajes').select('*').order('created_at', { ascending: true }).limit(40);
+        const box = document.getElementById('chat-box');
+        box.innerHTML = '';
+        if (data) data.forEach(msg => appendMessage(msg));
+    }
+
+    function appendMessage(msg) {
+        const box = document.getElementById('chat-box');
+        const isMe = msg.user_id === myId;
+        const div = document.createElement('div');
+        div.className = `msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}`;
+        div.innerHTML = `<span class="msg-info">${msg.user_name}</span>${msg.content}`;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const { error } = await _supabase.from('mensajes').insert([{
+            user_id: myId,
+            user_name: myName,
+            content: text
+        }]);
+
+        if (!error) input.value = '';
     }
 
     window.onload = loadItem;
