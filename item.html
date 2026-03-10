@@ -190,83 +190,12 @@
             margin-top: auto;
         }
 
-        /* --- CHAT SYSTEM --- */
-        #chat-window {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 360px;
-            height: 500px;
-            background: var(--bg-card);
-            border: 2px solid var(--blue-primary);
-            border-radius: 15px;
-            flex-direction: column;
-            z-index: 10001;
-            box-shadow: 0 0 40px #000;
-            overflow: hidden;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .chat-header {
-            background: var(--grad-blue);
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'Orbitron';
-            font-size: 0.8rem;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background: rgba(0,0,0,0.4);
-        }
-
-        .msg-bubble {
-            padding: 10px 14px;
-            border-radius: 12px;
-            max-width: 85%;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-
-        .msg-sent { background: var(--blue-dark); align-self: flex-end; border-bottom-right-radius: 2px; }
-        .msg-received { background: #1a2635; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #333; }
-        .msg-info { font-size: 0.6rem; color: var(--yellow-accent); display: block; font-family: 'Orbitron'; margin-bottom: 3px; }
-
-        .chat-input-area {
-            padding: 12px;
-            background: #050a12;
-            display: flex;
-            gap: 8px;
-            border-top: 1px solid #222;
-        }
-
-        .chat-input-area input {
-            flex: 1;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid #333;
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            outline: none;
-        }
-
-        .chat-send-btn { background: var(--blue-primary); border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; }
-
+        /* Mobile specific fixes */
         @media (max-width: 650px) {
             .main-card { grid-template-columns: 1fr; }
             h1 { font-size: 2.2rem; }
-            #chat-window { width: 100%; height: 100%; bottom: 0; right: 0; border-radius: 0; border: none; }
             #chat-btn span { display: none; }
+            .info-panel { padding: 20px; }
         }
 
         footer { text-align: center; padding: 40px; color: #444; font-family: 'Orbitron'; font-size: 0.7rem; }
@@ -315,21 +244,6 @@
     </div>
 </div>
 
-<div id="chat-window">
-    <div class="chat-header">
-        <span>ENCRYPTED COMMS</span>
-        <div style="display:flex; gap:15px; align-items:center;">
-            <span style="color:red; font-size:0.7rem; cursor:pointer;" onclick="closeChat()">BLOCK</span>
-            <span style="cursor:pointer; font-size:1.2rem;" onclick="closeChat()">×</span>
-        </div>
-    </div>
-    <div class="chat-messages" id="chat-box"></div>
-    <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="Type message..." onkeypress="if(event.key==='Enter') sendMessage()">
-        <button class="chat-send-btn" onclick="sendMessage()">SEND</button>
-    </div>
-</div>
-
 <footer>
     SHOPYSPACE NETWORK &copy; 2956 | STANTON HUB
 </footer>
@@ -338,11 +252,6 @@
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
-
-    let myId = localStorage.getItem('chat_uid') || 'U-' + Math.floor(Math.random()*9000);
-    let myName = localStorage.getItem('chat_uname') || 'Citizen_' + Math.floor(Math.random()*999);
-    localStorage.setItem('chat_uid', myId);
-    localStorage.setItem('chat_uname', myName);
 
     async function checkAuth() {
         const { data: { session } } = await _supabase.auth.getSession();
@@ -370,59 +279,38 @@
         }
     }
 
-    // MODIFICADO: Ahora verifica sesión antes de abrir
+    // MODIFICADO: Prepara el contacto y redirige a la página completa de Chats
     async function openChat() {
         const { data: { session } } = await _supabase.auth.getSession();
         
         if (!session) {
-            // Si no hay sesión, redirige al login
             window.location.href = 'login.html'; 
             return;
         }
 
-        const win = document.getElementById('chat-window');
-        win.style.display = 'flex';
-        if (window.innerWidth < 650) document.body.style.overflow = 'hidden';
-        loadMessages();
-        
-        _supabase.channel('public:mensajes').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
-            appendMessage(payload.new);
-        }).subscribe();
-    }
+        const params = new URLSearchParams(window.location.search);
+        const itemId = params.get('id');
 
-    function closeChat() {
-        document.getElementById('chat-window').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
+        // Buscamos quién es el vendedor de este ítem
+        const { data: itemData } = await _supabase
+            .from('marketplace_items')
+            .select('user_id, seller_name') 
+            .eq('id', itemId)
+            .single();
 
-    async function loadMessages() {
-        const { data } = await _supabase.from('mensajes').select('*').order('created_at', { ascending: true }).limit(40);
-        const box = document.getElementById('chat-box');
-        box.innerHTML = '';
-        if (data) data.forEach(msg => appendMessage(msg));
-    }
-
-    function appendMessage(msg) {
-        const box = document.getElementById('chat-box');
-        const isMe = msg.user_id === myId;
-        const div = document.createElement('div');
-        div.className = `msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}`;
-        div.innerHTML = `<span class="msg-info">${msg.user_name}</span>${msg.content}`;
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('chat-input');
-        const text = input.value.trim();
-        if (!text) return;
-
-        const { error } = await _supabase.from('mensajes').insert([{
-            user_id: myId,
-            user_name: myName,
-            content: text
-        }]);
-        if (!error) input.value = '';
+        if (itemData && itemData.user_id) {
+            // Guardamos la intención de contactar para que Chats.html la recoja
+            const pendingContact = {
+                id: itemData.user_id,
+                name: itemData.seller_name || 'Seller'
+            };
+            localStorage.setItem('pending_contact', JSON.stringify(pendingContact));
+            
+            // Redirigimos a la página de chats
+            window.location.href = 'Chats.html';
+        } else {
+            alert("Unable to find seller ID for this asset.");
+        }
     }
 
     window.onload = () => {
