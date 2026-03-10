@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShopySpace | Expediente de Ciudadano</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=Rajdhani:wght@500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -22,43 +22,40 @@
         }
 
         * { box-sizing: border-box; }
-        body { 
-            margin: 0; font-family: 'Inter', sans-serif; 
-            background-color: var(--bg); color: var(--text); 
-            min-height: 100vh; position: relative; overflow-x: hidden; 
-        }
-
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
         #bg-parallax { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top right, #001a33 0%, #050a12 60%); z-index: -2; }
 
         header { position: sticky; top: 0; z-index: 100; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); }
         .nav { max-width: 1200px; margin: auto; padding: 0.8rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
-        .logo { display: flex; align-items: center; gap: 0.8rem; font-family: 'Orbitron', sans-serif; text-decoration: none; color: var(--primary); }
-        .logo-img { height: 110px; filter: drop-shadow(0 0 5px var(--primary)); }
+        .logo-img { height: 40px; filter: drop-shadow(0 0 5px var(--primary)); }
 
         nav a { margin-left: 1.2rem; color: var(--muted); text-decoration: none; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
         nav a:hover, nav a.active { color: var(--primary); }
 
         .main-container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
-
         @media (max-width: 992px) { .main-container { grid-template-columns: 1fr; } }
 
-        .profile-card { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 35px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .content-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 25px; }
-        
-        .section-title { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: var(--primary); margin-bottom: 25px; display: flex; align-items: center; gap: 15px; letter-spacing: 2px; }
+        .profile-card { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 35px 20px; text-align: center; }
+        .avatar-main { width: 120px; height: 120px; border-radius: 10px; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); margin-bottom: 15px; }
+
+        .content-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+        .section-title { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 15px; letter-spacing: 2px; }
         .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 
-        select { width: 100%; padding: 12px 15px; background: #000; border: 1px solid var(--border); border-radius: 6px; color: white; outline: none; font-family: 'Rajdhani'; font-size: 1rem; }
+        /* Galería de Avatares */
+        .avatar-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; margin-top: 15px; }
+        .avatar-option { width: 60px; height: 60px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; object-fit: cover; }
+        .avatar-option:hover { border-color: var(--primary); transform: scale(1.1); }
+        .avatar-option.selected { border-color: var(--success); box-shadow: 0 0 10px var(--success); }
 
-        .btn-action { background: linear-gradient(90deg, var(--primary), var(--accent)); color: white; border: none; padding: 12px 25px; border-radius: 6px; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-action:hover { filter: brightness(1.2); transform: translateY(-1px); }
+        select { width: 100%; padding: 12px 15px; background: #000; border: 1px solid var(--border); border-radius: 6px; color: white; outline: none; }
+        .btn-action { background: linear-gradient(90deg, var(--primary), var(--accent)); color: white; border: none; padding: 12px 25px; border-radius: 6px; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: 700; cursor: pointer; }
 
-        .fleet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .ship-card { background: var(--bg-soft); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; transition: 0.3s; }
-        .ship-card:hover { border-color: var(--primary); }
-        .ship-img { width: 100%; height: 110px; object-fit: cover; border-radius: 4px; }
+        .fleet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
+        .ship-card { background: var(--bg-soft); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; text-align: center; }
+        .ship-img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; }
 
-        footer { margin-top: 50px; padding: 30px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.75rem; letter-spacing: 1px; }
+        footer { margin-top: 50px; padding: 30px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.75rem; }
     </style>
 </head>
 <body> 
@@ -68,7 +65,6 @@
     <div class="nav">
         <a href="index.html" class="logo">
             <img src="img/Shopy.png" alt="ShopySpace" class="logo-img"> 
-            <span style="font-size: 0.9rem; letter-spacing: 3px;"></span>
         </a>
         <nav>
             <a href="index.html">Market</a>
@@ -81,17 +77,17 @@
 <div class="main-container">
     <aside class="sidebar">
         <div class="profile-card">
-            <img src="https://robertsspaceindustries.com/media/7p79ck2sc5r9rr/heap_infocus/Loading_The_Carrack.jpg" id="avatar-img" style="width: 110px; height: 110px; border-radius: 10px; object-fit: cover; border: 1px solid var(--primary); box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);">
+            <img src="img/default-avatar.jpg" id="avatar-img" class="avatar-main">
             
-            <div id="display-name" style="font-family: 'Orbitron'; margin-top: 20px; font-size: 1.1rem; color: var(--primary);">USUARIO</div>
+            <div id="display-name" style="font-family: 'Orbitron'; font-size: 1.1rem; color: var(--primary);">USUARIO</div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
                 <div>
-                    <small style="font-size: 0.55rem; color: var(--muted); display: block; margin-bottom: 5px;">HANGAR</small>
-                    <div id="ship-count" style="font-family: 'JetBrains Mono'; font-size:1.2rem; font-weight:700;">0</div>
+                    <small style="font-size: 0.55rem; color: var(--muted); display: block;">HANGAR</small>
+                    <div id="ship-count" style="font-size:1.1rem; font-weight:700;">0</div>
                 </div>
                 <div>
-                    <small style="font-size: 0.55rem; color: var(--muted); display: block; margin-bottom: 5px;">ESTADO</small>
+                    <small style="font-size: 0.55rem; color: var(--muted); display: block;">ESTADO</small>
                     <div id="display-rank" style="font-family: 'Orbitron'; color:var(--success); font-size:0.6rem;">CIVIL</div>
                 </div>
             </div>
@@ -99,6 +95,18 @@
     </aside>
 
     <main class="content-area">
+        <div class="content-panel">
+            <div class="section-title">IDENTIDAD DE CIUDADANO</div>
+            <p style="font-size: 0.75rem; color: var(--muted);">Si inicias sesión con Discord, tu imagen se actualizará automáticamente. También puedes elegir un avatar predefinido:</p>
+            
+            <div class="avatar-picker" id="avatar-options">
+                <img src="https://robertsspaceindustries.com/media/7p79ck2sc5r9rr/heap_infocus/Loading_The_Carrack.jpg" class="avatar-option" onclick="selectAvatar(this.src)">
+                <img src="https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg" class="avatar-option" onclick="selectAvatar(this.src)">
+                <img src="https://media.robertsspaceindustries.com/6p8e2j4w7v5f5r/store_slideshow_large.jpg" class="avatar-option" onclick="selectAvatar(this.src)">
+                <img src="https://media.robertsspaceindustries.com/f0m5r6n3q3t2w/store_slideshow_large.jpg" class="avatar-option" onclick="selectAvatar(this.src)">
+            </div>
+        </div>
+
         <div class="content-panel">
             <div class="section-title">REGISTRO DE FLOTA CIVIL</div>
             <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px;">
@@ -109,7 +117,6 @@
                     <option value="Cutter">Drake Cutter</option>
                     <option value="Avenger Titan">Aegis Avenger Titan</option>
                     <option value="Constellation">RSI Constellation</option>
-                    <option value="Caterpillar">Drake Caterpillar</option>
                 </select>
                 <button class="btn-action" onclick="addShip()">+ REGISTRAR</button>
             </div>
@@ -133,19 +140,43 @@ async function init() {
 
     let { data: profile } = await _supabase.from('perfiles').select('*').eq('id', user.id).single();
     
+    // LÓGICA DE AVATAR:
+    // 1. Prioridad: Discord (metadata)
+    // 2. Segunda: Avatar guardado en perfil (DB)
+    // 3. Tercera: Imagen por defecto
+    const discordAvatar = user.user_metadata?.avatar_url;
+    const savedAvatar = profile?.avatar_url;
+    const finalAvatar = discordAvatar || savedAvatar || "img/default-avatar.jpg";
+    
+    document.getElementById('avatar-img').src = finalAvatar;
+
     if (profile) {
         document.getElementById('display-name').innerText = (profile.display_name || user.email.split('@')[0]).toUpperCase();
-        // Cambiamos "Cadete" por algo neutral como "Civil" o "Merchant"
         document.getElementById('display-rank').innerText = (profile.rank || "CIVIL").toUpperCase();
 
-        if (profile.ships && profile.ships.length > 0) {
+        if (profile.ships) {
             document.getElementById('fleet-grid').innerHTML = '';
             profile.ships.forEach(s => renderShipCard(s));
-        } else {
-            document.getElementById('fleet-grid').innerHTML = '<p style="color:var(--muted); font-size:0.8rem; grid-column: 1/-1; text-align:center; padding: 40px;">No se han detectado naves civiles en este registro.</p>';
         }
     }
     updateShipCount();
+}
+
+// Función para elegir avatar manualmente
+async function selectAvatar(url) {
+    document.getElementById('avatar-img').src = url;
+    
+    // Guardamos la elección en la base de datos
+    const { error } = await _supabase
+        .from('perfiles')
+        .update({ avatar_url: url })
+        .eq('id', currentUser.id);
+
+    if(!error) {
+        // Marcamos visualmente la opción seleccionada
+        document.querySelectorAll('.avatar-option').forEach(img => img.classList.remove('selected'));
+        event.target.classList.add('selected');
+    }
 }
 
 function renderShipCard(name) {
@@ -156,8 +187,8 @@ function renderShipCard(name) {
     card.className = 'ship-card';
     card.innerHTML = `
         <img src="https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg" class="ship-img">
-        <div style="font-family:Orbitron; font-size:0.6rem; color:var(--primary); margin: 10px 0; font-weight:700; text-align:center;">${name.toUpperCase()}</div>
-        <button onclick="removeShip(this)" style="background:rgba(255,68,68,0.1); border:1px solid var(--danger); color:var(--danger); cursor:pointer; width:100%; padding:6px; border-radius:4px; font-family:Orbitron; font-size:0.5rem; font-weight:700;">DESVINCULAR</button>
+        <div style="font-family:Orbitron; font-size:0.6rem; color:var(--primary); margin: 8px 0; font-weight:700;">${name.toUpperCase()}</div>
+        <button onclick="removeShip(this)" style="background:rgba(255,68,68,0.1); border:1px solid var(--danger); color:var(--danger); cursor:pointer; width:100%; padding:4px; border-radius:4px; font-size:0.5rem;">ELIMINAR</button>
     `;
     grid.appendChild(card);
 }
@@ -168,10 +199,7 @@ async function addShip() {
 }
 
 async function removeShip(btn) {
-    if(confirm("¿Confirmas la eliminación de este registro de hangar?")) { 
-        btn.parentElement.remove(); 
-        await syncShips(); 
-    }
+    if(confirm("¿Eliminar registro?")) { btn.parentElement.remove(); await syncShips(); }
 }
 
 async function syncShips() {
