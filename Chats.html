@@ -11,7 +11,6 @@
             --blue-primary: #00d2ff;
             --blue-dark: #0056ff;
             --yellow-accent: #ffb800;
-            --yellow-bright: #ffe600;
             --bg-deep: #050a12;
             --bg-card: #0e1621;
             --text-white: #ffffff;
@@ -21,7 +20,6 @@
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--blue-primary); border-radius: 10px; }
-        ::-webkit-scrollbar { display: none; } 
 
         body {
             margin: 0; background-color: var(--bg-deep); color: var(--text-white);
@@ -33,195 +31,127 @@
         nav {
             background: #000; border-bottom: 3px solid; border-image: var(--grad-blue) 1;
             padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
-            height: 60px; box-sizing: border-box; backdrop-filter: blur(10px);
+            height: 60px; box-sizing: border-box; z-index: 1000;
         }
-        .logo-img { height: 35px; cursor: pointer; filter: drop-shadow(0 0 5px var(--blue-primary)); }
+        .logo-img { height: 30px; cursor: pointer; filter: drop-shadow(0 0 5px var(--blue-primary)); }
+        
+        .menu-toggle { display: none; background: none; border: 1px solid var(--blue-primary); color: var(--blue-primary); padding: 5px 10px; font-family: 'Orbitron'; cursor: pointer; font-size: 0.8rem; }
 
         /* --- MAIN LAYOUT --- */
-        .chat-container {
-            display: grid; grid-template-columns: 320px 1fr;
-            flex: 1; overflow: hidden;
-        }
+        .chat-container { display: grid; grid-template-columns: 320px 1fr; flex: 1; overflow: hidden; position: relative; }
 
-        /* --- SIDEBAR (Contact List) --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             background: var(--bg-card); border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; transition: 0.3s; z-index: 999;
         }
 
-        .sidebar-header {
-            padding: 15px; border-bottom: 1px solid var(--border-color);
-            display: flex; flex-direction: column; gap: 10px;
-        }
+        .sidebar-header { padding: 15px; border-bottom: 1px solid var(--border-color); }
+        .sidebar-label { font-family: 'Orbitron'; font-size: 0.6rem; color: #444; margin-bottom: 10px; display: block; letter-spacing: 2px; }
 
         .add-friend-btn {
-            background: var(--grad-blue); color: white; border: none; padding: 10px;
+            width: 100%; background: var(--grad-blue); color: white; border: none; padding: 10px;
             font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; font-weight: bold;
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
-            transition: 0.3s;
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); transition: 0.3s;
         }
-        .add-friend-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
 
         .contact-list { flex: 1; overflow-y: auto; }
-        
         .contact-item {
             padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03);
-            cursor: pointer; transition: 0.2s; position: relative;
+            cursor: pointer; transition: 0.2s;
         }
         .contact-item:hover { background: rgba(0, 210, 255, 0.05); }
         .contact-item.active { background: rgba(0, 210, 255, 0.1); border-left: 4px solid var(--blue-primary); }
-        
         .contact-name { display: block; font-family: 'Orbitron'; font-size: 0.8rem; color: var(--blue-primary); }
-        .contact-status { font-size: 0.7rem; color: #666; font-style: italic; }
+        .contact-status { font-size: 0.65rem; color: #555; }
 
         /* --- CHAT AREA --- */
         .chat-main { display: flex; flex-direction: column; background: radial-gradient(circle at center, #0e1621 0%, #050a12 100%); }
+        .chat-top-bar { padding: 10px 20px; background: rgba(0,0,0,0.6); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .messages-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
 
-        .chat-top-bar {
-            padding: 10px 20px; background: rgba(0,0,0,0.6); 
-            border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .chat-actions { display: flex; gap: 15px; }
-        .action-icon { 
-            cursor: pointer; font-size: 0.7rem; color: #555; 
-            transition: 0.3s; font-family: 'Orbitron'; border: 1px solid #222; padding: 4px 8px; border-radius: 3px;
-        }
-        .action-icon:hover { color: var(--yellow-accent); border-color: var(--yellow-accent); }
-        .action-icon.danger:hover { color: #ff4444; border-color: #ff4444; }
-
-        .messages-area {
-            flex: 1; padding: 25px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 15px;
-        }
-
-        .msg { max-width: 70%; padding: 12px 18px; border-radius: 15px; font-size: 0.95rem; line-height: 1.4; position: relative; }
-        .msg.sent { align-self: flex-end; background: var(--blue-dark); border-bottom-right-radius: 2px; box-shadow: 0 4px 15px rgba(0,86,255,0.2); }
+        .msg { max-width: 85%; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; position: relative; word-wrap: break-word; }
+        .msg.sent { align-self: flex-end; background: var(--blue-dark); border-bottom-right-radius: 2px; }
         .msg.received { align-self: flex-start; background: #1a2635; border: 1px solid #333; border-bottom-left-radius: 2px; }
+        .msg-info { font-size: 0.55rem; color: var(--yellow-accent); margin-bottom: 3px; font-family: 'Orbitron'; display: block; }
 
-        .msg-info { font-size: 0.6rem; color: var(--yellow-accent); margin-bottom: 4px; font-family: 'Orbitron'; display: block; }
+        /* --- INPUT --- */
+        .input-container { padding: 15px; background: var(--bg-card); border-top: 1px solid var(--border-color); }
+        .input-wrapper { display: flex; gap: 8px; background: #050a12; border: 1px solid #333; padding: 5px; border-radius: 8px; align-items: center; }
+        .input-wrapper input { flex: 1; background: transparent; border: none; color: white; padding: 8px; outline: none; font-size: 0.95rem; }
+        .emoji-btn { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; filter: grayscale(1); }
+        .send-btn { background: var(--grad-blue); border: none; padding: 8px 15px; color: white; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; border-radius: 4px; }
 
-        /* --- INPUT & EMOJIS --- */
-        .input-container {
-            padding: 20px; background: var(--bg-card);
-            border-top: 1px solid var(--border-color);
-        }
-
-        .input-wrapper {
-            display: flex; gap: 10px; background: #050a12; border: 1px solid #333;
-            padding: 5px; border-radius: 8px; align-items: center;
-        }
-
-        .input-wrapper input {
-            flex: 1; background: transparent; border: none;
-            color: white; padding: 10px; outline: none; font-family: 'Rajdhani'; font-size: 1rem;
-        }
-
-        .emoji-btn {
-            background: transparent; border: none; font-size: 1.3rem; cursor: pointer;
-            padding: 5px; filter: grayscale(1); transition: 0.3s;
-        }
-        .emoji-btn:hover { filter: grayscale(0); transform: scale(1.1); }
-
-        .send-btn {
-            background: var(--grad-blue); border: none; padding: 10px 25px;
-            color: white; font-family: 'Orbitron'; font-size: 0.8rem;
-            cursor: pointer; border-radius: 5px; font-weight: bold;
-        }
-
-        /* --- EMOJI PICKER POPUP --- */
         .emoji-picker {
-            display: none; position: absolute; bottom: 90px; right: 20px;
+            display: none; position: absolute; bottom: 80px; left: 20px;
             background: var(--bg-card); border: 2px solid var(--blue-primary);
-            padding: 10px; grid-template-columns: repeat(5, 1fr); gap: 5px;
-            border-radius: 10px; box-shadow: 0 0 20px #000; z-index: 100;
+            padding: 8px; grid-template-columns: repeat(5, 1fr); gap: 5px; border-radius: 10px; z-index: 100;
         }
-        .emoji-picker span { cursor: pointer; font-size: 1.5rem; padding: 5px; transition: 0.2s; }
-        .emoji-picker span:hover { background: rgba(255,255,255,0.1); border-radius: 5px; }
+        .emoji-picker span { cursor: pointer; font-size: 1.3rem; padding: 5px; }
 
-        /* --- MODAL ADD FRIEND --- */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px); z-index: 2000; align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: var(--bg-card); width: 90%; max-width: 400px;
-            border: 2px solid var(--blue-primary); border-radius: 0 20px 0 20px;
-            box-shadow: 0 0 40px rgba(0, 210, 255, 0.3); overflow: hidden;
-            animation: modalSlide 0.3s ease-out;
-        }
-        @keyframes modalSlide { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .modal-header {
-            background: var(--grad-blue); padding: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            font-family: 'Orbitron'; font-size: 0.8rem;
-        }
-        .modal-body { padding: 30px; }
-        .modal-input {
-            width: 100%; background: #000; border: 1px solid #333;
-            padding: 12px; color: white; border-radius: 5px; margin-top: 10px; outline: none;
-        }
-        .modal-input:focus { border-color: var(--blue-primary); }
-
+        /* --- MOBILE OPTIMIZATION --- */
         @media (max-width: 768px) {
+            .menu-toggle { display: block; }
             .chat-container { grid-template-columns: 1fr; }
-            .sidebar { display: none; }
+            .sidebar {
+                position: absolute; left: -100%; top: 0; bottom: 0; width: 280px;
+                box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            }
+            .sidebar.active { left: 0; }
+            .msg { max-width: 90%; }
         }
+
+        /* --- MODAL --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--bg-card); width: 90%; max-width: 350px; border: 2px solid var(--blue-primary); border-radius: 0 15px 0 15px; overflow: hidden; }
+        .modal-header { background: var(--grad-blue); padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; display: flex; justify-content: space-between; }
+        .modal-body { padding: 20px; }
+        .modal-input { width: 100%; background: #000; border: 1px solid #333; padding: 10px; color: white; border-radius: 5px; margin-top: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <nav>
+    <button class="menu-toggle" onclick="toggleSidebar()">COMMS</button>
     <img src="img/Shopy.png" class="logo-img" onclick="window.location.href='index.html'">
-    <div style="font-family: 'Orbitron'; font-size: 0.7rem; color: var(--yellow-accent);">
-        CITIZEN: <span id="my-name-display">---</span>
+    <div style="font-family: 'Orbitron'; font-size: 0.6rem; color: var(--yellow-accent);">
+        ID: <span id="my-name-display">---</span>
     </div>
 </nav>
 
 <div class="chat-container">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <button class="add-friend-btn" onclick="openAddFriend()">+ ADD NEW CITIZEN</button>
-        </div>
-        <div class="contact-list" id="contact-list">
+            <span class="sidebar-label">GLOBAL COMMS</span>
             <div class="contact-item active" onclick="selectContact('Global Hub', this)">
                 <span class="contact-name"># BROADCAST_CHANNEL</span>
                 <span class="contact-status">Stanton System Wide</span>
             </div>
+            <span class="sidebar-label" style="margin-top: 20px;">PRIVATE LINKS</span>
+            <button class="add-friend-btn" onclick="openAddFriend()">+ LINK CITIZEN</button>
         </div>
+        <div class="contact-list" id="contact-list">
+            </div>
     </aside>
 
     <main class="chat-main">
         <div class="chat-top-bar">
-            <span id="current-chat-name" style="font-family: 'Orbitron'; color: var(--blue-primary);">GLOBAL HUB</span>
-            <div class="chat-actions">
-                <span class="action-icon" onclick="alert('Muted')">MUTE</span>
-                <span class="action-icon danger" onclick="confirm('Block user?')">BLOCK</span>
-                <span class="action-icon danger" onclick="confirm('Purge history?')">PURGE</span>
-            </div>
+            <span id="current-chat-name" style="font-family: 'Orbitron'; color: var(--blue-primary); font-size: 0.8rem;">GLOBAL HUB</span>
         </div>
 
         <div class="messages-area" id="messages-area"></div>
 
         <div class="input-container">
             <div class="emoji-picker" id="emoji-picker">
-                <span onclick="addEmoji('🚀')">🚀</span>
-                <span onclick="addEmoji('🛸')">🛸</span>
-                <span onclick="addEmoji('💎')">💎</span>
-                <span onclick="addEmoji('🔫')">🔫</span>
-                <span onclick="addEmoji('💰')">💰</span>
-                <span onclick="addEmoji('🔥')">🔥</span>
-                <span onclick="addEmoji('👍')">👍</span>
-                <span onclick="addEmoji('😎')">😎</span>
-                <span onclick="addEmoji('🛠️')">🛠️</span>
-                <span onclick="addEmoji('💀')">💀</span>
+                <span onclick="addEmoji('🚀')">🚀</span><span onclick="addEmoji('🛸')">🛸</span>
+                <span onclick="addEmoji('💎')">💎</span><span onclick="addEmoji('💰')">💰</span>
+                <span onclick="addEmoji('🔥')">🔥</span><span onclick="addEmoji('👍')">👍</span>
+                <span onclick="addEmoji('😎')">😎</span><span onclick="addEmoji('💀')">💀</span>
+                <span onclick="addEmoji('🛠️')">🛠️</span><span onclick="addEmoji('🔫')">🔫</span>
             </div>
             <div class="input-wrapper">
                 <button class="emoji-btn" onclick="toggleEmojis()">😊</button>
-                <input type="text" id="chat-input" placeholder="Enter encrypted message..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <input type="text" id="chat-input" placeholder="Secure transmission..." onkeypress="if(event.key==='Enter') sendMessage()">
                 <button class="send-btn" onclick="sendMessage()">SEND</button>
             </div>
         </div>
@@ -231,13 +161,12 @@
 <div id="modal-add" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-header">
-            <span>ESTABLISH P2P LINK</span>
+            <span>LINK NEW CITIZEN</span>
             <span style="cursor:pointer" onclick="closeAddFriend()">×</span>
         </div>
         <div class="modal-body">
-            <label style="font-size: 0.7rem; color: var(--blue-primary); font-family: 'Orbitron';">CITIZEN HANDLE</label>
-            <input type="text" id="new-friend-name" class="modal-input" placeholder="Handle / Call-sign...">
-            <button class="add-friend-btn" style="width:100%; margin-top:20px;" onclick="confirmAddFriend()">CONNECT</button>
+            <input type="text" id="new-friend-name" class="modal-input" placeholder="Citizen Handle...">
+            <button class="add-friend-btn" style="margin-top:15px;" onclick="confirmAddFriend()">ESTABLISH LINK</button>
         </div>
     </div>
 </div>
@@ -250,69 +179,37 @@
     let myId, myName, currentTarget = 'Global Hub';
 
     async function init() {
-        // PROTECCIÓN DE SESIÓN
         const { data: { session } } = await _supabase.auth.getSession();
-        
-        if (!session) {
-            window.location.href = 'login.html';
-            return;
-        }
+        if (!session) { window.location.href = 'login.html'; return; }
 
-        // Obtener datos reales del ciudadano
         myId = session.user.id;
         myName = session.user.user_metadata.full_name || 'Citizen_' + myId.substring(0,4);
-        
         document.getElementById('my-name-display').innerText = myName.toUpperCase();
         
         loadMessages();
-        loadFakeContacts();
 
-        // ACTIVAR REALTIME (Código añadido)
-        _supabase
-            .channel('sala_publica')
-            .on('postgres_changes', 
-                { event: 'INSERT', schema: 'public', table: 'mensajes' }, 
-                (payload) => {
-                    console.log('Nuevo mensaje recibido:', payload.new);
-                    // Solo añadir si es para el canal que estamos viendo
-                    if (payload.new.channel === currentTarget) {
-                        appendMessage(payload.new);
-                    }
-                }
-            ).subscribe();
+        _supabase.channel('comms')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, 
+            payload => {
+                if (payload.new.channel === currentTarget) appendMessage(payload.new);
+            }).subscribe();
     }
 
-    function loadFakeContacts() {
-        const contacts = ['Vanguard_Dealer', 'GrimHex_Tech', 'Mining_Corp_X'];
-        const list = document.getElementById('contact-list');
-        contacts.forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'contact-item';
-            div.onclick = () => selectContact(c, div);
-            div.innerHTML = `<span class="contact-name">${c}</span><span class="contact-status">Direct Link</span>`;
-            list.appendChild(div);
-        });
-    }
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
 
     function selectContact(name, el) {
         currentTarget = name;
         document.getElementById('current-chat-name').innerText = name.toUpperCase();
         document.querySelectorAll('.contact-item').forEach(i => i.classList.remove('active'));
         el.classList.add('active');
+        if(window.innerWidth < 768) toggleSidebar();
         loadMessages();
     }
 
     async function loadMessages() {
         const box = document.getElementById('messages-area');
-        box.innerHTML = '<div style="text-align:center; color:#333; font-size:0.8rem;">SYNCING COMMS...</div>';
-        
-        const { data } = await _supabase.from('mensajes')
-            .select('*')
-            .eq('channel', currentTarget)
-            .order('created_at', { ascending: true })
-            .limit(50);
-            
         box.innerHTML = '';
+        const { data } = await _supabase.from('mensajes').select('*').eq('channel', currentTarget).order('created_at', { ascending: true }).limit(50);
         if (data) data.forEach(msg => appendMessage(msg));
     }
 
@@ -330,30 +227,12 @@
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if (!text) return;
-        
-        const { error } = await _supabase.from('mensajes').insert([{ 
-            user_id: myId, 
-            user_name: myName, 
-            content: text,
-            channel: currentTarget 
-        }]);
-
-        if (!error) {
-            input.value = '';
-            document.getElementById('emoji-picker').style.display = 'none';
-        }
+        const { error } = await _supabase.from('mensajes').insert([{ user_id: myId, user_name: myName, content: text, channel: currentTarget }]);
+        if (!error) { input.value = ''; document.getElementById('emoji-picker').style.display = 'none'; }
     }
 
-    function toggleEmojis() {
-        const p = document.getElementById('emoji-picker');
-        p.style.display = p.style.display === 'grid' ? 'none' : 'grid';
-    }
-
-    function addEmoji(emoji) {
-        document.getElementById('chat-input').value += emoji;
-        document.getElementById('chat-input').focus();
-    }
-
+    function toggleEmojis() { const p = document.getElementById('emoji-picker'); p.style.display = p.style.display === 'grid' ? 'none' : 'grid'; }
+    function addEmoji(emoji) { document.getElementById('chat-input').value += emoji; }
     function openAddFriend() { document.getElementById('modal-add').style.display = 'flex'; }
     function closeAddFriend() { document.getElementById('modal-add').style.display = 'none'; }
     
@@ -364,19 +243,13 @@
             const div = document.createElement('div');
             div.className = 'contact-item';
             div.onclick = () => selectContact(name, div);
-            div.innerHTML = `<span class="contact-name">${name}</span><span class="contact-status">Link established</span>`;
+            div.innerHTML = `<span class="contact-name">${name}</span><span class="contact-status">P2P Encryption Active</span>`;
             list.appendChild(div);
             closeAddFriend();
         }
     }
 
-    window.onclick = (e) => {
-        if (e.target.className === 'modal-overlay') closeAddFriend();
-    }
-
-    // Iniciar sistema
     init();
 </script>
-
 </body>
 </html>
