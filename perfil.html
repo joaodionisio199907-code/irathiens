@@ -6,7 +6,6 @@
     <title>Irathiens | Perfil de Ciudadano</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Inter:wght@300;400;600&family=Rajdhani:wght@500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
 
     <style>
         :root {
@@ -18,7 +17,6 @@
             --muted: #9fb3c8;
             --border: rgba(255, 154, 31, 0.2);
             --glass: rgba(11, 18, 32, 0.8);
-            --shadow: rgba(255, 154, 31, 0.15);
             --danger: #ff4444;
             --success: #00ff88;
         }
@@ -57,18 +55,16 @@
 
         @media (max-width: 992px) {
             .main-container { grid-template-columns: 1fr; }
-            .sidebar { order: -1; }
         }
 
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
         .profile-card { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 30px 20px; text-align: center; backdrop-filter: blur(10px); }
-        .token-balance-box { margin-top: 15px; padding: 15px; background: rgba(255, 154, 31, 0.05); border: 1px solid var(--border); border-radius: 8px; }
-        .token-value { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; color: var(--primary); font-weight: bold; }
-
+        
         .content-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 25px; backdrop-filter: blur(10px); margin-bottom: 20px; }
         .section-title { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 
-        input, select { width: 100%; padding: 12px 15px; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 8px; color: white; outline: none; margin-bottom: 15px; }
+        select { width: 100%; padding: 12px 15px; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 8px; color: white; outline: none; }
 
         .btn-action { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #000; border: none; padding: 12px 20px; border-radius: 8px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .btn-action:hover { opacity: 0.9; transform: translateY(-2px); }
@@ -77,18 +73,15 @@
         .ship-card { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
         .ship-img { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; }
 
-        .verification-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.6rem; font-weight: bold; margin-top: 5px; }
-        .v-pending { background: rgba(255, 154, 31, 0.1); color: var(--primary); border: 1px solid var(--primary); }
-        .v-done { background: rgba(0, 255, 136, 0.1); color: var(--success); border: 1px solid var(--success); }
-
         footer { margin-top: 40px; padding: 20px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; }
     </style>
 </head>
-<body oncontextmenu="return false;"> <div id="bg-parallax"></div>
+<body oncontextmenu="return false;"> 
+<div id="bg-parallax"></div>
 
 <header>
     <div class="nav">
-        <a href="#" class="logo">
+        <a href="index.html" class="logo">
             <img src="logo.png" alt="Logo" class="logo-img"> 
             <span class="logo-text">IRATHIENS</span>
         </a>
@@ -106,40 +99,37 @@
     <aside class="sidebar">
         <div class="profile-card">
             <img src="https://robertsspaceindustries.com/media/7p79ck2sc5r9rr/heap_infocus/Loading_The_Carrack.jpg" id="avatar-img" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
-            <div class="user-name" id="display-name" style="font-family: 'Orbitron'; margin-top: 15px;">CARGANDO...</div>
-            <div id="status-badge" class="verification-badge v-pending">SIN VINCULAR</div>
+            <div class="user-name" id="display-name" style="font-family: 'Orbitron'; margin-top: 15px; letter-spacing: 1px;">CARGANDO...</div>
             
-            <div class="token-balance-box">
-                <small style="display:block; letter-spacing:1px; color:var(--primary); font-size: 0.65rem;">CRÉDITOS DISPONIBLES</small>
-                <div class="token-value" id="display-balance">0</div>
-            </div>
-
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px;">
-                <div><small>NAVES</small><div id="ship-count" style="font-size:1.1rem; font-weight:700;">0</div></div>
-                <div><small>RANGO</small><div id="display-rank" style="color:var(--primary); font-size:0.7rem;">CADETE</div></div>
+                <div><small style="font-size: 0.6rem; color: var(--muted);">NAVES</small><div id="ship-count" style="font-size:1.1rem; font-weight:700; color: var(--primary);">0</div></div>
+                <div><small style="font-size: 0.6rem; color: var(--muted);">RANGO</small><div id="display-rank" style="color:var(--text); font-size:0.7rem; font-weight: 600;">CADETE</div></div>
             </div>
         </div>
     </aside>
 
+    <main class="content-area">
         <div class="content-panel">
-            <div class="section-title">GESTIÓN DE HANGAR</div>
+            <div class="section-title">GESTIÓN DE HANGAR PERSONAL</div>
             <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px;">
-                <select id="ship-selector" style="margin-bottom: 0;">
-                    <option value="" disabled selected>Selecciona una nave...</option>
-                    <option value="Carrack">Carrack</option>
-                    <option value="Arrow">Arrow</option>
-                    <option value="Cutter">Cutter</option>
-                    <option value="Avenger Titan">Avenger Titan</option>
-                    <option value="Constellation">Constellation</option>
+                <select id="ship-selector">
+                    <option value="" disabled selected>Selecciona una nave para registrar...</option>
+                    <option value="Carrack">Anvil Carrack</option>
+                    <option value="Arrow">Anvil Arrow</option>
+                    <option value="Cutter">Drake Cutter</option>
+                    <option value="Avenger Titan">Aegis Avenger Titan</option>
+                    <option value="Constellation">RSI Constellation</option>
+                    <option value="Mercury Star Runner">Crusader MSR</option>
                 </select>
                 <button class="btn-action" onclick="addShip()">+ AÑADIR</button>
             </div>
-            <div class="fleet-grid" id="fleet-grid"></div>
+            <div class="fleet-grid" id="fleet-grid">
+                </div>
         </div>
     </main>
 </div>
 
-<footer>© 2025 Irathiens Command · Seguridad Encriptada</footer>
+<footer>© 2026 Irathiens Command · Comunicaciones Seguras</footer>
 
 <script>
 const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
@@ -155,24 +145,14 @@ async function init() {
     let { data: profile } = await _supabase.from('perfiles').select('*').eq('id', user.id).single();
     
     if (profile) {
-        // Mostramos el nombre guardado en DB (o el email si no hay) sin sobreescribirlo con el handle de RSI
         document.getElementById('display-name').innerText = (profile.display_name || user.email.split('@')[0]).toUpperCase();
         document.getElementById('display-rank').innerText = (profile.rank || "Cadete de Flota").toUpperCase();
-        document.getElementById('display-balance').innerText = profile.citizen_tokens || 0;
 
-        const statusBadge = document.getElementById('status-badge');
-        if (profile.is_verified) {
-            statusBadge.innerText = "VERIFICADO RSI";
-            statusBadge.className = "verification-badge v-done";
-            document.getElementById('rsi-section').innerHTML = `<p style="color:var(--success); font-size:0.8rem; text-align:center;">✓ Ciudadano verificado como: <strong>${profile.handle}</strong></p>`;
-        } else if (profile.handle) {
-            statusBadge.innerText = "PENDIENTE";
-            showVerificationBox();
-        }
-
-        if (profile.ships) {
+        if (profile.ships && profile.ships.length > 0) {
             document.getElementById('fleet-grid').innerHTML = '';
             profile.ships.forEach(s => renderShipCard(s));
+        } else {
+            document.getElementById('fleet-grid').innerHTML = '<p style="color:var(--muted); font-size:0.8rem; grid-column: 1/-1; text-align:center;">No hay naves registradas en tu hangar.</p>';
         }
         
         if (profile.role === 'admin') document.getElementById('admin-link').style.display = 'inline';
@@ -180,64 +160,42 @@ async function init() {
     updateShipCount();
 }
 
-function showVerificationBox() {
-    const box = document.getElementById('verification-box');
-    box.style.display = 'block';
-    // Código único basado en el ID de Supabase para evitar suplantaciones
-    document.getElementById('bio-code').innerText = "IRATH-" + currentUser.id.substring(0,8).toUpperCase();
-}
-
-async function saveRSIUrl() {
-    const urlVal = document.getElementById('handle-input').value.trim();
-    if(!urlVal) return;
-
-    // Extraemos el handle de la URL (el texto después de /citizens/)
-    const parts = urlVal.split('/');
-    const handle = parts[parts.length - 1] || parts[parts.length - 2];
-
-    if(!handle || !urlVal.includes('robertsspaceindustries.com')) {
-        alert("Por favor, introduce una URL de ciudadano válida.");
-        return;
-    }
-
-    // Actualizamos el handle en la DB pero mantenemos la verificación en falso
-    await _supabase.from('perfiles').update({ handle: handle, is_verified: false }).eq('id', currentUser.id);
-    location.reload();
-}
-
-async function checkRSIVerification() {
-    const code = "IRATH-" + currentUser.id.substring(0,8).toUpperCase();
-    alert("Buscando el código [" + code + "] en tu Bio de RSI...");
-    
-    // Aquí se activaría la verificación
-    await _supabase.from('perfiles').update({ is_verified: true }).eq('id', currentUser.id);
-    location.reload();
-}
-
 function renderShipCard(name) {
     const grid = document.getElementById('fleet-grid');
+    // Si es la primera nave, limpiamos el mensaje de "No hay naves"
+    if(grid.querySelector('p')) grid.innerHTML = '';
+
     const card = document.createElement('div');
     card.className = 'ship-card';
     card.innerHTML = `
         <img src="https://media.robertsspaceindustries.com/v8p0803m4284m/store_slideshow_large.jpg" class="ship-img">
-        <div style="font-family:Orbitron; font-size:0.7rem; color:#ffb347; margin-top:8px">${name}</div>
-        <button onclick="removeShip(this)" style="background:rgba(255,0,0,0.1); border:1px solid red; color:red; cursor:pointer; width:100%; margin-top:8px; padding:4px; border-radius:4px; font-family:Orbitron; font-size:0.55rem;">RETIRAR</button>
+        <div style="font-family:Orbitron; font-size:0.65rem; color:var(--primary); margin-top:8px; font-weight:700;">${name.toUpperCase()}</div>
+        <button onclick="removeShip(this)" style="background:rgba(255,0,0,0.1); border:1px solid var(--danger); color:var(--danger); cursor:pointer; width:100%; margin-top:8px; padding:6px; border-radius:4px; font-family:Orbitron; font-size:0.5rem; font-weight:700;">ELIMINAR</button>
     `;
     grid.appendChild(card);
 }
 
 async function addShip() {
-    const name = document.getElementById('ship-selector').value;
-    if (name) { renderShipCard(name); syncShips(); }
+    const selector = document.getElementById('ship-selector');
+    const name = selector.value;
+    if (name) { 
+        renderShipCard(name); 
+        await syncShips();
+        selector.selectedIndex = 0;
+    }
 }
 
 async function removeShip(btn) {
-    if(confirm("¿Retirar nave del hangar oficial?")) { btn.parentElement.remove(); syncShips(); }
+    if(confirm("¿Confirmas la eliminación de esta unidad de tu hangar oficial?")) { 
+        btn.parentElement.remove(); 
+        await syncShips(); 
+    }
 }
 
 async function syncShips() {
-    const ships = Array.from(document.querySelectorAll('.ship-card div:first-of-type')).map(el => el.innerText);
-    await _supabase.from('perfiles').update({ ships: ships }).eq('id', currentUser.id);
+    const ships = Array.from(document.querySelectorAll('.ship-card div')).map(el => el.innerText);
+    const { error } = await _supabase.from('perfiles').update({ ships: ships }).eq('id', currentUser.id);
+    if(error) console.error("Error sincronizando hangar:", error);
     updateShipCount();
 }
 
