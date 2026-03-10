@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOPYSPACE | STAR CITIZEN MARKET</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SHOPYSPACE | GALAXY MARKET</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -22,7 +22,10 @@
             --font-mono: 'JetBrains Mono', monospace;
         }
 
-        body {
+        /* Ocultar scrollbars globales pero permitir scroll */
+        ::-webkit-scrollbar { display: none; }
+        body { 
+            -ms-overflow-style: none; scrollbar-width: none; 
             margin: 0; background-color: var(--bg-deep); color: var(--text-white);
             font-family: var(--font-main); overflow-x: hidden;
             background-image: radial-gradient(circle at 50% 0%, #102a4d 0%, var(--bg-deep) 80%);
@@ -31,89 +34,102 @@
 
         /* --- NAV --- */
         nav {
-            background: rgba(0, 0, 0, 0.95); border-bottom: 3px solid; border-image: var(--grad-blue) 1;
+            background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--blue-light);
             padding: 0 40px; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); height: 90px;
+            position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); height: 110px;
         }
 
         .logo-wrapper { height: 100%; display: flex; align-items: center; cursor: pointer; }
         .logo-img { 
-            max-height: 75px; /* Tamaño aumentado */
-            filter: drop-shadow(0 0 12px var(--blue-light)); 
+            max-height: 95px; 
+            filter: drop-shadow(0 0 10px var(--blue-light)); 
             transition: 0.3s;
         }
-        .logo-img { 
-            max-height: 95px; /* <--- CAMBIA ESTE VALOR */
-            filter: drop-shadow(0 0 12px var(--blue-light)); 
-            transition: 0.3s;
-        }
-        .nav-controls { display: flex; align-items: center; gap: 25px; }
-        .nav-links { display: flex; gap: 25px; }
-        .nav-links a { 
-            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 1.3rem; 
-            cursor: pointer; transition: 0.3s; text-transform: uppercase; font-style: italic; letter-spacing: 1px;
-        }
-        .nav-links a.active { color: var(--yellow-accent); border-bottom: 3px solid var(--yellow-accent); }
 
-        .lang-selector {
-            background: #000; border: 1px solid var(--blue-light); color: var(--blue-light);
-            padding: 8px; font-weight: bold; cursor: pointer; font-family: var(--font-logo);
+        .nav-controls { display: flex; align-items: center; gap: 20px; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { 
+            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 1.2rem; 
+            cursor: pointer; transition: 0.3s; text-transform: uppercase; font-style: italic;
         }
+        .nav-links a.active { color: var(--yellow-accent); border-bottom: 2px solid var(--yellow-accent); }
 
         /* --- LAYOUT --- */
         .marketplace-wrapper {
-            display: grid; grid-template-columns: 280px 1fr; gap: 30px;
-            max-width: 1600px; margin: 30px auto; padding: 0 20px;
+            display: grid; grid-template-columns: 250px 1fr; gap: 30px;
+            max-width: 1400px; margin: 30px auto; padding: 0 20px;
         }
 
         .sidebar {
-            background: var(--bg-card); padding: 25px; border-radius: 0 20px 0 20px;
-            border-left: 4px solid var(--blue-light); height: fit-content; position: sticky; top: 120px;
+            background: var(--bg-card); padding: 20px; border-radius: 0 20px 0 20px;
+            border-left: 4px solid var(--blue-light); height: fit-content; position: sticky; top: 140px;
         }
+
         .cat-item {
-            display: block; padding: 12px 15px; color: #8899af; text-decoration: none;
+            display: block; padding: 12px; color: #8899af; text-decoration: none;
             font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.3s;
-            clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%); margin-bottom: 8px;
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%); margin-bottom: 5px;
         }
-        .cat-item:hover { background: rgba(0, 210, 255, 0.1); color: #fff; padding-left: 20px; }
+        .cat-item:hover { color: #fff; background: rgba(0, 210, 255, 0.1); }
         .cat-item.active { background: var(--grad-blue); color: white; }
 
-        /* --- MARKET GRID --- */
-        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        /* --- GRID --- */
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
         .item-card {
-            background: var(--bg-card); border: 1px solid #1a2635; transition: 0.4s;
-            cursor: pointer; border-radius: 0 15px 0 15px; overflow: hidden; position: relative;
+            background: var(--bg-card); border: 1px solid #1a2635; transition: 0.3s;
+            cursor: pointer; border-radius: 0 15px 0 15px; overflow: hidden;
         }
-        .item-card:hover { transform: translateY(-10px); border-color: var(--yellow-accent); box-shadow: 0 0 20px rgba(0,210,255,0.2); }
-        .item-card img { width: 100%; height: 200px; object-fit: cover; }
-        .item-card-info { padding: 15px; background: linear-gradient(to top, #000, transparent); }
-        .item-card h3 { margin: 0; font-family: var(--font-logo); font-size: 0.85rem; color: var(--blue-light); letter-spacing: 1px; }
-        .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1.3rem; margin-top: 8px; }
+        .item-card:hover { transform: translateY(-5px); border-color: var(--blue-light); }
+        .item-card img { width: 100%; height: 180px; object-fit: cover; }
+        .item-card-info { padding: 15px; }
+        .item-card h3 { margin: 0; font-family: var(--font-logo); font-size: 0.8rem; color: var(--blue-light); }
+        .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1.2rem; margin-top: 5px; }
 
-        /* --- MODAL DETALLES --- */
+        /* --- MODAL SIN BARRAS DE SCROLL --- */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); display: none; justify-content: center; 
-            align-items: center; z-index: 2000; backdrop-filter: blur(10px); 
+            background: rgba(0,0,0,0.92); display: none; justify-content: center; 
+            align-items: center; z-index: 2000; backdrop-filter: blur(10px);
         }
         .modal-content { 
             background: var(--bg-card); border: 2px solid var(--blue-light); 
-            width: 90%; max-width: 1000px; display: grid; grid-template-columns: 1fr 1fr; 
-            position: relative; border-radius: 0 30px 0 30px; overflow: hidden;
+            width: 95%; max-width: 850px; display: grid; grid-template-columns: 1fr 1fr; 
+            position: relative; border-radius: 0 30px 0 30px; 
+            max-height: 90vh; overflow-y: auto;
+            -ms-overflow-style: none; scrollbar-width: none; /* Ocultar en Firefox/IE */
         }
-        .modal-close { position: absolute; top: 20px; right: 20px; color: var(--yellow-accent); cursor: pointer; font-family: var(--font-logo); font-size: 1.5rem; z-index: 10; }
-        .modal-img-side { background: #000; display: flex; align-items: center; justify-content: center; }
-        .modal-info-side { padding: 40px; display: flex; flex-direction: column; gap: 20px; }
+        .modal-content::-webkit-scrollbar { display: none; } /* Ocultar en Chrome/Safari */
 
-        /* --- BOTONES Y FORMS --- */
+        .modal-img-side { background: #000; display: flex; align-items: center; justify-content: center; min-height: 300px; }
+        .modal-img-side img { max-width: 100%; height: auto; max-height: 100%; }
+        .modal-info-side { padding: 30px; display: flex; flex-direction: column; gap: 15px; }
+        .modal-close { position: absolute; top: 15px; right: 20px; color: var(--yellow-accent); cursor: pointer; font-family: var(--font-logo); font-weight: bold; z-index: 10; }
+
+        /* --- RESPONSIVE MÓVIL --- */
+        @media (max-width: 850px) {
+            nav { height: 90px; padding: 0 15px; }
+            .logo-img { max-height: 65px; }
+            .nav-links a { font-size: 0.9rem; }
+            .marketplace-wrapper { grid-template-columns: 1fr; margin: 15px auto; }
+            .sidebar { 
+                position: sticky; top: 90px; z-index: 900;
+                display: flex; overflow-x: auto; padding: 10px; gap: 10px; 
+                border-left: none; border-bottom: 2px solid var(--blue-light);
+                background: var(--bg-deep); border-radius: 0;
+            }
+            .cat-item { margin-bottom: 0; white-space: nowrap; padding: 8px 15px; }
+            .modal-content { grid-template-columns: 1fr; }
+            .modal-img-side { min-height: 200px; }
+        }
+
         .search-bar {
-            width: 100%; background: #000; border: 2px solid #1a2635; padding: 15px;
-            color: white; font-size: 1.1rem; border-radius: 5px; margin-bottom: 20px; box-sizing: border-box;
+            width: 100%; background: #000; border: 1px solid #1a2635; padding: 15px;
+            color: white; font-family: var(--font-mono); margin-bottom: 20px; box-sizing: border-box;
         }
         .action-btn {
-            background: linear-gradient(90deg, #ffb800, #ffe600); border: none; padding: 18px;
-            font-family: var(--font-impact); font-size: 1.3rem; font-weight: 900;
-            cursor: pointer; text-transform: uppercase; width: 100%; font-style: italic;
+            background: var(--grad-blue); border: none; padding: 15px; color: #fff;
+            font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer;
+            text-transform: uppercase; font-style: italic;
             clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
         }
     </style>
@@ -126,86 +142,60 @@
     </div>
     <div class="nav-controls">
         <div class="nav-links">
-            <a onclick="showTab('market')" id="link-market" class="active" data-i18n="nav_market">MARKETPLACE</a>
-            <a onclick="showTab('sell')" id="link-sell" data-i18n="nav_sell">PUBLISH ITEM</a>
+            <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
+            <a onclick="showTab('sell')" id="link-sell">SELL</a>
         </div>
-        <select class="lang-selector" onchange="changeLang(this.value)">
-            <option value="en">EN</option>
-            <option value="es">ES</option>
-            <option value="zh">ZH</option>
-            <option value="ja">JA</option>
-            <option value="ru">RU</option>
-        </select>
     </div>
 </nav>
 
 <div class="marketplace-wrapper">
     <aside class="sidebar">
-        <div style="font-family: var(--font-logo); font-size: 0.7rem; color: var(--blue-light); margin-bottom: 15px;" data-i18n="side_title">SYSTEM SECTORS</div>
-        <a class="cat-item active" onclick="filterByCategory('all', this)" data-i18n="cat_all">ALL ITEMS</a>
-        <a class="cat-item" onclick="filterByCategory('Armor', this)" data-i18n="cat_armor">ARMOR</a>
-        <a class="cat-item" onclick="filterByCategory('Weapons', this)" data-i18n="cat_weapons">WEAPONS</a>
-        <a class="cat-item" onclick="filterByCategory('Ships', this)" data-i18n="cat_ships">SHIPS</a>
-        <a class="cat-item" onclick="filterByCategory('Medical', this)" data-i18n="cat_medical">MEDICAL</a>
+        <a class="cat-item active" onclick="filterByCategory('all', this)">ALL</a>
+        <a class="cat-item" onclick="filterByCategory('Armor', this)">ARMOR</a>
+        <a class="cat-item" onclick="filterByCategory('Weapons', this)">WEAPONS</a>
+        <a class="cat-item" onclick="filterByCategory('Ships', this)">SHIPS</a>
+        <a class="cat-item" onclick="filterByCategory('Medical', this)">MEDICAL</a>
     </aside>
 
     <main>
         <section id="market">
-            <input type="text" id="main-search" class="search-bar" data-i18n-placeholder="search_placeholder" oninput="handleGlobalSearch()">
+            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH SYSTEM..." oninput="handleGlobalSearch()">
             <div id="market-grid" class="market-grid"></div>
         </section>
 
         <section id="sell" style="display:none;">
-            <div style="max-width: 600px; margin: auto; background: var(--bg-card); padding: 40px; border-radius: 0 20px 0 20px; border: 1px solid #1a2635;">
-                <h2 style="font-family: var(--font-impact); color: var(--yellow-accent); font-style: italic; font-size: 2rem;" data-i18n="sell_title">NEW MANIFEST ENTRY</h2>
-                
-                <label data-i18n="ph_name" style="color:var(--blue-light); font-family:var(--font-logo); font-size:0.7rem;">ITEM NAME</label>
-                <input type="text" id="item-name" class="search-bar" placeholder="e.g. ADP-Core Armor">
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div>
-                        <label style="color:var(--blue-light); font-family:var(--font-logo); font-size:0.7rem;">CATEGORY</label>
-                        <select id="item-cat" class="search-bar">
-                            <option value="Armor">Armor</option>
-                            <option value="Weapons">Weapons</option>
-                            <option value="Ships">Ships</option>
-                            <option value="Medical">Medical</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="color:var(--blue-light); font-family:var(--font-logo); font-size:0.7rem;">LOCATION</label>
-                        <input type="text" id="item-location" class="search-bar" placeholder="GrimHEX, Orison...">
-                    </div>
-                </div>
-
-                <label style="color:var(--blue-light); font-family:var(--font-logo); font-size:0.7rem;">PRICE (aUEC)</label>
-                <input type="number" id="item-price" class="search-bar" placeholder="0">
-
-                <div id="img-preview" onclick="document.getElementById('file-input').click()" style="width:100%; height:150px; border:2px dashed #333; margin-bottom:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
-                    <span style="color:#444">CLICK TO UPLOAD SCAN</span>
-                </div>
+            <div style="max-width: 500px; margin: auto; background: var(--bg-card); padding: 30px; border: 1px solid #1a2635; border-radius: 0 20px 0 20px;">
+                <h2 style="color: var(--yellow-accent); font-family: var(--font-impact); margin-top:0;">NEW MANIFEST</h2>
+                <input type="text" id="item-name" class="search-bar" placeholder="ITEM NAME">
+                <select id="item-cat" class="search-bar">
+                    <option value="Armor">ARMOR</option>
+                    <option value="Weapons">WEAPONS</option>
+                    <option value="Ships">SHIPS</option>
+                    <option value="Medical">MEDICAL</option>
+                </select>
+                <input type="text" id="item-location" class="search-bar" placeholder="LOCATION (e.g. Area18)">
+                <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC">
+                <button class="action-btn" onclick="document.getElementById('file-input').click()" style="margin-bottom:10px; background:#1a2635">SELECT IMAGE</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
-
-                <button class="action-btn" onclick="uploadToNet()" data-i18n="btn_upload">TRANSMIT TO GALAXY NET</button>
+                <div id="img-preview" style="text-align:center; margin-bottom:10px;"></div>
+                <button class="action-btn" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000; width:100%">TRANSMIT DATA</button>
             </div>
         </section>
     </main>
 </div>
 
-<div class="modal-overlay" id="item-modal">
+<div class="modal-overlay" id="item-modal" onclick="if(event.target == this) closeModal()">
     <div class="modal-content">
-        <div class="modal-close" onclick="closeModal()">[ X ]</div>
-        <div class="modal-img-side">
-            <img id="m-img" style="width:100%; height:100%; object-fit: contain;">
-        </div>
+        <div class="modal-close" onclick="closeModal()">CLOSE [X]</div>
+        <div class="modal-img-side"><img id="m-img"></div>
         <div class="modal-info-side">
             <h2 id="m-title" style="font-family: var(--font-logo); color: var(--blue-light); margin:0;"></h2>
-            <div id="m-price" style="font-family: var(--font-mono); color: var(--yellow-bright); font-size: 2.5rem; font-weight: bold;"></div>
-            <div style="border-top: 1px solid #333; padding-top: 20px;">
-                <p style="margin:5px 0;"><strong style="color:var(--blue-light)">SECTOR:</strong> <span id="m-cat"></span></p>
-                <p style="margin:5px 0;"><strong style="color:var(--blue-light)">LOCATION:</strong> <span id="m-loc"></span></p>
+            <div id="m-price" style="font-family: var(--font-mono); color: var(--yellow-bright); font-size: 2rem; font-weight: bold;"></div>
+            <div style="border-top: 1px solid #333; padding-top: 15px; font-size: 0.9rem;">
+                <p><strong>SECTOR:</strong> <span id="m-cat" style="color:var(--blue-light)"></span></p>
+                <p><strong>LOCATION:</strong> <span id="m-loc" style="color:var(--blue-light)"></span></p>
             </div>
-            <button class="action-btn" style="margin-top: auto;">CONTACT SELLER</button>
+            <button class="action-btn" style="margin-top:20px;">CONTACT SELLER</button>
         </div>
     </div>
 </div>
@@ -218,18 +208,7 @@
     let allItems = [];
     let uploadedImgBase64 = null;
 
-    const i18n = {
-        en: { nav_market: "MARKETPLACE", nav_sell: "PUBLISH ITEM", side_title: "NETWORK SECTORS", cat_all: "ALL ITEMS", cat_armor: "ARMOR", cat_weapons: "WEAPONS", cat_ships: "SHIPS", cat_medical: "MEDICAL", search_placeholder: "SEARCH BY NAME OR LOCATION...", sell_title: "NEW MANIFEST ENTRY", ph_name: "ITEM NAME...", btn_upload: "TRANSMIT TO GALAXY NET" },
-        es: { nav_market: "MERCADO", nav_sell: "PUBLICAR ITEM", side_title: "SECTORES DE RED", cat_all: "TODO EL BOTÍN", cat_armor: "ARMADURAS", cat_weapons: "ARMAMENTO", cat_ships: "NAVES", cat_medical: "MÉDICO", search_placeholder: "BUSCAR POR NOMBRE O LUGAR...", sell_title: "NUEVO MANIFIESTO", ph_name: "NOMBRE DEL ITEM...", btn_upload: "TRANSMITIR A LA RED" },
-        zh: { nav_market: "市场", nav_sell: "发布物品", side_title: "网络部门", cat_all: "所有物品", cat_armor: "护甲", cat_weapons: "武器", cat_ships: "飞船", cat_medical: "医疗", search_placeholder: "搜索...", sell_title: "新清单", ph_name: "名称", btn_upload: "传输" },
-        ja: { nav_market: "マーケット", nav_sell: "出品", side_title: "セクター", cat_all: "全アイテム", cat_armor: "アーマー", cat_weapons: "武器", cat_ships: "シップ", cat_medical: "医療", search_placeholder: "検索...", sell_title: "新規登録", ph_name: "アイテム名", btn_upload: "送信" },
-        ru: { nav_market: "РЫНОК", nav_sell: "ПРОДАТЬ", side_title: "СЕКТОРЫ", cat_all: "ВСЕ", cat_armor: "БРОНЯ", cat_weapons: "ОРУЖИЕ", cat_ships: "КОРАБЛИ", cat_medical: "МЕДИЦИНА", search_placeholder: "ПОИСК...", sell_title: "НОВЫЙ МАНИФЕСТ", ph_name: "НАЗВАНИЕ", btn_upload: "ПЕРЕДАТЬ" }
-    };
-
-    window.onload = () => {
-        fetchMarket();
-        changeLang('en');
-    };
+    window.onload = () => fetchMarket();
 
     async function fetchMarket() {
         const { data, error } = await _supabase.from('marketplace_items').select('*').order('created_at', {ascending: false});
@@ -242,12 +221,11 @@
         list.forEach(item => {
             const card = document.createElement('div');
             card.className = 'item-card';
-            card.onclick = () => openDetails(item); // AQUÍ SE ACTIVA EL CLIC
+            card.onclick = () => openDetails(item);
             card.innerHTML = `
-                <img src="${item.image_1 || 'https://via.placeholder.com/400x200?text=NO+SIGNAL'}">
+                <img src="${item.image_1 || 'https://via.placeholder.com/400x200?text=NO+IMAGE'}">
                 <div class="item-card-info">
                     <h3>${item.item_name.toUpperCase()}</h3>
-                    <div style="font-size:0.7rem; color:#666; font-family:var(--font-mono)">LOC: ${(item.location || 'UNKNOWN').toUpperCase()}</div>
                     <div class="price-tag">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
                 </div>
             `;
@@ -262,9 +240,13 @@
         document.getElementById('m-cat').innerText = (item.category || 'GENERAL').toUpperCase();
         document.getElementById('m-loc').innerText = (item.location || 'UNKNOWN').toUpperCase();
         document.getElementById('item-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Bloquea scroll del body al abrir
     }
 
-    function closeModal() { document.getElementById('item-modal').style.display = 'none'; }
+    function closeModal() { 
+        document.getElementById('item-modal').style.display = 'none'; 
+        document.body.style.overflow = 'auto'; // Devuelve scroll al cerrar
+    }
 
     function showTab(t) {
         document.getElementById('market').style.display = (t === 'market') ? 'block' : 'none';
@@ -273,21 +255,17 @@
         document.getElementById('link-sell').classList.toggle('active', t === 'sell');
     }
 
-    function changeLang(lang) {
-        document.querySelectorAll('[data-i18n]').forEach(el => { el.innerText = i18n[lang][el.getAttribute('data-i18n')]; });
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = i18n[lang][el.getAttribute('data-i18n-placeholder')]; });
-    }
-
     function processImg(input) {
         const reader = new FileReader();
         reader.onload = (e) => {
             uploadedImgBase64 = e.target.result;
-            document.getElementById('img-preview').innerHTML = `<img src="${e.target.result}" style="height:100%">`;
+            document.getElementById('img-preview').innerHTML = `<img src="${e.target.result}" style="width:80px; height:80px; object-fit:cover; border:2px solid var(--blue-light)">`;
         };
         reader.readAsDataURL(input.files[0]);
     }
 
     async function uploadToNet() {
+        if(!uploadedImgBase64) { alert("Please select an image first"); return; }
         const payload = {
             item_name: document.getElementById('item-name').value,
             category: document.getElementById('item-cat').value,
@@ -297,13 +275,12 @@
             status: 'available'
         };
         const { error } = await _supabase.from('marketplace_items').insert([payload]);
-        if(error) alert("FAILED: " + error.message);
-        else { alert("TRANSMISSION SUCCESSFUL"); location.reload(); }
+        if(error) alert("Error: " + error.message); else location.reload();
     }
 
     function handleGlobalSearch() {
         const q = document.getElementById('main-search').value.toLowerCase();
-        renderItems(allItems.filter(i => i.item_name.toLowerCase().includes(q) || (i.location && i.location.toLowerCase().includes(q))));
+        renderItems(allItems.filter(i => i.item_name.toLowerCase().includes(q)));
     }
 
     function filterByCategory(cat, el) {
@@ -312,6 +289,5 @@
         renderItems(cat === 'all' ? allItems : allItems.filter(i => i.category === cat));
     }
 </script>
-
 </body>
 </html>
