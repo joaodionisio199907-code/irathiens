@@ -22,7 +22,6 @@
             --font-mono: 'JetBrains Mono', monospace;
         }
 
-        /* Ocultar barras de scroll */
         ::-webkit-scrollbar { display: none; }
         
         body { 
@@ -33,114 +32,137 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- NAVEGACIÓN OPTIMIZADA --- */
+        /* --- NAVEGACIÓN --- */
         nav {
-            background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--blue-light);
-            padding: 0 20px; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); height: 80px;
+            background: rgba(0, 0, 0, 0.95); border-bottom: 2px solid var(--blue-light);
+            padding: 0 15px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); height: 70px;
         }
 
         .logo-wrapper { height: 100%; display: flex; align-items: center; cursor: pointer; }
-        .logo-img { max-height: 55px; filter: drop-shadow(0 0 8px var(--blue-light)); }
+        .logo-img { max-height: 45px; filter: drop-shadow(0 0 8px var(--blue-light)); }
 
-        .nav-links { display: flex; gap: 15px; }
+        .nav-controls { display: flex; align-items: center; }
+        .nav-links { display: flex; gap: 8px; align-items: center; }
         .nav-links a { 
-            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 1.1rem; 
+            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 1rem; 
             cursor: pointer; transition: 0.3s; text-transform: uppercase; font-style: italic;
-            padding: 5px 10px;
+            padding: 5px 8px;
         }
         .nav-links a.active { color: var(--yellow-accent); border-bottom: 2px solid var(--yellow-accent); }
 
-        /* --- SECCIÓN RECLUTAMIENTO (MOBILE FIRST) --- */
-        .seller-recruitment {
-            display: flex; flex-direction: column; 
-            background: linear-gradient(135deg, #0e1621 0%, #050a12 100%);
-            border: 1px solid #1a2635; border-radius: 15px;
-            overflow: hidden; margin-bottom: 30px; border-left: 4px solid var(--yellow-accent);
+        /* BOTÓN DE CHATS */
+        #chat-btn {
+            display: none; 
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid var(--blue-light);
+            color: var(--blue-light);
+            padding: 6px 10px;
+            border-radius: 4px;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            font-family: var(--font-impact);
+            font-size: 0.85rem;
+            transition: 0.3s;
+            position: relative;
         }
-
-        .recruitment-img { width: 100%; height: 200px; object-fit: cover; }
-
-        .recruitment-text { padding: 25px; text-align: center; }
-        .recruitment-text h2 { font-family: var(--font-impact); font-size: 1.8rem; color: var(--yellow-accent); margin: 0 0 10px 0; }
-        .recruitment-text p { font-size: 1rem; color: #ccc; line-height: 1.4; margin-bottom: 20px; }
+        .chat-icon { width: 16px; height: 16px; fill: currentColor; }
+        
+        #chat-btn::after {
+            content: ''; position: absolute; top: 4px; right: 4px;
+            width: 5px; height: 5px; background: var(--yellow-bright);
+            border-radius: 50%; box-shadow: 0 0 8px var(--yellow-bright);
+        }
 
         /* --- MARKETPLACE WRAPPER --- */
         .marketplace-wrapper {
-            max-width: 1400px; margin: 20px auto; padding: 0 15px;
-            display: grid; grid-template-columns: 220px 1fr; gap: 25px;
+            max-width: 1400px; margin: 10px auto; padding: 0 15px;
+            display: grid; grid-template-columns: 200px 1fr; gap: 20px;
         }
 
-        /* SIDEBAR / CATEGORÍAS MÓVIL */
         .sidebar {
             background: var(--bg-card); padding: 15px; border-radius: 0 15px 0 15px;
             border-left: 4px solid var(--blue-light); height: fit-content;
-            position: sticky; top: 100px;
+            position: sticky; top: 90px;
         }
 
         .cat-item {
-            display: block; padding: 10px; color: #8899af; text-decoration: none;
+            display: block; padding: 12px; color: #8899af; text-decoration: none;
             font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: 0.2s;
-            margin-bottom: 5px;
+            margin-bottom: 5px; border-radius: 4px;
         }
-        .cat-item.active { background: var(--grad-blue); color: white; clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%); }
+        .cat-item.active { background: var(--grad-blue); color: white; clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%); }
 
-        /* GRID PRODUCTOS */
         .market-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-            gap: 15px; 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; 
         }
 
         .item-card {
             background: var(--bg-card); border: 1px solid #1a2635; border-radius: 0 12px 0 12px;
-            overflow: hidden; display: flex; flex-direction: column;
+            overflow: hidden; display: flex; flex-direction: column; cursor: pointer;
+            transition: transform 0.2s;
         }
-        .item-card img { width: 100%; height: 140px; object-fit: cover; }
-        .item-card-info { padding: 10px; }
-        .item-card-info h3 { margin: 0; font-size: 0.75rem; color: var(--blue-light); font-family: var(--font-logo); }
-        .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1rem; margin-top: 5px; }
+        .item-card:active { transform: scale(0.98); }
+        .item-card img { width: 100%; height: 150px; object-fit: cover; border-bottom: 1px solid #1a2635; }
+        .item-card-info { padding: 12px; }
+        .item-card-info h3 { margin: 0; font-size: 0.8rem; color: var(--blue-light); font-family: var(--font-logo); line-height: 1.2; height: 2em; overflow: hidden; }
+        .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1rem; margin-top: 8px; }
 
-        /* MODAL RESPONSIVE */
+        /* MODAL */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.95); display: none; justify-content: center; 
-            align-items: flex-start; z-index: 2000; overflow-y: auto; padding: 20px 0;
+            align-items: center; z-index: 2000; padding: 10px; box-sizing: border-box;
         }
         .modal-content { 
             background: var(--bg-card); border: 1px solid var(--blue-light); 
-            width: 90%; max-width: 700px; border-radius: 15px; overflow: hidden;
-            display: flex; flex-direction: column;
+            width: 100%; max-width: 500px; border-radius: 15px; overflow-y: auto;
+            max-height: 90vh;
         }
-        .modal-img-side { background: #000; width: 100%; text-align: center; }
-        .modal-img-side img { max-width: 100%; height: auto; max-height: 300px; }
+        .modal-img-side img { width: 100%; height: auto; display: block; }
         .modal-info-side { padding: 20px; }
 
-        /* --- BOTONES --- */
-        .search-bar { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #1a2635; padding: 12px; color: white; margin-bottom: 15px; border-radius: 5px; box-sizing: border-box; }
+        .search-bar { 
+            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #1a2635; 
+            padding: 14px; color: white; margin-bottom: 15px; border-radius: 8px; 
+            box-sizing: border-box; font-family: var(--font-main); font-size: 1rem;
+        }
+        
         .action-btn {
-            background: var(--grad-blue); border: none; padding: 12px; color: #fff;
-            font-family: var(--font-impact); font-size: 1rem; cursor: pointer;
-            text-transform: uppercase; font-style: italic; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
-            width: 100%; text-decoration: none; display: inline-block; text-align: center;
+            background: var(--grad-blue); border: none; padding: 15px; color: #fff;
+            font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer;
+            text-transform: uppercase; font-style: italic; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+            width: 100%; text-decoration: none; display: inline-block; text-align: center; margin-bottom: 10px;
         }
 
-        /* --- MEDIA QUERIES (MÓVIL) --- */
+        /* --- MOBILE OPTIMIZATIONS --- */
         @media (max-width: 768px) {
-            nav { height: 70px; padding: 0 15px; }
-            .logo-img { max-height: 40px; }
-            .marketplace-wrapper { grid-template-columns: 1fr; margin-top: 10px; }
+            nav { height: 65px; }
+            .logo-img { max-height: 35px; }
+            #chat-btn span { display: none; } /* Solo icono en movil */
+            
+            .marketplace-wrapper { grid-template-columns: 1fr; margin-top: 5px; }
             
             .sidebar { 
-                position: sticky; top: 70px; z-index: 900; display: flex; 
+                position: sticky; top: 65px; z-index: 900; display: flex; 
                 overflow-x: auto; padding: 10px; gap: 8px; border-left: none; 
                 border-bottom: 1px solid var(--blue-light); background: var(--bg-deep);
                 border-radius: 0; margin: 0 -15px 15px -15px;
+                scrollbar-width: none;
             }
-            .cat-item { white-space: nowrap; padding: 8px 15px; margin-bottom: 0; }
+            .cat-item { 
+                white-space: nowrap; padding: 8px 15px; margin-bottom: 0; 
+                background: #0e1621; border: 1px solid #1a2635;
+            }
             
-            .recruitment-text h2 { font-size: 1.5rem; }
             .market-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .item-card img { height: 120px; }
+            
+            .modal-content { width: 95%; }
+            .modal-info-side h2 { font-size: 1.1rem; }
+            
+            .recruitment-img { height: 150px; }
         }
     </style>
 </head>
@@ -150,9 +172,16 @@
     <div class="logo-wrapper" onclick="location.reload()">
         <img src="img/Shopy.png" alt="SHOPYSPACE" class="logo-img">
     </div>
-    <div class="nav-links">
-        <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
-        <a onclick="showTab('sell')" id="link-sell">SELL</a>
+    
+    <div class="nav-controls">
+        <div class="nav-links">
+            <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
+            <a onclick="showTab('sell')" id="link-sell">SELL</a>
+            <a href="Chats.html" id="chat-btn">
+                <svg class="chat-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                <span>CHATS</span>
+            </a>
+        </div>
     </div>
 </nav>
 
@@ -167,7 +196,7 @@
 
     <main>
         <section id="market">
-            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH SYSTEM..." oninput="handleGlobalSearch()">
+            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH ASSET..." oninput="handleGlobalSearch()">
             <div id="market-grid" class="market-grid"></div>
         </section>
 
@@ -176,8 +205,8 @@
                 <img src="https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&q=80&w=800" class="recruitment-img" alt="Trader">
                 <div class="recruitment-text">
                     <h2>JOIN THE ELITE</h2>
-                    <p>¿Quieres vender tus items? Es obligatorio registrarse para verificar tu identidad ciudadana.</p>
-                    <a href="https://www.irathiens.org/login" class="action-btn" style="background: var(--yellow-accent); color: #000;">REGISTER AS SELLER</a>
+                    <p>Es obligatorio registrarse para verificar tu identidad ciudadana.</p>
+                    <a href="https://www.irathiens.org/login" class="action-btn" style="background: var(--yellow-accent); color: #000; clip-path:none; border-radius:5px;">REGISTER AS SELLER</a>
                 </div>
             </div>
 
@@ -192,7 +221,7 @@
                 </select>
                 <input type="text" id="item-location" class="search-bar" placeholder="LOCATION">
                 <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC">
-                <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635; margin-bottom:10px;">SELECT IMAGE</button>
+                <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635;">SELECT IMAGE</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
                 <div id="img-preview" style="text-align:center; margin-bottom: 10px;"></div>
                 <button class="action-btn" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000;">PUBLISH ASSET</button>
@@ -205,14 +234,13 @@
     <div class="modal-content">
         <div class="modal-img-side"><img id="m-img" src=""></div>
         <div class="modal-info-side">
-            <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light); font-size: 1.2rem;"></h2>
-            <div id="m-price" style="font-size: 1.8rem; color: var(--yellow-bright); font-family: var(--font-mono); margin: 10px 0;"></div>
-            <div style="font-size: 0.85rem; border-top: 1px solid #333; padding-top: 10px; color: #aaa;">
-                <p>SECTOR: <span id="m-cat" style="color:#fff"></span></p>
-                <p>LOCATION: <span id="m-loc" style="color:#fff"></span></p>
+            <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light);"></h2>
+            <div id="m-price" style="font-size: 1.6rem; color: var(--yellow-bright); font-family: var(--font-mono); margin: 10px 0;"></div>
+            <div style="font-size: 0.85rem; border-top: 1px solid #333; padding-top: 10px; color: #aaa; margin-bottom:20px;">
+                <p>SECTOR: <span id="m-cat" style="color:#fff"></span> | LOCATION: <span id="m-loc" style="color:#fff"></span></p>
             </div>
-            <button class="action-btn" id="m-btn" style="margin-top:15px;">DETAILS</button>
-            <button class="action-btn" onclick="closeModal()" style="margin-top:10px; background:transparent; border:1px solid #444;">CLOSE</button>
+            <button class="action-btn" id="m-btn">OPEN DETAILS</button>
+            <button class="action-btn" onclick="closeModal()" style="background:transparent; border:1px solid #444; clip-path:none;">CLOSE</button>
         </div>
     </div>
 </div>
@@ -225,7 +253,20 @@
     let allItems = [];
     let uploadedImgBase64 = null;
 
-    window.onload = () => fetchMarket();
+    window.onload = () => {
+        fetchMarket();
+        checkAuth();
+    };
+
+    async function checkAuth() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        const chatBtn = document.getElementById('chat-btn');
+        if (session) {
+            chatBtn.style.display = 'flex';
+        } else {
+            chatBtn.style.display = 'none';
+        }
+    }
 
     async function fetchMarket() {
         const { data, error } = await _supabase.from('marketplace_items').select('*').order('created_at', {ascending: false});
@@ -240,7 +281,7 @@
             card.className = 'item-card';
             card.onclick = () => openDetails(item);
             card.innerHTML = `
-                <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}">
+                <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}" loading="lazy">
                 <div class="item-card-info">
                     <h3>${item.item_name.toUpperCase()}</h3>
                     <div class="price-tag">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
