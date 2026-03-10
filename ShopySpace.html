@@ -20,6 +20,7 @@
             --font-logo: 'Orbitron', sans-serif;
             --font-impact: 'Barlow Condensed', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+            --danger: #ff4d4d;
         }
 
         ::-webkit-scrollbar { display: none; }
@@ -57,7 +58,6 @@
             transition: 0.3s; position: relative;
         }
         .chat-icon { width: 16px; height: 16px; fill: currentColor; }
-        #chat-btn::after { content: ''; position: absolute; top: 4px; right: 4px; width: 5px; height: 5px; background: var(--yellow-bright); border-radius: 50%; box-shadow: 0 0 8px var(--yellow-bright); }
 
         .marketplace-wrapper { max-width: 1400px; margin: 10px auto; padding: 0 15px; display: grid; grid-template-columns: 200px 1fr; gap: 20px; }
 
@@ -68,18 +68,25 @@
 
         .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
 
-        .item-card { background: var(--bg-card); border: 1px solid #1a2635; border-radius: 0 12px 0 12px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s; }
+        .item-card { background: var(--bg-card); border: 1px solid #1a2635; border-radius: 0 12px 0 12px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; position: relative; transition: transform 0.2s; }
         .item-card:active { transform: scale(0.98); }
         .item-card img { width: 100%; height: 150px; object-fit: cover; border-bottom: 1px solid #1a2635; }
         .item-card-info { padding: 12px; }
         .item-card-info h3 { margin: 0; font-size: 0.8rem; color: var(--blue-light); font-family: var(--font-logo); line-height: 1.2; height: 2.4em; overflow: hidden; }
 
-        /* Rating and Likes Style */
         .card-stats { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem; font-family: var(--font-mono); }
         .stat-stars { color: var(--yellow-bright); }
         .stat-likes { color: #8899af; }
 
         .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1rem; margin-top: 5px; }
+
+        /* Botón de Borrar */
+        .delete-overlay {
+            position: absolute; top: 8px; right: 8px; background: var(--danger);
+            color: white; border: none; padding: 8px; border-radius: 5px;
+            cursor: pointer; display: none; z-index: 10; font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
+        }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
         .modal-content { background: var(--bg-card); border: 1px solid var(--blue-light); width: 100%; max-width: 500px; border-radius: 15px; overflow-y: auto; max-height: 90vh; }
@@ -108,6 +115,7 @@
         <div class="nav-links">
             <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
             <a onclick="showTab('sell')" id="link-sell">SELL</a>
+            <a onclick="showTab('my-items')" id="link-my-items" style="display:none;">MY ASSETS</a>
             <a href="Chats.html" id="chat-btn">
                 <svg class="chat-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
                 <span>CHATS</span>
@@ -117,7 +125,7 @@
 </nav>
 
 <div class="marketplace-wrapper">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar-filter">
         <a class="cat-item active" onclick="filterByCategory('all', this)">ALL</a>
         <a class="cat-item" onclick="filterByCategory('Armor', this)">ARMOR</a>
         <a class="cat-item" onclick="filterByCategory('Weapons', this)">WEAPONS</a>
@@ -127,7 +135,8 @@
 
     <main>
         <section id="market">
-            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH ASSET..." oninput="handleGlobalSearch()">
+            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH ASSET...">
+            <h2 id="view-title" style="display:none; color: var(--blue-light); font-family: var(--font-impact); margin-bottom: 15px;">OWNED ASSETS</h2>
             <div id="market-grid" class="market-grid"></div>
         </section>
 
@@ -176,44 +185,40 @@
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
     let allItems = [];
-    let uploadedImgBase64 = null;
+    let currentUser = null;
+    let currentTab = 'market';
 
     async function fetchMarket() {
-        // Obtenemos los items y unimos con likes y reviews
         const { data, error } = await _supabase
             .from('marketplace_items')
-            .select(`
-                *,
-                item_likes (id),
-                item_reviews (rating)
-            `)
+            .select(`*, item_likes (id), item_reviews (rating)`)
             .order('created_at', {ascending: false});
 
         if (!error) { 
             allItems = data.map(item => {
                 const totalRating = item.item_reviews?.reduce((acc, r) => acc + r.rating, 0) || 0;
                 const avg = item.item_reviews?.length ? (totalRating / item.item_reviews.length).toFixed(1) : 0;
-                return {
-                    ...item,
-                    likes_count: item.item_likes?.length || 0,
-                    avg_rating: avg
-                };
+                return { ...item, likes_count: item.item_likes?.length || 0, avg_rating: avg };
             });
-            renderItems(allItems); 
+            renderItems(currentTab === 'my-items' ? allItems.filter(i => i.seller_id === currentUser?.id) : allItems); 
         }
     }
 
     function renderItems(list) {
         const grid = document.getElementById('market-grid');
         grid.innerHTML = "";
+        
         list.forEach(item => {
             const card = document.createElement('div');
             card.className = 'item-card';
             card.onclick = () => openDetails(item);
             
+            const isOwner = currentUser && item.seller_id === currentUser.id;
             const stars = item.avg_rating > 0 ? `★ ${item.avg_rating}` : "NEW";
 
             card.innerHTML = `
+                <button class="delete-overlay" style="display: ${ (currentTab === 'my-items' && isOwner) ? 'block' : 'none' }" 
+                    onclick="event.stopPropagation(); deleteAsset('${item.id}')">🗑</button>
                 <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}" loading="lazy">
                 <div class="item-card-info">
                     <h3>${item.item_name.toUpperCase()}</h3>
@@ -228,6 +233,39 @@
         });
     }
 
+    async function deleteAsset(id) {
+        if (!confirm("TERMINATE ASSET LISTING? THIS CANNOT BE UNDONE.")) return;
+        
+        const { error } = await _supabase.from('marketplace_items').delete().eq('id', id);
+        
+        if (!error) {
+            allItems = allItems.filter(i => i.id !== id);
+            renderItems(allItems.filter(i => i.seller_id === currentUser.id));
+        } else {
+            alert("COMM-LINK ERROR: COULD NOT TERMINATE.");
+        }
+    }
+
+    function showTab(t) {
+        currentTab = t;
+        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+        document.getElementById('market').style.display = (t === 'market' || t === 'my-items') ? 'block' : 'none';
+        document.getElementById('sell').style.display = (t === 'sell') ? 'block' : 'none';
+        document.getElementById('sidebar-filter').style.display = (t === 'market') ? 'block' : 'none';
+        document.getElementById('main-search').style.display = (t === 'market') ? 'block' : 'none';
+        document.getElementById('view-title').style.display = (t === 'my-items') ? 'block' : 'none';
+
+        if (t === 'market') {
+            document.getElementById('link-market').classList.add('active');
+            renderItems(allItems);
+        } else if (t === 'sell') {
+            document.getElementById('link-sell').classList.add('active');
+        } else if (t === 'my-items') {
+            document.getElementById('link-my-items').classList.add('active');
+            renderItems(allItems.filter(i => i.seller_id === currentUser.id));
+        }
+    }
+
     function openDetails(item) {
         document.getElementById('m-title').innerText = item.item_name.toUpperCase();
         document.getElementById('m-price').innerText = parseInt(item.price_auec).toLocaleString() + " aUEC";
@@ -235,37 +273,27 @@
         document.getElementById('m-cat').innerText = (item.category || 'ASSET').toUpperCase();
         document.getElementById('m-loc').innerText = (item.location || 'UNKNOWN').toUpperCase();
         document.getElementById('m-likes-text').innerText = `VOUCHED BY ${item.likes_count} CITIZENS`;
-        
-        const ratingText = item.avg_rating > 0 ? '★'.repeat(Math.round(item.avg_rating)) + ` (${item.avg_rating})` : "NO REVIEWS YET";
-        document.getElementById('m-rating').innerText = ratingText;
-
+        document.getElementById('m-rating').innerText = item.avg_rating > 0 ? '★'.repeat(Math.round(item.avg_rating)) + ` (${item.avg_rating})` : "NO REVIEWS";
         document.getElementById('m-btn').onclick = () => { window.location.href = `item.html?id=${item.id}`; };
         document.getElementById('item-modal').style.display = 'flex';
         document.body.style.overflow = 'hidden'; 
     }
 
-    // Funciones de utilidad se mantienen igual
     function closeModal() { document.getElementById('item-modal').style.display = 'none'; document.body.style.overflow = 'auto'; }
-    function showTab(t) {
-        document.getElementById('market').style.display = (t === 'market') ? 'block' : 'none';
-        document.getElementById('sell').style.display = (t === 'sell') ? 'block' : 'none';
-        document.getElementById('link-market').classList.toggle('active', t === 'market');
-        document.getElementById('link-sell').classList.toggle('active', t === 'sell');
+
+    async function checkAuth() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session) {
+            currentUser = session.user;
+            document.getElementById('chat-btn').style.display = 'flex';
+            document.getElementById('link-my-items').style.display = 'inline-block';
+        }
     }
-    function handleGlobalSearch() {
-        const q = document.getElementById('main-search').value.toLowerCase();
-        renderItems(allItems.filter(i => i.item_name.toLowerCase().includes(q)));
-    }
+
     function filterByCategory(cat, el) {
         document.querySelectorAll('.cat-item').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
         renderItems(cat === 'all' ? allItems : allItems.filter(i => i.category === cat));
-    }
-    
-    // Auth y Carga inicial
-    async function checkAuth() {
-        const { data: { session } } = await _supabase.auth.getSession();
-        if (session) document.getElementById('chat-btn').style.display = 'flex';
     }
 
     window.onload = () => { fetchMarket(); checkAuth(); };
