@@ -12,7 +12,7 @@
             --blue-dark: #0056ff;
             --yellow-accent: #ffb800;
             --bg-deep: #050a12;
-            --bg-card: rgba(14, 22, 33, 0.95);
+            --bg-card: rgba(14, 22, 33, 0.9);
             --text-white: #ffffff;
             --font-main: 'Rajdhani', sans-serif;
             --font-logo: 'Orbitron', sans-serif;
@@ -24,71 +24,63 @@
         ::-webkit-scrollbar { display: none; }
         body { margin: 0; background-color: var(--bg-deep); color: var(--text-white); font-family: var(--font-main); overflow-x: hidden; min-height: 100vh; background-image: radial-gradient(circle at 50% 0%, #102a4d 0%, var(--bg-deep) 100%); }
 
-        /* --- VIDEOS (Solo PC) --- */
+        /* --- VIDEOS LATERALES (Solo en PC) --- */
         .video-side-container { position: fixed; top: 70px; bottom: 0; width: calc((100vw - 1200px) / 2); z-index: -1; overflow: hidden; opacity: 0.3; }
         .left-video { left: 0; border-right: 1px solid rgba(0, 210, 255, 0.2); }
         .right-video { right: 0; border-left: 1px solid rgba(0, 210, 255, 0.2); }
         .side-video-element { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- NAV --- */
-        nav { background: rgba(0, 0, 0, 0.95); border-bottom: 2px solid var(--blue-light); padding: 0 10px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; height: 65px; backdrop-filter: blur(10px); }
-        .logo-img { max-height: 55px; cursor: pointer; }
-        .nav-links { display: flex; gap: 5px; }
-        .nav-links a { color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.75rem; padding: 6px 10px; border-radius: 4px; text-transform: uppercase; cursor: pointer; }
+        /* --- NAVEGACIÓN --- */
+        nav { background: rgba(0, 0, 0, 0.95); border-bottom: 2px solid var(--blue-light); padding: 0 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; height: 70px; backdrop-filter: blur(10px); }
+        .logo-img { max-height: 60px; cursor: pointer; filter: drop-shadow(0 0 5px var(--blue-light)); }
+        .nav-links { display: flex; gap: 8px; }
+        .nav-links a { color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.75rem; cursor: pointer; padding: 6px 10px; border-radius: 4px; text-transform: uppercase; font-style: italic; }
         .nav-links a.active { color: var(--blue-light); border-bottom: 2px solid var(--blue-light); }
 
-        /* --- LAYOUT --- */
-        .main-container { max-width: 1200px; margin: 0 auto; padding: 15px; display: flex; gap: 20px; }
-        .sidebar { width: 180px; flex-shrink: 0; background: var(--bg-card); padding: 15px; border-radius: 0 15px 0 15px; border-left: 4px solid var(--blue-light); }
-        .cat-item { display: block; padding: 12px; color: #8899af; cursor: pointer; font-weight: 700; margin-bottom: 5px; border-radius: 4px; text-transform: uppercase; font-size: 0.8rem; }
-        .cat-item.active { background: linear-gradient(90deg, var(--blue-light), var(--blue-dark)); color: white; }
+        /* --- ESTRUCTURA --- */
+        .main-container { max-width: 1200px; margin: 15px auto; padding: 0 15px; display: flex; gap: 20px; align-items: flex-start; }
+        .sidebar { width: 180px; flex-shrink: 0; background: var(--bg-card); padding: 15px; border-radius: 0 15px 0 15px; border-left: 4px solid var(--blue-light); backdrop-filter: blur(10px); }
+        .cat-item { display: block; padding: 12px; color: #8899af; cursor: pointer; font-weight: 700; margin-bottom: 5px; border-radius: 4px; transition: 0.2s; text-transform: uppercase; font-size: 0.85rem; }
+        .cat-item.active { background: linear-gradient(90deg, #00d2ff, #0056ff); color: white; }
 
-        /* --- MARKET --- */
-        .sub-nav { display: none; gap: 8px; padding: 10px 0; overflow-x: auto; margin-bottom: 10px; }
-        .sub-item { background: rgba(0, 210, 255, 0.1); color: var(--blue-light); padding: 8px 15px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; white-space: nowrap; border: 1px solid var(--blue-light); text-transform: uppercase; }
+        /* --- CONTENIDO --- */
+        .content-area { flex-grow: 1; width: 100%; }
+        .sub-nav { display: none; gap: 10px; padding: 10px 0; overflow-x: auto; margin-bottom: 15px; }
+        .sub-item { background: rgba(0, 210, 255, 0.1); color: var(--blue-light); padding: 6px 15px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px solid var(--blue-light); text-transform: uppercase; }
         .sub-item.active { background: var(--blue-light); color: black; }
+
         .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-        .item-card { background: var(--bg-card); border-radius: 0 10px 0 10px; border: 1px solid #1a2635; overflow: hidden; position: relative; }
-        .item-card img { width: 100%; height: 130px; object-fit: cover; }
+        .item-card { background: var(--bg-card); border-radius: 0 12px 0 12px; overflow: hidden; border: 1px solid #1a2635; position: relative; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); }
+        .item-card:hover { border-color: var(--blue-light); transform: translateY(-3px); }
+        .item-card img { width: 100%; height: 140px; object-fit: cover; }
         .item-card-info { padding: 10px; }
+        .item-card-info h3 { margin: 0; font-size: 0.75rem; color: var(--blue-light); font-family: var(--font-logo); height: 2.4em; overflow: hidden; }
 
-        /* --- SELL SECTION (CORREGIDA) --- */
-        .sell-wrapper { display: none; width: 100%; justify-content: center; padding: 10px 0; }
-        #publish-container { background: var(--bg-card); padding: 25px; border-radius: 15px; border: 1px solid rgba(0, 210, 255, 0.2); width: 100%; max-width: 480px; backdrop-filter: blur(10px); }
-        .form-label { display: block; font-size: 0.65rem; color: var(--blue-light); font-family: var(--font-mono); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
-        .input-field { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid #1a2635; padding: 12px; color: white; border-radius: 8px; margin-bottom: 12px; font-family: var(--font-main); font-size: 1rem; }
-        
-        #img-preview { width: 100%; height: 160px; background: rgba(0,0,0,0.5); border: 2px dashed #1a2635; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow: hidden; color: #3a4a5d; font-size: 0.8rem; }
+        /* --- SELL SECTION (TODO RESTAURADO) --- */
+        .sell-wrapper { width: 100%; display: none; justify-content: center; padding: 10px 0; }
+        #publish-container { background: var(--bg-card); padding: 30px; border-radius: 20px; border: 1px solid rgba(0, 210, 255, 0.2); width: 100%; max-width: 480px; box-shadow: 0 10px 50px rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
+        .form-group { margin-bottom: 12px; }
+        .form-label { display: block; font-size: 0.65rem; color: var(--blue-light); font-family: var(--font-mono); margin-bottom: 4px; text-transform: uppercase; }
+        .input-field { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid #1a2635; padding: 12px; color: white; border-radius: 8px; box-sizing: border-box; font-family: var(--font-main); font-size: 1rem; }
+        #img-preview { width: 100%; height: 160px; background: rgba(0,0,0,0.5); border: 2px dashed #1a2635; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow: hidden; color: #2a3a4d; font-family: var(--font-mono); }
         #img-preview img { width: 100%; height: 100%; object-fit: contain; }
+        .btn-main { background: var(--yellow-accent); color: #000; border: none; padding: 16px; font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; width: 100%; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); font-weight: 900; text-transform: uppercase; margin-top: 10px; }
 
-        /* EL BOTÓN ESTILO NAVE */
-        .btn-main { 
-            background: var(--yellow-accent); color: #000; border: none; padding: 16px; 
-            font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; width: 100%; 
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); font-weight: 900; 
-            text-transform: uppercase; letter-spacing: 1px; margin-top: 10px;
-        }
-
-        /* --- RESPONSIVE MOBILE --- */
+        /* --- RESPONSIVE MÓVIL --- */
         @media (max-width: 1200px) { .video-side-container { display: none; } }
         @media (max-width: 768px) {
             .main-container { flex-direction: column; padding: 10px; }
-            .sidebar { width: 100%; display: flex; overflow-x: auto; margin: 0 -10px 15px -10px; border-radius: 0; border-left: none; border-bottom: 2px solid var(--blue-light); padding: 10px; }
-            .cat-item { margin-bottom: 0; white-space: nowrap; padding: 8px 15px; }
+            .sidebar { width: 100%; display: flex; overflow-x: auto; margin: 0 -10px 15px -10px; border-radius: 0; border-left: none; border-bottom: 2px solid var(--blue-light); padding: 10px; gap: 8px; position: sticky; top: 70px; z-index: 999; }
+            .cat-item { margin-bottom: 0; white-space: nowrap; padding: 8px 15px; font-size: 0.75rem; }
             .market-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             #publish-container { padding: 20px; border: 1px solid var(--blue-light); }
-            .btn-main { font-size: 1rem; padding: 14px; }
         }
     </style>
 </head>
 <body>
 
-<div class="video-side-container left-video">
-    <video class="side-video-element" autoplay muted loop playsinline><source src="https://exitframe.com/assets/videos/sc_starfield_loop.mp4" type="video/mp4"></video>
-</div>
-<div class="video-side-container right-video">
-    <video class="side-video-element" autoplay muted loop playsinline><source src="https://exitframe.com/assets/videos/sc_ui_loop.mp4" type="video/mp4"></video>
-</div>
+<div class="video-side-container left-video"><video class="side-video-element" autoplay muted loop playsinline><source src="https://exitframe.com/assets/videos/sc_starfield_loop.mp4" type="video/mp4"></video></div>
+<div class="video-side-container right-video"><video class="side-video-element" autoplay muted loop playsinline><source src="https://exitframe.com/assets/videos/sc_ui_loop.mp4" type="video/mp4"></video></div>
 
 <nav>
     <img src="img/Shopy.png" class="logo-img" onclick="showTab('market')">
@@ -112,21 +104,23 @@
 
     <div class="content-area">
         <section id="market-section">
-            <input type="text" id="main-search" class="input-field" placeholder="SEARCH ASSETS..." oninput="handleGlobalSearch()">
+            <input type="text" id="main-search" class="input-field" placeholder="SEARCH GALAXY ASSETS..." oninput="handleGlobalSearch()" style="margin-bottom: 10px;">
             <div id="sub-nav" class="sub-nav"></div>
+            <h2 id="view-title" style="display:none; color: var(--yellow-accent); font-family: var(--font-impact); text-align: center; margin-bottom: 20px;">PERSONAL INVENTORY</h2>
             <div id="market-grid" class="market-grid"></div>
         </section>
 
         <section id="sell-section" class="sell-wrapper">
             <div id="publish-container">
-                <h2 style="text-align:center; color: var(--blue-light); font-family: var(--font-impact); margin: 0 0 20px 0; letter-spacing: 2px;">DATA UPLOAD</h2>
+                <h2 style="text-align:center; color: var(--blue-light); font-family: var(--font-impact); margin-top:0; letter-spacing: 2px;">DATA UPLOAD</h2>
                 
-                <label class="form-label">Asset Designation</label>
-                <input type="text" id="item-name" class="input-field" placeholder="Name">
+                <div class="form-group">
+                    <label class="form-label">Asset Designation</label>
+                    <input type="text" id="item-name" class="input-field" placeholder="Name">
+                </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
-                        <label class="form-label">Category</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="form-group">
+                    <div><label class="form-label">Category</label>
                         <select id="item-cat" class="input-field" onchange="updateSubCatSelect()">
                             <option value="Armor">ARMOR</option>
                             <option value="Weapons">WEAPONS</option>
@@ -136,25 +130,24 @@
                             <option value="Medals">MEDALS</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="form-label">Sub-Category</label>
+                    <div><label class="form-label">Sub-Category</label>
                         <select id="item-subcat" class="input-field"></select>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
-                        <label class="form-label">Price (aUEC)</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="form-group">
+                    <div><label class="form-label">Price (aUEC)</label>
                         <input type="number" id="item-price" class="input-field" placeholder="0">
                     </div>
-                    <div>
-                        <label class="form-label">Location</label>
+                    <div><label class="form-label">Location</label>
                         <input type="text" id="item-location" class="input-field" placeholder="Station">
                     </div>
                 </div>
 
-                <label class="form-label">Manifest Details (Description)</label>
-                <textarea id="item-desc" class="input-field" style="height: 70px; resize: none;" placeholder="Detailed info..."></textarea>
+                <div class="form-group">
+                    <label class="form-label">Manifest Details</label>
+                    <textarea id="item-desc" class="input-field" placeholder="Description..." style="height: 70px; resize: none;"></textarea>
+                </div>
 
                 <div id="img-preview">NO VISUAL DATA</div>
                 <button class="input-field" style="margin-bottom:10px; cursor:pointer; background: #1a2635;" onclick="document.getElementById('file-input').click()">UPLOAD VISUAL</button>
@@ -173,6 +166,7 @@
 
     let allItems = [];
     let currentUser = null;
+    let currentTab = 'market';
     let selectedMainCat = 'all';
     let uploadedImgBase64 = null;
 
@@ -223,15 +217,18 @@
     function renderGrid(list) {
         const grid = document.getElementById('market-grid');
         grid.innerHTML = "";
-        list.forEach(item => {
+        const displayList = (currentTab === 'my-items') ? list.filter(i => i.seller_id === currentUser?.id) : list;
+
+        displayList.forEach(item => {
             const card = document.createElement('div');
             card.className = 'item-card';
             card.innerHTML = `
+                ${(currentTab === 'my-items' && currentUser) ? `<button style="position:absolute;top:5px;right:5px;background:red;color:white;border:none;padding:5px;font-size:10px;z-index:10;" onclick="deleteAsset('${item.id}')">DEL</button>` : ''}
                 <img src="${item.image_1 || ''}">
                 <div class="item-card-info">
-                    <span style="font-size:0.55rem; color:var(--blue-light); opacity:0.6;">${item.category} / ${item.sub_category || ''}</span>
-                    <h3 style="margin:2px 0; font-size:0.7rem; color:var(--blue-light);">${item.item_name.toUpperCase()}</h3>
-                    <div style="color:var(--yellow-accent); font-weight:bold; font-size:0.85rem;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
+                    <span style="font-size:0.55rem; color:var(--blue-light); opacity:0.6;">${item.category} / ${item.sub_category || 'General'}</span>
+                    <h3>${item.item_name.toUpperCase()}</h3>
+                    <div style="color:var(--yellow-accent); font-weight:bold;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
                 </div>`;
             grid.appendChild(card);
         });
@@ -263,15 +260,18 @@
             seller_id: currentUser.id
         };
         const { error } = await _supabase.from('marketplace_items').insert([payload]);
-        if (!error) { alert("SUCCESS"); location.reload(); }
+        if (!error) { alert("SUCCESS"); showTab('market'); fetchMarket(); }
     }
 
     function showTab(t) {
-        document.getElementById('market-section').style.display = (t === 'market') ? 'block' : 'none';
-        document.getElementById('sell-section').style.display = (t === 'sell') ? 'flex' : 'none';
-        document.getElementById('sidebar-filter').style.display = (t === 'market') ? 'flex' : 'none';
+        currentTab = t;
         document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
         if(document.getElementById('link-'+t)) document.getElementById('link-'+t).classList.add('active');
+        document.getElementById('market-section').style.display = (t === 'market' || t === 'my-items') ? 'block' : 'none';
+        document.getElementById('sell-section').style.display = (t === 'sell') ? 'flex' : 'none';
+        document.getElementById('sidebar-filter').style.display = (t === 'market') ? 'flex' : 'none';
+        document.getElementById('view-title').style.display = (t === 'my-items') ? 'block' : 'none';
+        renderGrid(allItems);
     }
 
     function processImg(input) {
@@ -283,6 +283,10 @@
             };
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+    async function deleteAsset(id) {
+        if (confirm("DELETE?")) { await _supabase.from('marketplace_items').delete().eq('id', id); fetchMarket(); }
     }
 
     async function checkAuth() {
