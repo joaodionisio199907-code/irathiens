@@ -72,7 +72,7 @@
             border: 1px solid rgba(0, 210, 255, 0.3);
         }
 
-        /* BOTÓN DE CHATS (Estilo igual al Market) */
+        /* BOTÓN DE CHATS */
         #chat-btn {
             display: none; 
             background: rgba(0, 210, 255, 0.1);
@@ -344,7 +344,6 @@
     localStorage.setItem('chat_uid', myId);
     localStorage.setItem('chat_uname', myName);
 
-    // FUNCIÓN PARA DETECTAR LOGIN
     async function checkAuth() {
         const { data: { session } } = await _supabase.auth.getSession();
         const chatBtn = document.getElementById('chat-btn');
@@ -371,11 +370,21 @@
         }
     }
 
-    function openChat() {
+    // MODIFICADO: Ahora verifica sesión antes de abrir
+    async function openChat() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        
+        if (!session) {
+            // Si no hay sesión, redirige al login
+            window.location.href = 'login.html'; 
+            return;
+        }
+
         const win = document.getElementById('chat-window');
         win.style.display = 'flex';
         if (window.innerWidth < 650) document.body.style.overflow = 'hidden';
         loadMessages();
+        
         _supabase.channel('public:mensajes').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
             appendMessage(payload.new);
         }).subscribe();
@@ -418,7 +427,7 @@
 
     window.onload = () => {
         loadItem();
-        checkAuth(); // Detecta sesión al cargar
+        checkAuth();
     };
 </script>
 </body>
