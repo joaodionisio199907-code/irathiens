@@ -32,7 +32,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- NAVEGACIÓN --- */
         nav {
             background: rgba(0, 0, 0, 0.95); border-bottom: 2px solid var(--blue-light);
             padding: 0 15px; display: flex; justify-content: space-between; align-items: center;
@@ -52,116 +51,50 @@
         .nav-links a.active { color: var(--yellow-accent); border-bottom: 2px solid var(--yellow-accent); }
 
         #chat-btn {
-            display: none; 
-            background: rgba(0, 210, 255, 0.1);
-            border: 1px solid var(--blue-light);
-            color: var(--blue-light);
-            padding: 6px 10px;
-            border-radius: 4px;
-            align-items: center;
-            gap: 5px;
-            text-decoration: none;
-            font-family: var(--font-impact);
-            font-size: 0.85rem;
-            transition: 0.3s;
-            position: relative;
+            display: none; background: rgba(0, 210, 255, 0.1); border: 1px solid var(--blue-light);
+            color: var(--blue-light); padding: 6px 10px; border-radius: 4px; align-items: center;
+            gap: 5px; text-decoration: none; font-family: var(--font-impact); font-size: 0.85rem;
+            transition: 0.3s; position: relative;
         }
         .chat-icon { width: 16px; height: 16px; fill: currentColor; }
-        
-        #chat-btn::after {
-            content: ''; position: absolute; top: 4px; right: 4px;
-            width: 5px; height: 5px; background: var(--yellow-bright);
-            border-radius: 50%; box-shadow: 0 0 8px var(--yellow-bright);
-        }
+        #chat-btn::after { content: ''; position: absolute; top: 4px; right: 4px; width: 5px; height: 5px; background: var(--yellow-bright); border-radius: 50%; box-shadow: 0 0 8px var(--yellow-bright); }
 
-        /* --- MARKETPLACE WRAPPER --- */
-        .marketplace-wrapper {
-            max-width: 1400px; margin: 10px auto; padding: 0 15px;
-            display: grid; grid-template-columns: 200px 1fr; gap: 20px;
-        }
+        .marketplace-wrapper { max-width: 1400px; margin: 10px auto; padding: 0 15px; display: grid; grid-template-columns: 200px 1fr; gap: 20px; }
 
-        .sidebar {
-            background: var(--bg-card); padding: 15px; border-radius: 0 15px 0 15px;
-            border-left: 4px solid var(--blue-light); height: fit-content;
-            position: sticky; top: 90px;
-        }
+        .sidebar { background: var(--bg-card); padding: 15px; border-radius: 0 15px 0 15px; border-left: 4px solid var(--blue-light); height: fit-content; position: sticky; top: 90px; }
 
-        .cat-item {
-            display: block; padding: 12px; color: #8899af; text-decoration: none;
-            font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: 0.2s;
-            margin-bottom: 5px; border-radius: 4px;
-        }
+        .cat-item { display: block; padding: 12px; color: #8899af; text-decoration: none; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-bottom: 5px; border-radius: 4px; }
         .cat-item.active { background: var(--grad-blue); color: white; clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%); }
 
-        .market-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; 
-        }
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
 
-        .item-card {
-            background: var(--bg-card); border: 1px solid #1a2635; border-radius: 0 12px 0 12px;
-            overflow: hidden; display: flex; flex-direction: column; cursor: pointer;
-            transition: transform 0.2s;
-        }
+        .item-card { background: var(--bg-card); border: 1px solid #1a2635; border-radius: 0 12px 0 12px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s; }
         .item-card:active { transform: scale(0.98); }
         .item-card img { width: 100%; height: 150px; object-fit: cover; border-bottom: 1px solid #1a2635; }
         .item-card-info { padding: 12px; }
-        .item-card-info h3 { margin: 0; font-size: 0.8rem; color: var(--blue-light); font-family: var(--font-logo); line-height: 1.2; height: 2em; overflow: hidden; }
-        .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1rem; margin-top: 8px; }
+        .item-card-info h3 { margin: 0; font-size: 0.8rem; color: var(--blue-light); font-family: var(--font-logo); line-height: 1.2; height: 2.4em; overflow: hidden; }
 
-        .seller-recruitment {
-            display: flex; flex-direction: column; 
-            background: linear-gradient(135deg, #0e1621 0%, #050a12 100%);
-            border: 1px solid #1a2635; border-radius: 15px;
-            overflow: hidden; margin-bottom: 30px; border-left: 4px solid var(--yellow-accent);
-        }
-        .recruitment-img { width: 100%; height: 200px; object-fit: cover; }
-        .recruitment-text { padding: 25px; text-align: center; }
-        .recruitment-text h2 { font-family: var(--font-impact); font-size: 1.8rem; color: var(--yellow-accent); margin: 0 0 10px 0; }
-        .recruitment-text p { font-size: 1rem; color: #ccc; line-height: 1.4; margin-bottom: 20px; }
+        /* Rating and Likes Style */
+        .card-stats { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem; font-family: var(--font-mono); }
+        .stat-stars { color: var(--yellow-bright); }
+        .stat-likes { color: #8899af; }
 
-        .modal-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.95); display: none; justify-content: center; 
-            align-items: center; z-index: 2000; padding: 10px; box-sizing: border-box;
-        }
-        .modal-content { 
-            background: var(--bg-card); border: 1px solid var(--blue-light); 
-            width: 100%; max-width: 500px; border-radius: 15px; overflow-y: auto;
-            max-height: 90vh;
-        }
+        .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1rem; margin-top: 5px; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--blue-light); width: 100%; max-width: 500px; border-radius: 15px; overflow-y: auto; max-height: 90vh; }
         .modal-img-side img { width: 100%; height: auto; display: block; }
         .modal-info-side { padding: 20px; }
 
-        .search-bar { 
-            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #1a2635; 
-            padding: 14px; color: white; margin-bottom: 15px; border-radius: 8px; 
-            box-sizing: border-box; font-family: var(--font-main); font-size: 1rem;
-        }
+        .search-bar { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #1a2635; padding: 14px; color: white; margin-bottom: 15px; border-radius: 8px; box-sizing: border-box; font-family: var(--font-main); font-size: 1rem; }
         
-        .action-btn {
-            background: var(--grad-blue); border: none; padding: 15px; color: #fff;
-            font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer;
-            text-transform: uppercase; font-style: italic; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
-            width: 100%; text-decoration: none; display: inline-block; text-align: center; margin-bottom: 10px;
-        }
+        .action-btn { background: var(--grad-blue); border: none; padding: 15px; color: #fff; font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; text-transform: uppercase; font-style: italic; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); width: 100%; text-decoration: none; display: inline-block; text-align: center; margin-bottom: 10px; }
 
         @media (max-width: 768px) {
-            nav { height: 65px; }
-            .logo-img { max-height: 35px; }
-            #chat-btn span { display: none; }
-            .marketplace-wrapper { grid-template-columns: 1fr; margin-top: 5px; }
-            .sidebar { 
-                position: sticky; top: 65px; z-index: 900; display: flex; 
-                overflow-x: auto; padding: 10px; gap: 8px; border-left: none; 
-                border-bottom: 1px solid var(--blue-light); background: var(--bg-deep);
-                border-radius: 0; margin: 0 -15px 15px -15px; scrollbar-width: none;
-            }
-            .cat-item { white-space: nowrap; padding: 8px 15px; margin-bottom: 0; background: #0e1621; border: 1px solid #1a2635; }
-            .market-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .item-card img { height: 120px; }
-            .modal-content { width: 95%; }
-            .modal-info-side h2 { font-size: 1.1rem; }
-            .recruitment-img { height: 150px; }
+            .marketplace-wrapper { grid-template-columns: 1fr; }
+            .sidebar { position: sticky; top: 70px; display: flex; overflow-x: auto; border-left: none; border-bottom: 1px solid var(--blue-light); background: var(--bg-deep); border-radius: 0; margin: 0 -15px 15px -15px; z-index: 900; }
+            .cat-item { white-space: nowrap; margin-bottom: 0; }
+            .market-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -171,7 +104,6 @@
     <div class="logo-wrapper" onclick="location.reload()">
         <img src="img/Shopy.png" class="logo-img" onclick="window.location.href='https://www.irathiens.org/ShopySpaceStarCitizen'">
     </div>
-    
     <div class="nav-controls">
         <div class="nav-links">
             <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
@@ -200,15 +132,6 @@
         </section>
 
         <section id="sell" style="display:none;">
-            <div class="seller-recruitment" id="recruitment-banner">
-                <img src="img/Shopy.png" class="recruitment-img" alt="Trader">
-                <div class="recruitment-text">
-                    <h2>SELL YOUR ITEMS ON SHOPYSPACE</h2>
-                    <p>To sell on our system, you need to be registered</p>
-                    <a href="https://www.irathiens.org/login" class="action-btn seller-btn">REGISTER AS SELLER</a>
-                </div>
-            </div>
-
             <div id="publish-container" style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid #1a2635;">
                 <h2 style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 15px 0;">NEW MANIFEST</h2>
                 <input type="text" id="item-name" class="search-bar" placeholder="ITEM NAME">
@@ -219,14 +142,11 @@
                     <option value="Medical">MEDICAL</option>
                 </select>
                 <input type="text" id="item-location" class="search-bar" placeholder="LOCATION">
-                <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC" inputmode="numeric">
-                
-                <textarea id="item-desc" class="search-bar" placeholder="ITEM DESCRIPTION (LTI, SKINS, SPECS...)" style="height: 100px; resize: none;"></textarea>
-
+                <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC">
+                <textarea id="item-desc" class="search-bar" placeholder="ITEM DESCRIPTION" style="height: 80px;"></textarea>
                 <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635;">SELECT IMAGE</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
-                <div id="img-preview" style="text-align:center; margin-bottom: 10px;"></div>
-                
+                <div id="img-preview"></div>
                 <button class="action-btn" id="btn-publish" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000;">PUBLISH ASSET</button>
             </div>
         </section>
@@ -238,9 +158,11 @@
         <div class="modal-img-side"><img id="m-img" src=""></div>
         <div class="modal-info-side">
             <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light);"></h2>
+            <div id="m-rating" class="stat-stars" style="margin-top:5px;"></div>
             <div id="m-price" style="font-size: 1.6rem; color: var(--yellow-bright); font-family: var(--font-mono); margin: 10px 0;"></div>
             <div style="font-size: 0.85rem; border-top: 1px solid #333; padding-top: 10px; color: #aaa; margin-bottom:20px;">
                 <p>SECTOR: <span id="m-cat" style="color:#fff"></span> | LOCATION: <span id="m-loc" style="color:#fff"></span></p>
+                <p id="m-likes-text" style="color: var(--blue-light); font-weight: bold;"></p>
             </div>
             <button class="action-btn" id="m-btn">OPEN DETAILS</button>
             <button class="action-btn" onclick="closeModal()" style="background:transparent; border:1px solid #444; clip-path:none;">CLOSE</button>
@@ -256,31 +178,29 @@
     let allItems = [];
     let uploadedImgBase64 = null;
 
-    window.onload = () => {
-        fetchMarket();
-        checkAuth();
-    };
-
-    async function checkAuth() {
-        const { data: { session } } = await _supabase.auth.getSession();
-        const chatBtn = document.getElementById('chat-btn');
-        const recruitmentBanner = document.getElementById('recruitment-banner');
-        const publishContainer = document.getElementById('publish-container');
-        
-        if (session) {
-            chatBtn.style.display = 'flex';
-            if(recruitmentBanner) recruitmentBanner.style.display = 'none';
-            if(publishContainer) publishContainer.style.display = 'block';
-        } else {
-            chatBtn.style.display = 'none';
-            if(recruitmentBanner) recruitmentBanner.style.display = 'flex';
-            if(publishContainer) publishContainer.style.display = 'none';
-        }
-    }
-
     async function fetchMarket() {
-        const { data, error } = await _supabase.from('marketplace_items').select('*').order('created_at', {ascending: false});
-        if (!error) { allItems = data; renderItems(data); }
+        // Obtenemos los items y unimos con likes y reviews
+        const { data, error } = await _supabase
+            .from('marketplace_items')
+            .select(`
+                *,
+                item_likes (id),
+                item_reviews (rating)
+            `)
+            .order('created_at', {ascending: false});
+
+        if (!error) { 
+            allItems = data.map(item => {
+                const totalRating = item.item_reviews?.reduce((acc, r) => acc + r.rating, 0) || 0;
+                const avg = item.item_reviews?.length ? (totalRating / item.item_reviews.length).toFixed(1) : 0;
+                return {
+                    ...item,
+                    likes_count: item.item_likes?.length || 0,
+                    avg_rating: avg
+                };
+            });
+            renderItems(allItems); 
+        }
     }
 
     function renderItems(list) {
@@ -290,10 +210,17 @@
             const card = document.createElement('div');
             card.className = 'item-card';
             card.onclick = () => openDetails(item);
+            
+            const stars = item.avg_rating > 0 ? `★ ${item.avg_rating}` : "NEW";
+
             card.innerHTML = `
                 <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}" loading="lazy">
                 <div class="item-card-info">
                     <h3>${item.item_name.toUpperCase()}</h3>
+                    <div class="card-stats">
+                        <span class="stat-stars">${stars}</span>
+                        <span class="stat-likes">❤ ${item.likes_count}</span>
+                    </div>
                     <div class="price-tag">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
                 </div>
             `;
@@ -307,79 +234,41 @@
         document.getElementById('m-img').src = item.image_1 || '';
         document.getElementById('m-cat').innerText = (item.category || 'ASSET').toUpperCase();
         document.getElementById('m-loc').innerText = (item.location || 'UNKNOWN').toUpperCase();
+        document.getElementById('m-likes-text').innerText = `VOUCHED BY ${item.likes_count} CITIZENS`;
+        
+        const ratingText = item.avg_rating > 0 ? '★'.repeat(Math.round(item.avg_rating)) + ` (${item.avg_rating})` : "NO REVIEWS YET";
+        document.getElementById('m-rating').innerText = ratingText;
+
         document.getElementById('m-btn').onclick = () => { window.location.href = `item.html?id=${item.id}`; };
         document.getElementById('item-modal').style.display = 'flex';
         document.body.style.overflow = 'hidden'; 
     }
 
+    // Funciones de utilidad se mantienen igual
     function closeModal() { document.getElementById('item-modal').style.display = 'none'; document.body.style.overflow = 'auto'; }
-
     function showTab(t) {
         document.getElementById('market').style.display = (t === 'market') ? 'block' : 'none';
         document.getElementById('sell').style.display = (t === 'sell') ? 'block' : 'none';
         document.getElementById('link-market').classList.toggle('active', t === 'market');
         document.getElementById('link-sell').classList.toggle('active', t === 'sell');
-        window.scrollTo(0,0);
     }
-
-    function processImg(input) {
-        if (!input.files[0]) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            uploadedImgBase64 = e.target.result;
-            document.getElementById('img-preview').innerHTML = `<img src="${e.target.result}" style="width:100px; height:100px; object-fit:cover; border:2px solid var(--blue-light); border-radius:8px;">`;
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-
-    async function uploadToNet() {
-        // --- AQUÍ SE GESTIONA EL ID DEL MENSAJE/VENDEDOR AUTOMÁTICAMENTE ---
-        const { data: { session } } = await _supabase.auth.getSession();
-        
-        if(!session) {
-            alert("SECURE ERROR: No session detected.");
-            return;
-        }
-
-        if(!uploadedImgBase64) return alert("Select image first");
-
-        const btn = document.getElementById('btn-publish');
-        btn.innerText = "TRANSMITTING...";
-        btn.disabled = true;
-
-        const payload = {
-            item_name: document.getElementById('item-name').value,
-            category: document.getElementById('item-cat').value,
-            location: document.getElementById('item-location').value,
-            price_auec: parseInt(document.getElementById('item-price').value),
-            description: document.getElementById('item-desc').value, // CAPTURA LA DESCRIPCIÓN
-            image_1: uploadedImgBase64,
-            status: 'available',
-            seller_id: session.user.id // ASIGNA TU ID AUTOMÁTICAMENTE
-        };
-
-        const { error } = await _supabase.from('marketplace_items').insert([payload]);
-        
-        if(error) {
-            alert("UEE DATABASE ERROR: " + error.message);
-            btn.innerText = "RETRY";
-            btn.disabled = false;
-        } else {
-            alert("ASSET PUBLISHED IN GALAXY MARKET");
-            location.reload();
-        }
-    }
-
     function handleGlobalSearch() {
         const q = document.getElementById('main-search').value.toLowerCase();
         renderItems(allItems.filter(i => i.item_name.toLowerCase().includes(q)));
     }
-
     function filterByCategory(cat, el) {
         document.querySelectorAll('.cat-item').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
         renderItems(cat === 'all' ? allItems : allItems.filter(i => i.category === cat));
     }
+    
+    // Auth y Carga inicial
+    async function checkAuth() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session) document.getElementById('chat-btn').style.display = 'flex';
+    }
+
+    window.onload = () => { fetchMarket(); checkAuth(); };
 </script>
 </body>
 </html>
