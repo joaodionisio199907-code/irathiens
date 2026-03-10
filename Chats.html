@@ -21,7 +21,7 @@
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--blue-primary); border-radius: 10px; }
-        ::-webkit-scrollbar { display: none; } /* Ocultar en lista si prefieres */
+        ::-webkit-scrollbar { display: none; } 
 
         body {
             margin: 0; background-color: var(--bg-deep); color: var(--text-white);
@@ -191,7 +191,7 @@
                 <span class="contact-name"># BROADCAST_CHANNEL</span>
                 <span class="contact-status">Stanton System Wide</span>
             </div>
-            </div>
+        </div>
     </aside>
 
     <main class="chat-main">
@@ -247,19 +247,40 @@
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    let myId = localStorage.getItem('chat_uid') || 'U-' + Math.floor(Math.random()*9000);
-    let myName = localStorage.getItem('chat_uname') || 'Citizen_' + Math.floor(Math.random()*999);
-    let currentTarget = 'Global Hub';
+    let myId, myName, currentTarget = 'Global Hub';
 
-    window.onload = () => {
-        document.getElementById('my-name-display').innerText = myName.toUpperCase();
-        loadMessages();
-        loadFakeContacts(); // Simulación
+    async function init() {
+        // PROTECCIÓN DE SESIÓN
+        const { data: { session } } = await _supabase.auth.getSession();
         
-        _supabase.channel('public:mensajes').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, payload => {
-            appendMessage(payload.new);
-        }).subscribe();
-    };
+        if (!session) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // Obtener datos reales del ciudadano
+        myId = session.user.id;
+        myName = session.user.user_metadata.full_name || 'Citizen_' + myId.substring(0,4);
+        
+        document.getElementById('my-name-display').innerText = myName.toUpperCase();
+        
+        loadMessages();
+        loadFakeContacts();
+
+        // ACTIVAR REALTIME (Código añadido)
+        _supabase
+            .channel('sala_publica')
+            .on('postgres_changes', 
+                { event: 'INSERT', schema: 'public', table: 'mensajes' }, 
+                (payload) => {
+                    console.log('Nuevo mensaje recibido:', payload.new);
+                    // Solo añadir si es para el canal que estamos viendo
+                    if (payload.new.channel === currentTarget) {
+                        appendMessage(payload.new);
+                    }
+                }
+            ).subscribe();
+    }
 
     function loadFakeContacts() {
         const contacts = ['Vanguard_Dealer', 'GrimHex_Tech', 'Mining_Corp_X'];
@@ -283,8 +304,15 @@
 
     async function loadMessages() {
         const box = document.getElementById('messages-area');
+        box.innerHTML = '<div style="text-align:center; color:#333; font-size:0.8rem;">SYNCING COMMS...</div>';
+        
+        const { data } = await _supabase.from('mensajes')
+            .select('*')
+            .eq('channel', currentTarget)
+            .order('created_at', { ascending: true })
+            .limit(50);
+            
         box.innerHTML = '';
-        const { data } = await _supabase.from('mensajes').select('*').order('created_at', { ascending: true }).limit(50);
         if (data) data.forEach(msg => appendMessage(msg));
     }
 
@@ -302,12 +330,20 @@
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if (!text) return;
-        await _supabase.from('mensajes').insert([{ user_id: myId, user_name: myName, content: text }]);
-        input.value = '';
-        document.getElementById('emoji-picker').style.display = 'none';
+        
+        const { error } = await _supabase.from('mensajes').insert([{ 
+            user_id: myId, 
+            user_name: myName, 
+            content: text,
+            channel: currentTarget 
+        }]);
+
+        if (!error) {
+            input.value = '';
+            document.getElementById('emoji-picker').style.display = 'none';
+        }
     }
 
-    // --- EMOJIS ---
     function toggleEmojis() {
         const p = document.getElementById('emoji-picker');
         p.style.display = p.style.display === 'grid' ? 'none' : 'grid';
@@ -318,7 +354,6 @@
         document.getElementById('chat-input').focus();
     }
 
-    // --- MODAL ADD FRIEND ---
     function openAddFriend() { document.getElementById('modal-add').style.display = 'flex'; }
     function closeAddFriend() { document.getElementById('modal-add').style.display = 'none'; }
     
@@ -329,16 +364,18 @@
             const div = document.createElement('div');
             div.className = 'contact-item';
             div.onclick = () => selectContact(name, div);
-            div.innerHTML = `<span class="contact-name">${name}</span><span class="contact-status">Pending verification...</span>`;
+            div.innerHTML = `<span class="contact-name">${name}</span><span class="contact-status">Link established</span>`;
             list.appendChild(div);
             closeAddFriend();
         }
     }
 
-    // Cerrar modal al hacer clic fuera
     window.onclick = (e) => {
         if (e.target.className === 'modal-overlay') closeAddFriend();
     }
+
+    // Iniciar sistema
+    init();
 </script>
 
 </body>
