@@ -45,7 +45,7 @@
         .nav-controls { display: flex; align-items: center; }
         .nav-links { display: flex; gap: 8px; align-items: center; }
         .nav-links a { 
-            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 1rem; 
+            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.9rem; 
             cursor: pointer; transition: 0.3s; text-transform: uppercase; font-style: italic;
             padding: 5px 8px;
         }
@@ -55,9 +55,8 @@
             display: none; background: rgba(0, 210, 255, 0.1); border: 1px solid var(--blue-light);
             color: var(--blue-light); padding: 6px 10px; border-radius: 4px; align-items: center;
             gap: 5px; text-decoration: none; font-family: var(--font-impact); font-size: 0.85rem;
-            transition: 0.3s; position: relative;
+            transition: 0.3s;
         }
-        .chat-icon { width: 16px; height: 16px; fill: currentColor; }
 
         .marketplace-wrapper { max-width: 1400px; margin: 10px auto; padding: 0 15px; display: grid; grid-template-columns: 200px 1fr; gap: 20px; }
 
@@ -66,44 +65,35 @@
         .cat-item { display: block; padding: 12px; color: #8899af; text-decoration: none; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-bottom: 5px; border-radius: 4px; }
         .cat-item.active { background: var(--grad-blue); color: white; clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%); }
 
-        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 15px; }
 
         .item-card { background: var(--bg-card); border: 1px solid #1a2635; border-radius: 0 12px 0 12px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; position: relative; transition: transform 0.2s; }
-        .item-card:active { transform: scale(0.98); }
         .item-card img { width: 100%; height: 150px; object-fit: cover; border-bottom: 1px solid #1a2635; }
         .item-card-info { padding: 12px; }
         .item-card-info h3 { margin: 0; font-size: 0.8rem; color: var(--blue-light); font-family: var(--font-logo); line-height: 1.2; height: 2.4em; overflow: hidden; }
 
-        .card-stats { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem; font-family: var(--font-mono); }
-        .stat-stars { color: var(--yellow-bright); }
-        .stat-likes { color: #8899af; }
+        /* Controles de gestión */
+        .mgmt-controls { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; z-index: 10; }
+        .btn-mgmt { border: none; padding: 6px; border-radius: 4px; cursor: pointer; color: white; font-size: 12px; font-weight: bold; }
+        .btn-del { background: var(--danger); }
+        .btn-edit { background: var(--blue-dark); }
 
-        .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1rem; margin-top: 5px; }
-
-        /* Contenedor de botones de gestión */
-        .mgmt-controls {
-            position: absolute; top: 8px; right: 8px; display: flex; gap: 5px; z-index: 10;
-        }
-        .btn-mgmt {
-            border: none; padding: 8px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; font-size: 14px;
-        }
-        .btn-del { background: var(--danger); box-shadow: 0 0 10px rgba(255, 77, 77, 0.4); }
-        .btn-edit { background: var(--blue-dark); box-shadow: 0 0 10px rgba(0, 86, 255, 0.4); }
+        /* Formulario de Venta Mejorado */
+        #publish-container { background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid #1a2635; max-width: 600px; margin: 0 auto; }
+        .search-bar { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #1a2635; padding: 14px; color: white; margin-bottom: 12px; border-radius: 8px; box-sizing: border-box; font-family: var(--font-main); font-size: 1rem; }
+        .action-btn { background: var(--grad-blue); border: none; padding: 15px; color: #fff; font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; text-transform: uppercase; font-style: italic; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); width: 100%; margin-bottom: 10px; }
+        
+        #img-preview img { width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px; border: 1px dashed var(--blue-light); border-radius: 8px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
         .modal-content { background: var(--bg-card); border: 1px solid var(--blue-light); width: 100%; max-width: 500px; border-radius: 15px; overflow-y: auto; max-height: 90vh; }
-        .modal-img-side img { width: 100%; height: auto; display: block; }
-        .modal-info-side { padding: 20px; }
-
-        .search-bar { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #1a2635; padding: 14px; color: white; margin-bottom: 15px; border-radius: 8px; box-sizing: border-box; font-family: var(--font-main); font-size: 1rem; }
-        
-        .action-btn { background: var(--grad-blue); border: none; padding: 15px; color: #fff; font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; text-transform: uppercase; font-style: italic; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); width: 100%; text-decoration: none; display: inline-block; text-align: center; margin-bottom: 10px; }
 
         @media (max-width: 768px) {
-            .marketplace-wrapper { grid-template-columns: 1fr; }
-            .sidebar { position: sticky; top: 70px; display: flex; overflow-x: auto; border-left: none; border-bottom: 1px solid var(--blue-light); background: var(--bg-deep); border-radius: 0; margin: 0 -15px 15px -15px; z-index: 900; }
-            .cat-item { white-space: nowrap; margin-bottom: 0; }
+            .marketplace-wrapper { grid-template-columns: 1fr; margin-top: 0; }
+            .sidebar { position: sticky; top: 70px; display: flex; overflow-x: auto; border-left: none; border-bottom: 1px solid var(--blue-light); background: var(--bg-deep); border-radius: 0; margin: 0 -15px 15px -15px; z-index: 900; padding: 10px; }
+            .cat-item { white-space: nowrap; margin-bottom: 0; padding: 8px 15px; }
             .market-grid { grid-template-columns: repeat(2, 1fr); }
+            #publish-container { margin: 10px; padding: 15px; }
         }
     </style>
 </head>
@@ -118,10 +108,7 @@
             <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
             <a onclick="showTab('sell')" id="link-sell">SELL</a>
             <a onclick="showTab('my-items')" id="link-my-items" style="display:none;">MY ASSETS</a>
-            <a href="Chats.html" id="chat-btn">
-                <svg class="chat-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
-                <span>CHATS</span>
-            </a>
+            <a href="Chats.html" id="chat-btn">CHATS</a>
         </div>
     </div>
 </nav>
@@ -137,17 +124,16 @@
 
     <main>
         <section id="market">
-            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH ASSET...">
-            <h2 id="view-title" style="display:none; color: var(--blue-light); font-family: var(--font-impact); margin-bottom: 15px;">OWNED ASSETS</h2>
+            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH ASSET..." oninput="handleGlobalSearch()">
+            <h2 id="view-title" style="display:none; color: var(--blue-light); font-family: var(--font-impact); margin-bottom: 15px; text-align: center;">YOUR INVENTORY</h2>
             <div id="market-grid" class="market-grid"></div>
         </section>
 
         <section id="sell" style="display:none;">
-            <div id="publish-container" style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid #1a2635;">
+            <div id="publish-container">
                 <h2 id="form-title" style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 15px 0;">NEW MANIFEST</h2>
-                
                 <input type="hidden" id="edit-item-id">
-
+                
                 <input type="text" id="item-name" class="search-bar" placeholder="ITEM NAME">
                 <select id="item-cat" class="search-bar">
                     <option value="Armor">ARMOR</option>
@@ -159,12 +145,12 @@
                 <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC">
                 <textarea id="item-desc" class="search-bar" placeholder="ITEM DESCRIPTION" style="height: 80px;"></textarea>
                 
-                <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635;">SELECT IMAGE</button>
-                <input type="file" id="file-input" hidden onchange="processImg(this)">
                 <div id="img-preview"></div>
+                <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635; font-size: 0.9rem;">CHANGE IMAGE</button>
+                <input type="file" id="file-input" hidden onchange="processImg(this)">
                 
                 <button class="action-btn" id="btn-publish" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000;">PUBLISH ASSET</button>
-                <button class="action-btn" id="btn-cancel-edit" onclick="resetForm()" style="display:none; background:transparent; border:1px solid #444; clip-path:none;">CANCEL EDIT</button>
+                <button class="action-btn" id="btn-cancel-edit" onclick="resetForm(); showTab('my-items');" style="display:none; background:transparent; border:1px solid #444; clip-path:none;">CANCEL</button>
             </div>
         </section>
     </main>
@@ -172,15 +158,11 @@
 
 <div class="modal-overlay" id="item-modal" onclick="if(event.target == this) closeModal()">
     <div class="modal-content">
-        <div class="modal-img-side"><img id="m-img" src=""></div>
-        <div class="modal-info-side">
+        <div class="modal-img-side"><img id="m-img" src="" style="width: 100%"></div>
+        <div class="modal-info-side" style="padding: 20px;">
             <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light);"></h2>
-            <div id="m-rating" class="stat-stars" style="margin-top:5px;"></div>
-            <div id="m-price" style="font-size: 1.6rem; color: var(--yellow-bright); font-family: var(--font-mono); margin: 10px 0;"></div>
-            <div style="font-size: 0.85rem; border-top: 1px solid #333; padding-top: 10px; color: #aaa; margin-bottom:20px;">
-                <p>SECTOR: <span id="m-cat" style="color:#fff"></span> | LOCATION: <span id="m-loc" style="color:#fff"></span></p>
-                <p id="m-likes-text" style="color: var(--blue-light); font-weight: bold;"></p>
-            </div>
+            <div id="m-price" style="font-size: 1.5rem; color: var(--yellow-bright); margin: 10px 0;"></div>
+            <p style="font-size: 0.8rem; color: #8899af;">LOCATION: <span id="m-loc" style="color:white"></span></p>
             <button class="action-btn" id="m-btn">OPEN DETAILS</button>
             <button class="action-btn" onclick="closeModal()" style="background:transparent; border:1px solid #444; clip-path:none;">CLOSE</button>
         </div>
@@ -195,78 +177,73 @@
     let allItems = [];
     let currentUser = null;
     let currentTab = 'market';
+    let uploadedImgBase64 = null;
 
     async function fetchMarket() {
-        const { data, error } = await _supabase
-            .from('marketplace_items')
-            .select(`*, item_likes (id), item_reviews (rating)`)
-            .order('created_at', {ascending: false});
-
+        const { data, error } = await _supabase.from('marketplace_items').select(`*, item_likes (id), item_reviews (rating)`).order('created_at', {ascending: false});
         if (!error) { 
             allItems = data.map(item => {
                 const totalRating = item.item_reviews?.reduce((acc, r) => acc + r.rating, 0) || 0;
                 const avg = item.item_reviews?.length ? (totalRating / item.item_reviews.length).toFixed(1) : 0;
                 return { ...item, likes_count: item.item_likes?.length || 0, avg_rating: avg };
             });
-            renderItems(currentTab === 'my-items' ? allItems.filter(i => i.seller_id === currentUser?.id) : allItems); 
+            updateView();
+        }
+    }
+
+    function updateView() {
+        if (currentTab === 'my-items') {
+            renderItems(allItems.filter(i => i.seller_id === currentUser?.id));
+        } else {
+            renderItems(allItems);
         }
     }
 
     function renderItems(list) {
         const grid = document.getElementById('market-grid');
         grid.innerHTML = "";
-        
         list.forEach(item => {
             const card = document.createElement('div');
             card.className = 'item-card';
             card.onclick = () => openDetails(item);
             
-            const isOwner = currentUser && item.seller_id === currentUser.id;
-            const stars = item.avg_rating > 0 ? `★ ${item.avg_rating}` : "NEW";
-
-            // Si estamos en MY ASSETS, añadimos controles de borrado y edición
-            let controls = "";
-            if(currentTab === 'my-items' && isOwner) {
-                controls = `
+            let mgmt = "";
+            if(currentTab === 'my-items' && currentUser && item.seller_id === currentUser.id) {
+                mgmt = `
                     <div class="mgmt-controls">
-                        <button class="btn-mgmt btn-edit" onclick="event.stopPropagation(); prepareEdit('${item.id}')">✎</button>
-                        <button class="btn-mgmt btn-del" onclick="event.stopPropagation(); deleteAsset('${item.id}')">🗑</button>
-                    </div>
-                `;
+                        <button class="btn-mgmt btn-edit" onclick="event.stopPropagation(); prepareEdit('${item.id}')">EDIT</button>
+                        <button class="btn-mgmt btn-del" onclick="event.stopPropagation(); deleteAsset('${item.id}')">DEL</button>
+                    </div>`;
             }
 
             card.innerHTML = `
-                ${controls}
+                ${mgmt}
                 <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}" loading="lazy">
                 <div class="item-card-info">
                     <h3>${item.item_name.toUpperCase()}</h3>
-                    <div class="card-stats">
-                        <span class="stat-stars">${stars}</span>
-                        <span class="stat-likes">❤ ${item.likes_count}</span>
-                    </div>
                     <div class="price-tag">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
-                </div>
-            `;
+                </div>`;
             grid.appendChild(card);
         });
     }
 
-    // --- FUNCIONES DE GESTIÓN (DELETE & EDIT) ---
-
-    async function deleteAsset(id) {
-        if (!confirm("TERMINATE ASSET LISTING? THIS CANNOT BE UNDONE.")) return;
-        const { error } = await _supabase.from('marketplace_items').delete().eq('id', id);
-        if (!error) {
-            allItems = allItems.filter(i => i.id !== id);
-            renderItems(allItems.filter(i => i.seller_id === currentUser.id));
+    // GESTIÓN DE IMAGEN
+    function processImg(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImgBase64 = e.target.result;
+                document.getElementById('img-preview').innerHTML = `<img src="${uploadedImgBase64}">`;
+            };
+            reader.readAsDataURL(input.files[0]);
         }
     }
 
+    // EDITAR
     function prepareEdit(id) {
         const item = allItems.find(i => i.id === id);
         if (!item) return;
 
-        // Llenar el formulario con los datos actuales
         document.getElementById('edit-item-id').value = item.id;
         document.getElementById('item-name').value = item.item_name;
         document.getElementById('item-cat').value = item.category;
@@ -274,23 +251,25 @@
         document.getElementById('item-price').value = item.price_auec;
         document.getElementById('item-desc').value = item.description || "";
         
-        // Cambiar UI del formulario
-        document.getElementById('form-title').innerText = "UPDATE MANIFEST";
+        uploadedImgBase64 = item.image_1;
+        document.getElementById('img-preview').innerHTML = `<img src="${item.image_1 || ''}">`;
+
+        document.getElementById('form-title').innerText = "UPDATE ASSET";
         document.getElementById('btn-publish').innerText = "SAVE CHANGES";
         document.getElementById('btn-publish').style.background = "var(--blue-light)";
         document.getElementById('btn-cancel-edit').style.display = "block";
 
-        showTab('sell'); // Ir a la pestaña del formulario
+        showTab('sell');
     }
 
     function resetForm() {
         document.getElementById('edit-item-id').value = "";
         document.getElementById('item-name').value = "";
-        document.getElementById('item-location').value = "";
         document.getElementById('item-price').value = "";
+        document.getElementById('item-location').value = "";
         document.getElementById('item-desc').value = "";
         document.getElementById('img-preview').innerHTML = "";
-        
+        uploadedImgBase64 = null;
         document.getElementById('form-title').innerText = "NEW MANIFEST";
         document.getElementById('btn-publish').innerText = "PUBLISH ASSET";
         document.getElementById('btn-publish').style.background = "var(--yellow-accent)";
@@ -298,6 +277,7 @@
     }
 
     async function uploadToNet() {
+        if(!currentUser) return alert("LOG IN REQUIRED");
         const editId = document.getElementById('edit-item-id').value;
         const payload = {
             item_name: document.getElementById('item-name').value,
@@ -305,31 +285,33 @@
             location: document.getElementById('item-location').value,
             price_auec: document.getElementById('item-price').value,
             description: document.getElementById('item-desc').value,
+            image_1: uploadedImgBase64,
             seller_id: currentUser.id
         };
 
+        let res;
         if (editId) {
-            // Lógica de Actualización
-            const { error } = await _supabase.from('marketplace_items').update(payload).eq('id', editId);
-            if (!error) {
-                alert("MANIFEST UPDATED.");
-                resetForm();
-                await fetchMarket();
-                showTab('my-items');
-            }
+            res = await _supabase.from('marketplace_items').update(payload).eq('id', editId);
         } else {
-            // Lógica de Creación Original (aquí iría tu código de Insert existente)
-            const { error } = await _supabase.from('marketplace_items').insert([payload]);
-            if (!error) {
-                alert("ASSET PUBLISHED.");
-                resetForm();
-                fetchMarket();
-                showTab('market');
-            }
+            res = await _supabase.from('marketplace_items').insert([payload]);
+        }
+
+        if (!res.error) {
+            alert(editId ? "MANIFEST UPDATED" : "ASSET PUBLISHED");
+            resetForm();
+            await fetchMarket();
+            showTab(editId ? 'my-items' : 'market');
+        } else {
+            alert("ERROR: " + res.error.message);
         }
     }
 
-    // --- UTILIDADES ---
+    async function deleteAsset(id) {
+        if (confirm("TERMINATE THIS LISTING?")) {
+            const { error } = await _supabase.from('marketplace_items').delete().eq('id', id);
+            if (!error) { fetchMarket(); }
+        }
+    }
 
     function showTab(t) {
         currentTab = t;
@@ -340,15 +322,10 @@
         document.getElementById('main-search').style.display = (t === 'market') ? 'block' : 'none';
         document.getElementById('view-title').style.display = (t === 'my-items') ? 'block' : 'none';
 
-        if (t === 'market') {
-            document.getElementById('link-market').classList.add('active');
-            renderItems(allItems);
-        } else if (t === 'sell') {
-            document.getElementById('link-sell').classList.add('active');
-        } else if (t === 'my-items') {
-            document.getElementById('link-my-items').classList.add('active');
-            renderItems(allItems.filter(i => i.seller_id === currentUser?.id));
-        }
+        if (t === 'market') document.getElementById('link-market').classList.add('active');
+        if (t === 'sell') document.getElementById('link-sell').classList.add('active');
+        if (t === 'my-items') document.getElementById('link-my-items').classList.add('active');
+        updateView();
     }
 
     async function checkAuth() {
@@ -360,26 +337,26 @@
         }
     }
 
-    function openDetails(item) {
-        document.getElementById('m-title').innerText = item.item_name.toUpperCase();
-        document.getElementById('m-price').innerText = parseInt(item.price_auec).toLocaleString() + " aUEC";
-        document.getElementById('m-img').src = item.image_1 || '';
-        document.getElementById('m-cat').innerText = (item.category || 'ASSET').toUpperCase();
-        document.getElementById('m-loc').innerText = (item.location || 'UNKNOWN').toUpperCase();
-        document.getElementById('m-likes-text').innerText = `VOUCHED BY ${item.likes_count} CITIZENS`;
-        document.getElementById('m-rating').innerText = item.avg_rating > 0 ? '★'.repeat(Math.round(item.avg_rating)) + ` (${item.avg_rating})` : "NO REVIEWS";
-        document.getElementById('m-btn').onclick = () => { window.location.href = `item.html?id=${item.id}`; };
-        document.getElementById('item-modal').style.display = 'flex';
-        document.body.style.overflow = 'hidden'; 
+    function handleGlobalSearch() {
+        const q = document.getElementById('main-search').value.toLowerCase();
+        renderItems(allItems.filter(i => i.item_name.toLowerCase().includes(q)));
     }
-
-    function closeModal() { document.getElementById('item-modal').style.display = 'none'; document.body.style.overflow = 'auto'; }
 
     function filterByCategory(cat, el) {
         document.querySelectorAll('.cat-item').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
         renderItems(cat === 'all' ? allItems : allItems.filter(i => i.category === cat));
     }
+
+    function openDetails(item) {
+        document.getElementById('m-title').innerText = item.item_name;
+        document.getElementById('m-price').innerText = parseInt(item.price_auec).toLocaleString() + " aUEC";
+        document.getElementById('m-img').src = item.image_1 || '';
+        document.getElementById('m-loc').innerText = item.location;
+        document.getElementById('item-modal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('item-modal').style.display = 'none'; }
 
     window.onload = () => { fetchMarket(); checkAuth(); };
 </script>
