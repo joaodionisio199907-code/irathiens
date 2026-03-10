@@ -95,7 +95,6 @@
             border-radius: 50%; box-shadow: 0 0 8px var(--yellow-bright);
         }
 
-        /* --- CONTENT --- */
         .wrapper { max-width: 1100px; margin: 30px auto; padding: 0 15px; }
 
         .main-card {
@@ -203,7 +202,6 @@
 
 <nav>
     <img src="img/Shopy.png" alt="SHOPYSPACE" class="logo-img" onclick="window.location.href='https://irathiens.org/ShopySpace'">
-    
     <div class="nav-right">
         <a href="Chats.html" id="chat-btn">
             <svg class="chat-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
@@ -218,14 +216,11 @@
         <div class="image-container">
             <img id="item-img" src="" alt="Loading asset...">
         </div>
-
         <div class="info-panel">
             <span class="category-tag" id="item-cat">LOADING...</span>
             <h1 id="item-name">ASSET NAME</h1>
             <div class="price-box" id="item-price">0 aUEC</div>
-            
             <div class="item-desc" id="item-desc">Establishing secure link to UEE manifest...</div>
-
             <div class="specs-list">
                 <div class="spec-box">
                     <span class="spec-label">Location</span>
@@ -236,15 +231,12 @@
                     <span class="spec-val" id="item-status" style="color: var(--success);">STABLE</span>
                 </div>
             </div>
-
             <button class="buy-btn" onclick="openChat()">CONTACT SELLER</button>
         </div>
     </div>
 </div>
 
-<footer>
-    SHOPYSPACE NETWORK &copy; 2956 | STANTON HUB
-</footer>
+<footer>SHOPYSPACE NETWORK &copy; 2956 | STANTON HUB</footer>
 
 <script>
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
@@ -254,11 +246,8 @@
     async function checkAuth() {
         const { data: { session } } = await _supabase.auth.getSession();
         const chatBtn = document.getElementById('chat-btn');
-        if (session) {
-            chatBtn.style.display = 'flex';
-        } else {
-            chatBtn.style.display = 'none';
-        }
+        if (session) chatBtn.style.display = 'flex';
+        else chatBtn.style.display = 'none';
     }
 
     async function loadItem() {
@@ -277,48 +266,35 @@
         }
     }
 
-    // FUNCIÓN CON DEBUG INTEGRADO PARA VER EL ERROR
     async function openChat() {
         const { data: { session } } = await _supabase.auth.getSession();
-        
-        if (!session) {
-            window.location.href = 'login.html'; 
-            return;
-        }
+        if (!session) { window.location.href = 'login.html'; return; }
 
         const params = new URLSearchParams(window.location.search);
         const itemId = params.get('id');
 
-        console.log("Iniciando contacto para Asset ID:", itemId);
-
-        // Intentamos obtener el vendedor
+        // USANDO seller_id SEGÚN TU TABLA
         const { data: itemData, error } = await _supabase
             .from('marketplace_items')
-            .select('user_id, seller_name') 
+            .select('seller_id') 
             .eq('id', itemId)
             .single();
 
         if (error) {
-            console.error("Error de Supabase:", error);
-            alert("Database Error: " + error.message);
+            console.error(error);
+            alert("Database Link Error.");
             return;
         }
 
-        console.log("Datos del vendedor recibidos:", itemData);
-
-        if (itemData && itemData.user_id) {
-            // Guardamos datos para Chats.html
+        if (itemData && itemData.seller_id) {
             const pendingContact = {
-                id: itemData.user_id,
-                name: itemData.seller_name || 'Unknown Seller'
+                id: itemData.seller_id,
+                name: 'Seller' // O puedes añadir una columna seller_name a tu tabla
             };
             localStorage.setItem('pending_contact', JSON.stringify(pendingContact));
-            
             window.location.href = 'Chats.html';
         } else {
-            // ERROR DETECTADO: El producto existe pero la columna user_id está vacía
-            console.warn("Advertencia: El campo user_id en la tabla marketplace_items está vacío para este ID.");
-            alert("Unable to find seller ID. This asset might be orphaned or the seller account was deleted.");
+            alert("This asset has no Seller ID assigned. Check your database!");
         }
     }
 
