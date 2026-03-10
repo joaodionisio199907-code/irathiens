@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SHOPYSPACE | GALAXY GATEWAY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --blue: #00d2ff;
+            --blue-dark: #0056ff;
+            --yellow: #ffb800;
+            --bg: #050a12;
+            --card-bg: #0e1621;
+            --border: #1a2635;
+            --font-impact: 'Barlow Condensed', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { display: none; }
+        
+        body { 
+            margin: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden; background-image: radial-gradient(circle at 50% 0%, #102a4d 0%, var(--bg) 80%);
+        }
+
+        /* --- NAVIGATION (Matching ShopySpace Style) --- */
+        nav {
+            background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--blue);
+            padding: 0 20px; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1000; height: 70px;
+        }
+        .logo-img { height: 40px; cursor: pointer; filter: drop-shadow(0 0 8px var(--blue)); }
+        .nav-right { display: flex; align-items: center; gap: 15px; }
+        .nav-link { color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.9rem; text-transform: uppercase; }
+        
+        #chat-btn {
+            display: none; background: rgba(0, 210, 255, 0.1); border: 1px solid var(--blue);
+            color: var(--blue); padding: 6px 12px; border-radius: 4px; text-decoration: none; 
+            font-family: var(--font-impact); font-size: 0.8rem;
+        }
+
+        /* --- HERO --- */
+        .hero {
+            padding: 60px 20px 20px; text-align: center;
+        }
+        .hero-img { width: 85%; max-width: 500px; filter: drop-shadow(0 0 20px var(--blue)); margin-bottom: 10px; }
+        .hero-sub { font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 5px; color: var(--blue); opacity: 0.8; }
+
+        /* --- BENTO BOX GRID --- */
+        .grid-container {
+            max-width: 1100px; margin: 20px auto; padding: 0 15px;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+        }
+
+        .box {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 0 15px 0 15px; padding: 25px; position: relative;
+            transition: 0.3s; overflow: hidden;
+        }
+        .box:hover { border-color: var(--blue); transform: translateY(-3px); }
+
+        .full-width { grid-column: span 2; }
+
+        .box h2 { font-family: var(--font-impact); font-size: 2rem; margin: 0 0 10px 0; font-style: italic; text-transform: uppercase; }
+        .box p { color: #8899af; font-size: 0.95rem; line-height: 1.4; margin-bottom: 20px; }
+
+        /* --- MARKET PREVIEW SLIDER --- */
+        .slider-wrap {
+            display: flex; overflow-x: auto; gap: 12px; padding: 10px 0;
+            scrollbar-width: none;
+        }
+        .mini-card {
+            min-width: 150px; background: #000; padding: 10px; border-radius: 4px; border: 1px solid #111;
+        }
+        .mini-card img { width: 100%; height: 90px; object-fit: cover; border-radius: 3px; }
+        .mini-price { font-family: var(--font-mono); color: var(--yellow); font-weight: bold; font-size: 0.85rem; margin-top: 5px; }
+
+        /* --- BINANCE STYLE BUTTONS --- */
+        .action-btn {
+            display: block; width: 100%; padding: 15px; background: var(--blue); color: #000;
+            text-align: center; font-family: var(--font-impact); font-size: 1.3rem;
+            text-decoration: none; font-weight: 900; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+            text-transform: uppercase;
+        }
+        .btn-yellow { background: var(--yellow); }
+        .btn-kofi { background: #29abe0; color: white; }
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+            .hero-img { width: 100%; }
+            h2 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <img src="img/Shopy.png" class="logo-img" onclick="location.reload()">
+    <div class="nav-right">
+        <a href="market.html" class="nav-link">MARKET</a>
+        <a href="Chats.html" id="chat-btn">CHATS</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <img src="img/Shopy.png" class="hero-img">
+    <div class="hero-sub">THE ASSET HUB</div>
+</section>
+
+<div class="grid-container">
+    
+    <div class="box full-width">
+        <h2>LIVE MARKETPLACE</h2>
+        <div class="slider-wrap" id="preview-slider">
+            <div class="mini-card"><p>SYNCING NETWORK...</p></div>
+        </div>
+        <a href="market.html" class="action-btn" style="margin-top:20px;">ACCESS FULL MARKET [+]</a>
+    </div>
+
+    <div class="box">
+        <h2>SELL WITH US</h2>
+        <p>Start trading your gear across the Stanton system. Secure UEE-backed transactions for verified sellers.</p>
+        <a href="sell.html" class="action-btn btn-yellow">REGISTER TRADER</a>
+    </div>
+
+    <div class="box">
+        <h2>FLEET STORE</h2>
+        <p>Future exchange for LTI pledges and rare hulls using global currency. Secure escrow system in development.</p>
+        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--blue);">STATUS: ENCRYPTING DATA LINK...</div>
+    </div>
+
+    <div class="box">
+        <h2>SYSTEM API</h2>
+        <p>Integrate live market data and price tracking directly into your Organization's Discord or Hub.</p>
+    </div>
+
+    <div class="box">
+        <h2>SUPPORT DEVELOPMENT</h2>
+        <p>Help us maintain the servers and develop new features for the community. All contributions help.</p>
+        <a href="https://ko-fi.com/YOUR_LINK" class="action-btn btn-kofi">SUPPORT ON KO-FI</a>
+    </div>
+
+</div>
+
+<footer style="padding: 40px; text-align: center; font-family: var(--font-mono); font-size: 0.6rem; color: #333; letter-spacing: 2px;">
+    SHOPYSPACE_NETWORK // STANTON_SYSTEM_HUB © 2026
+</footer>
+
+<script>
+    const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
+    const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+    async function checkUser() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session) document.getElementById('chat-btn').style.display = 'flex';
+    }
+
+    async function loadSlider() {
+        const { data } = await _supabase.from('marketplace_items').select('*').limit(8);
+        const container = document.getElementById('preview-slider');
+        if (data && data.length > 0) {
+            container.innerHTML = "";
+            data.forEach(item => {
+                container.innerHTML += `
+                    <div class="mini-card" onclick="location.href='item.html?id=${item.id}'">
+                        <img src="${item.image_1 || 'https://via.placeholder.com/150'}">
+                        <div class="mini-price">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
+                        <div style="font-size:0.55rem; color:#555; font-family:var(--font-mono); margin-top:2px; text-transform:uppercase;">${item.item_name}</div>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    window.onload = () => {
+        checkUser();
+        loadSlider();
+    };
+</script>
+
+</body>
+</html>
