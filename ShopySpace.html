@@ -11,16 +11,12 @@
             --blue-light: #00d2ff;
             --blue-dark: #0056ff;
             --yellow-accent: #ffb800;
-            --yellow-bright: #ffe600;
             --bg-deep: #050a12;
             --bg-card: #0e1621;
             --text-white: #ffffff;
-            --grad-blue: linear-gradient(90deg, #00d2ff 0%, #0056ff 100%);
             --font-main: 'Rajdhani', sans-serif;
-            --font-logo: 'Orbitron', sans-serif;
             --font-impact: 'Barlow Condensed', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
-            --danger: #ff4d4d;
         }
 
         ::-webkit-scrollbar { display: none; }
@@ -30,97 +26,94 @@
             font-family: var(--font-main); overflow-x: hidden;
             background-image: radial-gradient(circle at 50% 0%, #102a4d 0%, var(--bg-deep) 80%);
             min-height: 100vh;
-            -webkit-tap-highlight-color: transparent;
         }
 
+        /* NAVEGACIÓN */
         nav {
             background: rgba(0, 0, 0, 0.95); border-bottom: 2px solid var(--blue-light);
             padding: 0 15px; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); height: 70px;
+            position: sticky; top: 0; z-index: 1000; height: 70px;
         }
-        .logo-img { max-height: 75px; filter: drop-shadow(0 0 8px var(--blue-light)); cursor: pointer; }
-        .nav-links { display: flex; gap: 8px; align-items: center; }
+        .logo-img { max-height: 70px; cursor: pointer; }
+        .nav-links { display: flex; gap: 10px; }
         .nav-links a { 
             color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.8rem; 
-            cursor: pointer; transition: 0.3s; text-transform: uppercase; font-style: italic;
-            padding: 6px 10px; border-radius: 4px;
+            cursor: pointer; padding: 6px 12px; border-radius: 4px; text-transform: uppercase;
         }
-        #link-my-items.active { 
-            background: rgba(255, 184, 0, 0.15); color: var(--yellow-bright); 
-            border: 1px solid var(--yellow-accent); box-shadow: 0 0 15px rgba(255, 184, 0, 0.2);
+        .nav-links a.active { color: var(--blue-light); border-bottom: 2px solid var(--blue-light); }
+        #chat-btn { border: 1px solid var(--blue-light); background: rgba(0, 210, 255, 0.1); }
+
+        /* CONTENEDOR FLEXIBLE */
+        .main-container { 
+            max-width: 1200px; margin: 20px auto; padding: 0 15px; 
+            display: flex; gap: 25px; align-items: flex-start;
         }
-        .nav-links a.active:not(#link-my-items) { color: var(--blue-light); border-bottom: 2px solid var(--blue-light); }
-        
-        #chat-btn { color: var(--blue-light); border: 1px solid rgba(0, 210, 255, 0.4); background: rgba(0, 210, 255, 0.05); }
 
-        .marketplace-wrapper { max-width: 1200px; margin: 10px auto; padding: 0 15px; display: grid; grid-template-columns: 180px 1fr; gap: 20px; }
+        /* SIDEBAR (Solo en Market) */
+        .sidebar { 
+            width: 200px; flex-shrink: 0; background: var(--bg-card); padding: 15px; 
+            border-radius: 0 15px 0 15px; border-left: 4px solid var(--blue-light);
+        }
+        .cat-item { 
+            display: block; padding: 12px; color: #8899af; cursor: pointer; 
+            font-weight: 700; margin-bottom: 5px; border-radius: 4px; 
+        }
+        .cat-item.active { background: linear-gradient(90deg, #00d2ff, #0056ff); color: white; }
 
-        .sidebar { background: var(--bg-card); padding: 15px; border-radius: 0 15px 0 15px; border-left: 4px solid var(--blue-light); height: fit-content; position: sticky; top: 90px; }
-        .cat-item { display: block; padding: 12px; color: #8899af; text-decoration: none; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-bottom: 5px; border-radius: 4px; }
-        .cat-item.active { background: var(--grad-blue); color: white; clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%); }
+        /* ÁREA DE CONTENIDO */
+        .content-area { flex-grow: 1; width: 100%; }
 
-        /* --- CORRECCIÓN SECCIÓN SELL --- */
-        #sell { width: 100%; display: flex; justify-content: center; align-items: flex-start; }
-        
+        /* FORMULARIO SELL - ESTILO CORREGIDO */
+        .sell-wrapper { 
+            width: 100%; display: flex; justify-content: center; padding: 20px 0; 
+        }
         #publish-container { 
-            background: var(--bg-card); padding: 30px; border-radius: 20px; 
-            border: 1px solid rgba(0, 210, 255, 0.2); width: 100%; max-width: 550px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.7); margin: 20px auto;
+            background: var(--bg-card); padding: 35px; border-radius: 20px; 
+            border: 1px solid rgba(0, 210, 255, 0.3); width: 100%; max-width: 500px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
         }
 
         .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 0.7rem; color: var(--blue-light); font-family: var(--font-mono); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1.5px; }
+        .form-label { display: block; font-size: 0.7rem; color: var(--blue-light); font-family: var(--font-mono); margin-bottom: 8px; letter-spacing: 1px; }
         
-        .search-bar { 
-            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #1a2635; 
+        .input-field { 
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #1a2635; 
             padding: 15px; color: white; border-radius: 10px; box-sizing: border-box; 
-            font-family: var(--font-main); font-size: 1rem; transition: 0.3s;
+            font-family: var(--font-main); font-size: 1rem;
         }
-        .search-bar:focus { border-color: var(--blue-light); outline: none; background: rgba(0, 210, 255, 0.05); }
-        
+
         #img-preview { 
-            width: 100%; height: 200px; background: rgba(0,0,0,0.4); border: 2px dashed #1a2635; 
+            width: 100%; height: 200px; background: rgba(0,0,0,0.5); border: 2px dashed #1a2635; 
             border-radius: 15px; display: flex; align-items: center; justify-content: center; 
-            margin-bottom: 15px; overflow: hidden; color: #2a3a4d; font-family: var(--font-mono);
+            margin-bottom: 15px; overflow: hidden; font-family: var(--font-mono); color: #2a3a4d;
         }
         #img-preview img { width: 100%; height: 100%; object-fit: contain; }
 
-        .action-btn { 
-            background: var(--grad-blue); border: none; padding: 18px; color: #fff; 
-            font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; 
-            text-transform: uppercase; font-style: italic; width: 100%; 
-            clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%); margin-bottom: 12px;
+        .btn-main { 
+            background: var(--yellow-accent); color: #000; border: none; padding: 18px; 
+            font-family: var(--font-impact); font-size: 1.2rem; cursor: pointer; width: 100%; 
+            clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%); font-weight: 900;
         }
-        .btn-secondary { background: #1a2635; font-size: 0.85rem; clip-path: none; border-radius: 8px; }
 
         /* MARKET GRID */
-        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 15px; }
-        .item-card { background: var(--bg-card); border: 1px solid #1a2635; border-radius: 0 12px 0 12px; overflow: hidden; position: relative; transition: 0.3s; }
-        .item-card img { width: 100%; height: 150px; object-fit: cover; }
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        .item-card { background: var(--bg-card); border-radius: 0 12px 0 12px; overflow: hidden; border: 1px solid #1a2635; }
+        .item-card img { width: 100%; height: 160px; object-fit: cover; }
         .item-card-info { padding: 12px; }
-        .item-card-info h3 { margin: 0; font-size: 0.8rem; color: var(--blue-light); font-family: var(--font-logo); }
 
-        .btn-del { 
-            position: absolute; top: 8px; right: 8px; background: var(--danger); 
-            color: white; border: none; padding: 6px 10px; border-radius: 4px; 
-            font-size: 10px; font-weight: 900; cursor: pointer;
-        }
-
-        /* MOBILE */
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .marketplace-wrapper { grid-template-columns: 1fr; }
-            .sidebar { position: sticky; top: 70px; display: flex; overflow-x: auto; border: none; margin: 0 -15px 15px -15px; padding: 10px; z-index: 900; }
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; display: flex; overflow-x: auto; padding: 10px; border-left: none; border-bottom: 1px solid var(--blue-light); }
+            .cat-item { white-space: nowrap; }
             #publish-container { padding: 20px; border: none; background: transparent; }
-            .market-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo-wrapper" onclick="showTab('market')">
-        <img src="img/Shopy.png" class="logo-img">
-    </div>
+    <img src="img/Shopy.png" class="logo-img" onclick="showTab('market')">
     <div class="nav-links">
         <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
         <a onclick="showTab('sell')" id="link-sell">SELL</a>
@@ -129,7 +122,7 @@
     </div>
 </nav>
 
-<div class="marketplace-wrapper">
+<div class="main-container">
     <aside class="sidebar" id="sidebar-filter">
         <a class="cat-item active" onclick="filterByCategory('all', this)">ALL</a>
         <a class="cat-item" onclick="filterByCategory('Armor', this)">ARMOR</a>
@@ -138,57 +131,50 @@
         <a class="cat-item" onclick="filterByCategory('Medical', this)">MEDICAL</a>
     </aside>
 
-    <main id="main-content">
-        <section id="market">
-            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH GALAXY ASSETS..." oninput="handleGlobalSearch()" style="margin-bottom:20px;">
-            <h2 id="view-title" style="display:none; color: var(--yellow-accent); font-family: var(--font-impact); margin-bottom: 20px; text-align: center;">PERSONAL INVENTORY</h2>
+    <div class="content-area">
+        <section id="market-section">
+            <input type="text" id="main-search" class="input-field" placeholder="SEARCH ASSETS..." oninput="handleGlobalSearch()" style="margin-bottom: 20px;">
             <div id="market-grid" class="market-grid"></div>
         </section>
 
-        <section id="sell" style="display:none;">
+        <section id="sell-section" class="sell-wrapper" style="display:none;">
             <div id="publish-container">
-                <h2 style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 30px 0; text-align: center; letter-spacing: 3px; font-size: 1.8rem;">DATA UPLOAD</h2>
+                <h2 style="text-align:center; color: var(--blue-light); font-family: var(--font-impact); letter-spacing: 2px;">DATA UPLOAD</h2>
                 
                 <div class="form-group">
-                    <label class="form-label">Asset Designation</label>
-                    <input type="text" id="item-name" class="search-bar" placeholder="e.g. RSI Scorpius">
+                    <label class="form-label">Asset Name</label>
+                    <input type="text" id="item-name" class="input-field" placeholder="Name">
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Category</label>
-                    <select id="item-cat" class="search-bar">
-                        <option value="Armor">ARMOR</option>
-                        <option value="Weapons">WEAPONS</option>
-                        <option value="Ships">SHIPS</option>
-                        <option value="Medical">MEDICAL</option>
-                    </select>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label class="form-label">Credits (aUEC)</label>
-                        <input type="number" id="item-price" class="search-bar" placeholder="000">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" class="form-group">
+                    <div>
+                        <label class="form-label">Price (aUEC)</label>
+                        <input type="number" id="item-price" class="input-field" placeholder="0">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Sector</label>
-                        <input type="text" id="item-location" class="search-bar" placeholder="e.g. Orison">
+                    <div>
+                        <label class="form-label">Category</label>
+                        <select id="item-cat" class="input-field">
+                            <option value="Armor">ARMOR</option>
+                            <option value="Weapons">WEAPONS</option>
+                            <option value="Ships">SHIPS</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Manifest Details</label>
-                    <textarea id="item-desc" class="search-bar" placeholder="Specifications..." style="height: 100px; resize: none;"></textarea>
+                    <label class="form-label">Location</label>
+                    <input type="text" id="item-location" class="input-field" placeholder="Orison / Area18">
                 </div>
+
+                <div id="img-preview">NO IMAGE</div>
                 
-                <div id="img-preview">NO VISUAL DATA LINKED</div>
-                
-                <button class="action-btn btn-secondary" onclick="document.getElementById('file-input').click()">UPLOAD VISUAL DATA</button>
+                <button class="input-field" style="margin-bottom:10px; cursor:pointer;" onclick="document.getElementById('file-input').click()">SELECT IMAGE</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
                 
-                <button class="action-btn" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000; margin-top: 10px; font-weight: 900;">CONFIRM BROADCAST</button>
+                <button class="btn-main" onclick="uploadToNet()">PUBLISH</button>
             </div>
         </section>
-    </main>
+    </div>
 </div>
 
 <script>
@@ -198,73 +184,40 @@
 
     let allItems = [];
     let currentUser = null;
-    let currentTab = 'market';
     let uploadedImgBase64 = null;
 
     async function fetchMarket() {
         const { data } = await _supabase.from('marketplace_items').select('*').order('created_at', {ascending: false});
-        if (data) { allItems = data; updateView(); }
+        if (data) { allItems = data; renderGrid(data); }
     }
 
-    function updateView() {
+    function renderGrid(list) {
         const grid = document.getElementById('market-grid');
-        grid.innerHTML = "";
-        const list = (currentTab === 'my-items') ? allItems.filter(i => i.seller_id === currentUser?.id) : allItems;
-
-        list.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            let delBtn = (currentTab === 'my-items') ? `<button class="btn-del" onclick="deleteAsset('${item.id}')">DEL</button>` : "";
-            
-            card.innerHTML = `
-                ${delBtn}
-                <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}" loading="lazy">
+        grid.innerHTML = list.map(item => `
+            <div class="item-card">
+                <img src="${item.image_1 || ''}">
                 <div class="item-card-info">
-                    <h3>${item.item_name.toUpperCase()}</h3>
-                    <div style="color: var(--yellow-bright); font-family: var(--font-mono); font-size: 0.9rem; margin-top:5px;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
-                </div>`;
-            grid.appendChild(card);
-        });
-    }
-
-    async function uploadToNet() {
-        if(!currentUser) return alert("LOGIN REQUIRED");
-        const payload = {
-            item_name: document.getElementById('item-name').value,
-            category: document.getElementById('item-cat').value,
-            location: document.getElementById('item-location').value,
-            price_auec: document.getElementById('item-price').value,
-            description: document.getElementById('item-desc').value,
-            image_1: uploadedImgBase64,
-            seller_id: currentUser.id
-        };
-        const { error } = await _supabase.from('marketplace_items').insert([payload]);
-        if (!error) { alert("BROADCAST SUCCESS"); resetForm(); showTab('market'); fetchMarket(); }
-    }
-
-    function processImg(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                uploadedImgBase64 = e.target.result;
-                document.getElementById('img-preview').innerHTML = `<img src="${uploadedImgBase64}">`;
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
+                    <div style="color:var(--blue-light); font-size:0.8rem; font-family:Orbitron;">${item.item_name}</div>
+                    <div style="color:var(--yellow-accent); font-weight:bold;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
+                </div>
+            </div>
+        `).join('');
     }
 
     function showTab(t) {
-        currentTab = t;
         document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-        document.getElementById('market').style.display = (t === 'market' || t === 'my-items') ? 'block' : 'none';
-        document.getElementById('sell').style.display = (t === 'sell') ? 'flex' : 'none';
-        document.getElementById('sidebar-filter').style.display = (t === 'market') ? 'block' : 'none';
-        document.getElementById('view-title').style.display = (t === 'my-items') ? 'block' : 'none';
+        document.getElementById('link-'+t).classList.add('active');
+
+        const isMarket = (t === 'market' || t === 'my-items');
+        document.getElementById('market-section').style.display = isMarket ? 'block' : 'none';
+        document.getElementById('sell-section').style.display = (t === 'sell') ? 'flex' : 'none';
+        document.getElementById('sidebar-filter').style.display = isMarket ? 'block' : 'none';
         
-        if (document.getElementById('link-'+t)) document.getElementById('link-'+t).classList.add('active');
-        if (t === 'market') document.getElementById('link-market').classList.add('active');
-        
-        updateView();
+        if(t === 'my-items') {
+            renderGrid(allItems.filter(i => i.seller_id === currentUser?.id));
+        } else if(t === 'market') {
+            renderGrid(allItems);
+        }
     }
 
     async function checkAuth() {
@@ -276,11 +229,15 @@
         }
     }
 
-    function resetForm() {
-        document.getElementById('item-name').value = "";
-        document.getElementById('item-price').value = "";
-        document.getElementById('img-preview').innerText = "NO VISUAL DATA LINKED";
-        uploadedImgBase64 = null;
+    function processImg(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImgBase64 = e.target.result;
+                document.getElementById('img-preview').innerHTML = `<img src="${uploadedImgBase64}">`;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     window.onload = () => { fetchMarket(); checkAuth(); };
