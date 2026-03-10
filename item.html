@@ -72,7 +72,6 @@
             border: 1px solid rgba(0, 210, 255, 0.3);
         }
 
-        /* BOTÓN DE CHATS */
         #chat-btn {
             display: none; 
             background: rgba(0, 210, 255, 0.1);
@@ -190,7 +189,6 @@
             margin-top: auto;
         }
 
-        /* Mobile specific fixes */
         @media (max-width: 650px) {
             .main-card { grid-template-columns: 1fr; }
             h1 { font-size: 2.2rem; }
@@ -279,7 +277,7 @@
         }
     }
 
-    // MODIFICADO: Prepara el contacto y redirige a la página completa de Chats
+    // FUNCIÓN CON DEBUG INTEGRADO PARA VER EL ERROR
     async function openChat() {
         const { data: { session } } = await _supabase.auth.getSession();
         
@@ -291,25 +289,36 @@
         const params = new URLSearchParams(window.location.search);
         const itemId = params.get('id');
 
-        // Buscamos quién es el vendedor de este ítem
-        const { data: itemData } = await _supabase
+        console.log("Iniciando contacto para Asset ID:", itemId);
+
+        // Intentamos obtener el vendedor
+        const { data: itemData, error } = await _supabase
             .from('marketplace_items')
             .select('user_id, seller_name') 
             .eq('id', itemId)
             .single();
 
+        if (error) {
+            console.error("Error de Supabase:", error);
+            alert("Database Error: " + error.message);
+            return;
+        }
+
+        console.log("Datos del vendedor recibidos:", itemData);
+
         if (itemData && itemData.user_id) {
-            // Guardamos la intención de contactar para que Chats.html la recoja
+            // Guardamos datos para Chats.html
             const pendingContact = {
                 id: itemData.user_id,
-                name: itemData.seller_name || 'Seller'
+                name: itemData.seller_name || 'Unknown Seller'
             };
             localStorage.setItem('pending_contact', JSON.stringify(pendingContact));
             
-            // Redirigimos a la página de chats
             window.location.href = 'Chats.html';
         } else {
-            alert("Unable to find seller ID for this asset.");
+            // ERROR DETECTADO: El producto existe pero la columna user_id está vacía
+            console.warn("Advertencia: El campo user_id en la tabla marketplace_items está vacío para este ID.");
+            alert("Unable to find seller ID. This asset might be orphaned or the seller account was deleted.");
         }
     }
 
