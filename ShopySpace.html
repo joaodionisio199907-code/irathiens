@@ -80,13 +80,15 @@
 
         .price-tag { color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 1rem; margin-top: 5px; }
 
-        /* Botón de Borrar */
-        .delete-overlay {
-            position: absolute; top: 8px; right: 8px; background: var(--danger);
-            color: white; border: none; padding: 8px; border-radius: 5px;
-            cursor: pointer; display: none; z-index: 10; font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
+        /* Contenedor de botones de gestión */
+        .mgmt-controls {
+            position: absolute; top: 8px; right: 8px; display: flex; gap: 5px; z-index: 10;
         }
+        .btn-mgmt {
+            border: none; padding: 8px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; font-size: 14px;
+        }
+        .btn-del { background: var(--danger); box-shadow: 0 0 10px rgba(255, 77, 77, 0.4); }
+        .btn-edit { background: var(--blue-dark); box-shadow: 0 0 10px rgba(0, 86, 255, 0.4); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
         .modal-content { background: var(--bg-card); border: 1px solid var(--blue-light); width: 100%; max-width: 500px; border-radius: 15px; overflow-y: auto; max-height: 90vh; }
@@ -142,7 +144,10 @@
 
         <section id="sell" style="display:none;">
             <div id="publish-container" style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid #1a2635;">
-                <h2 style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 15px 0;">NEW MANIFEST</h2>
+                <h2 id="form-title" style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 15px 0;">NEW MANIFEST</h2>
+                
+                <input type="hidden" id="edit-item-id">
+
                 <input type="text" id="item-name" class="search-bar" placeholder="ITEM NAME">
                 <select id="item-cat" class="search-bar">
                     <option value="Armor">ARMOR</option>
@@ -153,10 +158,13 @@
                 <input type="text" id="item-location" class="search-bar" placeholder="LOCATION">
                 <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC">
                 <textarea id="item-desc" class="search-bar" placeholder="ITEM DESCRIPTION" style="height: 80px;"></textarea>
+                
                 <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635;">SELECT IMAGE</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
                 <div id="img-preview"></div>
+                
                 <button class="action-btn" id="btn-publish" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000;">PUBLISH ASSET</button>
+                <button class="action-btn" id="btn-cancel-edit" onclick="resetForm()" style="display:none; background:transparent; border:1px solid #444; clip-path:none;">CANCEL EDIT</button>
             </div>
         </section>
     </main>
@@ -216,9 +224,19 @@
             const isOwner = currentUser && item.seller_id === currentUser.id;
             const stars = item.avg_rating > 0 ? `★ ${item.avg_rating}` : "NEW";
 
+            // Si estamos en MY ASSETS, añadimos controles de borrado y edición
+            let controls = "";
+            if(currentTab === 'my-items' && isOwner) {
+                controls = `
+                    <div class="mgmt-controls">
+                        <button class="btn-mgmt btn-edit" onclick="event.stopPropagation(); prepareEdit('${item.id}')">✎</button>
+                        <button class="btn-mgmt btn-del" onclick="event.stopPropagation(); deleteAsset('${item.id}')">🗑</button>
+                    </div>
+                `;
+            }
+
             card.innerHTML = `
-                <button class="delete-overlay" style="display: ${ (currentTab === 'my-items' && isOwner) ? 'block' : 'none' }" 
-                    onclick="event.stopPropagation(); deleteAsset('${item.id}')">🗑</button>
+                ${controls}
                 <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}" loading="lazy">
                 <div class="item-card-info">
                     <h3>${item.item_name.toUpperCase()}</h3>
@@ -233,18 +251,85 @@
         });
     }
 
+    // --- FUNCIONES DE GESTIÓN (DELETE & EDIT) ---
+
     async function deleteAsset(id) {
         if (!confirm("TERMINATE ASSET LISTING? THIS CANNOT BE UNDONE.")) return;
-        
         const { error } = await _supabase.from('marketplace_items').delete().eq('id', id);
-        
         if (!error) {
             allItems = allItems.filter(i => i.id !== id);
             renderItems(allItems.filter(i => i.seller_id === currentUser.id));
-        } else {
-            alert("COMM-LINK ERROR: COULD NOT TERMINATE.");
         }
     }
+
+    function prepareEdit(id) {
+        const item = allItems.find(i => i.id === id);
+        if (!item) return;
+
+        // Llenar el formulario con los datos actuales
+        document.getElementById('edit-item-id').value = item.id;
+        document.getElementById('item-name').value = item.item_name;
+        document.getElementById('item-cat').value = item.category;
+        document.getElementById('item-location').value = item.location;
+        document.getElementById('item-price').value = item.price_auec;
+        document.getElementById('item-desc').value = item.description || "";
+        
+        // Cambiar UI del formulario
+        document.getElementById('form-title').innerText = "UPDATE MANIFEST";
+        document.getElementById('btn-publish').innerText = "SAVE CHANGES";
+        document.getElementById('btn-publish').style.background = "var(--blue-light)";
+        document.getElementById('btn-cancel-edit').style.display = "block";
+
+        showTab('sell'); // Ir a la pestaña del formulario
+    }
+
+    function resetForm() {
+        document.getElementById('edit-item-id').value = "";
+        document.getElementById('item-name').value = "";
+        document.getElementById('item-location').value = "";
+        document.getElementById('item-price').value = "";
+        document.getElementById('item-desc').value = "";
+        document.getElementById('img-preview').innerHTML = "";
+        
+        document.getElementById('form-title').innerText = "NEW MANIFEST";
+        document.getElementById('btn-publish').innerText = "PUBLISH ASSET";
+        document.getElementById('btn-publish').style.background = "var(--yellow-accent)";
+        document.getElementById('btn-cancel-edit').style.display = "none";
+    }
+
+    async function uploadToNet() {
+        const editId = document.getElementById('edit-item-id').value;
+        const payload = {
+            item_name: document.getElementById('item-name').value,
+            category: document.getElementById('item-cat').value,
+            location: document.getElementById('item-location').value,
+            price_auec: document.getElementById('item-price').value,
+            description: document.getElementById('item-desc').value,
+            seller_id: currentUser.id
+        };
+
+        if (editId) {
+            // Lógica de Actualización
+            const { error } = await _supabase.from('marketplace_items').update(payload).eq('id', editId);
+            if (!error) {
+                alert("MANIFEST UPDATED.");
+                resetForm();
+                await fetchMarket();
+                showTab('my-items');
+            }
+        } else {
+            // Lógica de Creación Original (aquí iría tu código de Insert existente)
+            const { error } = await _supabase.from('marketplace_items').insert([payload]);
+            if (!error) {
+                alert("ASSET PUBLISHED.");
+                resetForm();
+                fetchMarket();
+                showTab('market');
+            }
+        }
+    }
+
+    // --- UTILIDADES ---
 
     function showTab(t) {
         currentTab = t;
@@ -262,7 +347,16 @@
             document.getElementById('link-sell').classList.add('active');
         } else if (t === 'my-items') {
             document.getElementById('link-my-items').classList.add('active');
-            renderItems(allItems.filter(i => i.seller_id === currentUser.id));
+            renderItems(allItems.filter(i => i.seller_id === currentUser?.id));
+        }
+    }
+
+    async function checkAuth() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session) {
+            currentUser = session.user;
+            document.getElementById('chat-btn').style.display = 'flex';
+            document.getElementById('link-my-items').style.display = 'inline-block';
         }
     }
 
@@ -280,15 +374,6 @@
     }
 
     function closeModal() { document.getElementById('item-modal').style.display = 'none'; document.body.style.overflow = 'auto'; }
-
-    async function checkAuth() {
-        const { data: { session } } = await _supabase.auth.getSession();
-        if (session) {
-            currentUser = session.user;
-            document.getElementById('chat-btn').style.display = 'flex';
-            document.getElementById('link-my-items').style.display = 'inline-block';
-        }
-    }
 
     function filterByCategory(cat, el) {
         document.querySelectorAll('.cat-item').forEach(x => x.classList.remove('active'));
