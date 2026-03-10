@@ -34,32 +34,19 @@
             height: 60px; box-sizing: border-box; z-index: 1000;
         }
         .logo-img { height: 30px; cursor: pointer; filter: drop-shadow(0 0 5px var(--blue-primary)); }
-        
         .menu-toggle { display: none; background: none; border: 1px solid var(--blue-primary); color: var(--blue-primary); padding: 5px 10px; font-family: 'Orbitron'; cursor: pointer; font-size: 0.8rem; }
 
         /* --- MAIN LAYOUT --- */
         .chat-container { display: grid; grid-template-columns: 320px 1fr; flex: 1; overflow: hidden; position: relative; }
 
         /* --- SIDEBAR --- */
-        .sidebar {
-            background: var(--bg-card); border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column; transition: 0.3s; z-index: 999;
-        }
-
+        .sidebar { background: var(--bg-card); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: 0.3s; z-index: 999; }
         .sidebar-header { padding: 15px; border-bottom: 1px solid var(--border-color); }
         .sidebar-label { font-family: 'Orbitron'; font-size: 0.6rem; color: #444; margin-bottom: 10px; display: block; letter-spacing: 2px; }
-
-        .add-friend-btn {
-            width: 100%; background: var(--grad-blue); color: white; border: none; padding: 10px;
-            font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; font-weight: bold;
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); transition: 0.3s;
-        }
+        .add-friend-btn { width: 100%; background: var(--grad-blue); color: white; border: none; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; font-weight: bold; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); transition: 0.3s; }
 
         .contact-list { flex: 1; overflow-y: auto; }
-        .contact-item {
-            padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03);
-            cursor: pointer; transition: 0.2s;
-        }
+        .contact-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: 0.2s; }
         .contact-item:hover { background: rgba(0, 210, 255, 0.05); }
         .contact-item.active { background: rgba(0, 210, 255, 0.1); border-left: 4px solid var(--blue-primary); }
         .contact-name { display: block; font-family: 'Orbitron'; font-size: 0.8rem; color: var(--blue-primary); }
@@ -82,26 +69,17 @@
         .emoji-btn { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; filter: grayscale(1); }
         .send-btn { background: var(--grad-blue); border: none; padding: 8px 15px; color: white; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; border-radius: 4px; }
 
-        .emoji-picker {
-            display: none; position: absolute; bottom: 80px; left: 20px;
-            background: var(--bg-card); border: 2px solid var(--blue-primary);
-            padding: 8px; grid-template-columns: repeat(5, 1fr); gap: 5px; border-radius: 10px; z-index: 100;
-        }
+        .emoji-picker { display: none; position: absolute; bottom: 80px; left: 20px; background: var(--bg-card); border: 2px solid var(--blue-primary); padding: 8px; grid-template-columns: repeat(5, 1fr); gap: 5px; border-radius: 10px; z-index: 100; }
         .emoji-picker span { cursor: pointer; font-size: 1.3rem; padding: 5px; }
 
-        /* --- MOBILE OPTIMIZATION --- */
         @media (max-width: 768px) {
             .menu-toggle { display: block; }
             .chat-container { grid-template-columns: 1fr; }
-            .sidebar {
-                position: absolute; left: -100%; top: 0; bottom: 0; width: 280px;
-                box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-            }
+            .sidebar { position: absolute; left: -100%; top: 0; bottom: 0; width: 280px; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
             .sidebar.active { left: 0; }
             .msg { max-width: 90%; }
         }
 
-        /* --- MODAL --- */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; }
         .modal-content { background: var(--bg-card); width: 90%; max-width: 350px; border: 2px solid var(--blue-primary); border-radius: 0 15px 0 15px; overflow: hidden; }
         .modal-header { background: var(--grad-blue); padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; display: flex; justify-content: space-between; }
@@ -130,17 +108,14 @@
             <span class="sidebar-label" style="margin-top: 20px;">PRIVATE LINKS</span>
             <button class="add-friend-btn" onclick="openAddFriend()">+ LINK CITIZEN</button>
         </div>
-        <div class="contact-list" id="contact-list">
-            </div>
+        <div class="contact-list" id="contact-list"></div>
     </aside>
 
     <main class="chat-main">
         <div class="chat-top-bar">
             <span id="current-chat-name" style="font-family: 'Orbitron'; color: var(--blue-primary); font-size: 0.8rem;">GLOBAL HUB</span>
         </div>
-
         <div class="messages-area" id="messages-area"></div>
-
         <div class="input-container">
             <div class="emoji-picker" id="emoji-picker">
                 <span onclick="addEmoji('🚀')">🚀</span><span onclick="addEmoji('🛸')">🛸</span>
@@ -183,16 +158,39 @@
         if (!session) { window.location.href = 'login.html'; return; }
 
         myId = session.user.id;
-        myName = session.user.user_metadata.full_name || 'Citizen_' + myId.substring(0,4);
+        myName = session.user.user_metadata.full_name || session.user.email.split('@')[0];
         document.getElementById('my-name-display').innerText = myName.toUpperCase();
         
         loadMessages();
 
-        _supabase.channel('comms')
+        // ESCUCHA INTELIGENTE
+        _supabase.channel('comms_v2')
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, 
             payload => {
-                if (payload.new.channel === currentTarget) appendMessage(payload.new);
+                const msg = payload.new;
+                
+                // Si es del canal actual
+                if (msg.channel === currentTarget) {
+                    appendMessage(msg);
+                } 
+                // Si alguien me está hablando a MI canal personal y no lo tengo en la lista
+                else if (msg.channel === myName) {
+                    autoCreateContact(msg.user_name);
+                }
             }).subscribe();
+    }
+
+    function autoCreateContact(senderName) {
+        const list = document.getElementById('contact-list');
+        const exists = Array.from(list.querySelectorAll('.contact-name')).some(el => el.innerText === senderName.toUpperCase());
+        
+        if (!exists && senderName !== myName) {
+            const div = document.createElement('div');
+            div.className = 'contact-item';
+            div.onclick = () => selectContact(senderName, div);
+            div.innerHTML = `<span class="contact-name">${senderName}</span><span class="contact-status" style="color:var(--yellow-accent)">● NEW SIGNAL DETECTED</span>`;
+            list.prepend(div);
+        }
     }
 
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
@@ -208,8 +206,9 @@
 
     async function loadMessages() {
         const box = document.getElementById('messages-area');
-        box.innerHTML = '';
+        box.innerHTML = '<div style="text-align:center; color:#222; font-size:0.7rem;">DECRYPTING...</div>';
         const { data } = await _supabase.from('mensajes').select('*').eq('channel', currentTarget).order('created_at', { ascending: true }).limit(50);
+        box.innerHTML = '';
         if (data) data.forEach(msg => appendMessage(msg));
     }
 
@@ -237,14 +236,9 @@
     function closeAddFriend() { document.getElementById('modal-add').style.display = 'none'; }
     
     function confirmAddFriend() {
-        const name = document.getElementById('new-friend-name').value;
+        const name = document.getElementById('new-friend-name').value.trim();
         if(name) {
-            const list = document.getElementById('contact-list');
-            const div = document.createElement('div');
-            div.className = 'contact-item';
-            div.onclick = () => selectContact(name, div);
-            div.innerHTML = `<span class="contact-name">${name}</span><span class="contact-status">P2P Encryption Active</span>`;
-            list.appendChild(div);
+            autoCreateContact(name);
             closeAddFriend();
         }
     }
