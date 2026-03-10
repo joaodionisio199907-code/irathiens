@@ -31,7 +31,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- NAVEGACIÓN --- */
         nav {
             background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--blue-primary);
             padding: 0 20px; display: flex; justify-content: space-between; align-items: center;
@@ -53,7 +52,6 @@
             text-decoration: none; font-family: var(--font-impact); font-size: 0.85rem; font-style: italic;
         }
 
-        /* --- CONTENIDO --- */
         .wrapper { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
 
         .main-card {
@@ -74,7 +72,6 @@
 
         h1 { font-family: var(--font-impact); font-size: 3rem; margin: 0; text-transform: uppercase; font-style: italic; line-height: 1; }
 
-        /* BINANCE TRADING BOX */
         .binance-panel {
             background: #000; padding: 20px; border-radius: 8px; margin: 25px 0;
             border-left: 4px solid var(--yellow-accent); position: relative;
@@ -90,13 +87,15 @@
         .up { background: rgba(0, 255, 136, 0.1); color: var(--success); }
         .down { background: rgba(255, 77, 77, 0.1); color: var(--danger); }
 
-        .market-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid #111; pt: 10px; mt: 10px; padding-top: 15px; }
+        .market-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid #111; padding-top: 15px; margin-top: 10px; }
         .stat-item span { display: block; }
         .stat-label { font-size: 0.6rem; color: #444; font-family: 'Orbitron'; margin-bottom: 2px; }
         .stat-value { font-family: var(--font-mono); font-size: 0.8rem; color: #aaa; }
 
         .item-desc { color: #8899af; font-size: 1rem; line-height: 1.6; margin-bottom: 30px; }
 
+        .actions-grid { display: grid; grid-template-columns: 1fr 80px; gap: 10px; }
+        
         .action-btn {
             width: 100%; background: var(--grad-yellow, linear-gradient(90deg, #ffb800, #ffe600)); border: none; padding: 20px;
             font-family: var(--font-impact); font-size: 1.6rem; font-weight: 800; color: #000;
@@ -105,7 +104,14 @@
         }
         .action-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
 
-        /* --- GRÁFICO SECCIÓN --- */
+        .vouch-btn {
+            background: #1a2635; border: 1px solid var(--blue-primary); color: var(--blue-primary);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%); transition: 0.3s;
+        }
+        .vouch-btn.active { background: var(--blue-primary); color: #000; }
+        .vouch-count { font-family: var(--font-mono); font-weight: 700; font-size: 0.9rem; }
+
         .chart-box {
             margin-top: 25px; background: var(--bg-card); border-radius: 20px;
             border: 1px solid #1a2635; padding: 25px;
@@ -117,10 +123,22 @@
 
         .canvas-wrap { height: 280px; width: 100%; }
 
+        /* REVIEWS STYLING */
+        .review-section { margin-top: 25px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
+        .review-feed { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; border: 1px solid #1a2635; }
+        .review-item { border-bottom: 1px solid #1a2635; padding: 12px 0; }
+        .review-meta { display: flex; justify-content: space-between; font-size: 0.7rem; font-family: var(--font-mono); color: #555; margin-bottom: 5px; }
+        .review-text { font-size: 0.9rem; color: #ccc; }
+        .review-stars { color: var(--yellow-bright); }
+
+        .add-review-box { background: var(--bg-card); padding: 20px; border-radius: 15px; border: 1px solid var(--blue-primary); }
+        .review-input { width: 100%; background: #050a12; border: 1px solid #1a2635; color: white; padding: 10px; border-radius: 5px; margin-bottom: 10px; font-family: inherit; box-sizing: border-box; }
+
         @media (max-width: 850px) {
             .main-card { grid-template-columns: 1fr; }
             h1 { font-size: 2.2rem; }
             .info-side { padding: 25px; }
+            .review-section { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -167,7 +185,13 @@
 
             <div class="item-desc" id="item-desc">Establishing link to Stanton database...</div>
 
-            <button class="action-btn" onclick="openChat()">CONTACT SELLER</button>
+            <div class="actions-grid">
+                <button class="action-btn" onclick="openChat()">CONTACT SELLER</button>
+                <div class="vouch-btn" id="vouch-node" onclick="toggleLike()">
+                    <span style="font-size: 1.2rem;">❤</span>
+                    <span class="vouch-count" id="vouch-val">0</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -180,29 +204,50 @@
             <canvas id="marketChart"></canvas>
         </div>
     </div>
+
+    <div class="review-section">
+        <div class="review-feed" id="review-feed">
+            <div class="live-label" style="margin-bottom: 15px;">COMM-LINK FEED</div>
+            </div>
+
+        <div class="add-review-box" id="review-input-area" style="display:none;">
+            <div class="live-label" style="color: var(--yellow-bright); margin-bottom: 10px;">TRANSMIT FEEDBACK</div>
+            <select id="rev-rating" class="review-input">
+                <option value="5">★★★★★ (EXCELLENT)</option>
+                <option value="4">★★★★☆ (GOOD)</option>
+                <option value="3">★★★☆☆ (AVERAGE)</option>
+                <option value="2">★★☆☆☆ (POOR)</option>
+                <option value="1">★☆☆☆☆ (CRITICAL)</option>
+            </select>
+            <textarea id="rev-comment" class="review-input" placeholder="Enter transmission notes..." style="height: 80px;"></textarea>
+            <button class="action-btn" onclick="postReview()" style="font-size: 1rem; padding: 10px; background: var(--blue-primary);">SEND DATA</button>
+        </div>
+    </div>
 </div>
 
 <script>
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
     const SB_KEY = 'sb_publishable_3iByg_zBXp4C-SCtfeIiDw_NeyfB3wR';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
+    
+    let currentItemId = new URLSearchParams(window.location.search).get('id');
+    let currentUser = null;
 
-    window.onload = () => {
+    window.onload = async () => {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session) {
+            currentUser = session.user;
+            document.getElementById('chat-btn').style.display = 'flex';
+            document.getElementById('review-input-area').style.display = 'block';
+            checkUserLiked();
+        }
         loadItem();
-        checkAuth();
+        loadInteractions();
     };
 
-    async function checkAuth() {
-        const { data: { session } } = await _supabase.auth.getSession();
-        if (session) document.getElementById('chat-btn').style.display = 'flex';
-    }
-
     async function loadItem() {
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get('id');
-        if (!id) return;
-
-        const { data, error } = await _supabase.from('marketplace_items').select('*').eq('id', id).single();
+        if (!currentItemId) return;
+        const { data, error } = await _supabase.from('marketplace_items').select('*').eq('id', currentItemId).single();
         
         if (data) {
             const price = parseInt(data.price_auec);
@@ -211,35 +256,77 @@
             document.getElementById('item-img').src = data.image_1;
             document.getElementById('item-cat').innerText = (data.category || 'ASSET').toUpperCase();
             document.getElementById('item-loc').innerText = (data.location || 'UNKNOWN').toUpperCase();
-            document.getElementById('item-desc').innerText = data.description || 'No additional technical specs found for this asset.';
-            
-            // Simular Market Cap (Precio * Factor aleatorio)
+            document.getElementById('item-desc').innerText = data.description || 'No technical specs found.';
             document.getElementById('stat-cap').innerText = (price * 142).toLocaleString() + " aUEC";
-
-            // Simular % de Cambio 24h
-            const change = (Math.random() * 10 - 4).toFixed(2); // entre -4% y +6%
-            const changeEl = document.getElementById('price-change');
-            changeEl.innerText = (change >= 0 ? "+" : "") + change + "%";
-            changeEl.className = "change-tag " + (change >= 0 ? "up" : "down");
-
             initChart(price);
+        }
+    }
+
+    async function loadInteractions() {
+        // Cargar Likes
+        const { count: likes } = await _supabase.from('item_likes').select('*', { count: 'exact', head: true }).eq('item_id', currentItemId);
+        document.getElementById('vouch-val').innerText = likes || 0;
+
+        // Cargar Reviews
+        const { data: reviews } = await _supabase.from('item_reviews').select('*').eq('item_id', currentItemId).order('created_at', {ascending: false});
+        const feed = document.getElementById('review-feed');
+        const header = `<div class="live-label" style="margin-bottom: 15px;">COMM-LINK FEED</div>`;
+        
+        if (reviews && reviews.length > 0) {
+            feed.innerHTML = header + reviews.map(r => `
+                <div class="review-item">
+                    <div class="review-meta">
+                        <span>USER_ID: ${r.user_id.substring(0,8)}...</span>
+                        <span class="review-stars">${'★'.repeat(r.rating)}</span>
+                    </div>
+                    <div class="review-text">${r.comment}</div>
+                </div>
+            `).join('');
+        } else {
+            feed.innerHTML = header + `<div style="color:#444; font-family:var(--font-mono); font-size:0.8rem;">NO INCOMING TRANSMISSIONS...</div>`;
+        }
+    }
+
+    async function checkUserLiked() {
+        const { data } = await _supabase.from('item_likes').select('id').eq('item_id', currentItemId).eq('user_id', currentUser.id).single();
+        if (data) document.getElementById('vouch-node').classList.add('active');
+    }
+
+    async function toggleLike() {
+        if (!currentUser) { window.location.href = 'https://www.irathiens.org/login'; return; }
+        
+        const btn = document.getElementById('vouch-node');
+        if (btn.classList.contains('active')) {
+            await _supabase.from('item_likes').delete().eq('item_id', currentItemId).eq('user_id', currentUser.id);
+            btn.classList.remove('active');
+        } else {
+            await _supabase.from('item_likes').insert({ item_id: currentItemId, user_id: currentUser.id });
+            btn.classList.add('active');
+        }
+        loadInteractions();
+    }
+
+    async function postReview() {
+        const rating = document.getElementById('rev-rating').value;
+        const comment = document.getElementById('rev-comment').value;
+        if (!comment) return;
+
+        const { error } = await _supabase.from('item_reviews').insert({
+            item_id: currentItemId,
+            user_id: currentUser.id,
+            rating: parseInt(rating),
+            comment: comment
+        });
+
+        if (!error) {
+            document.getElementById('rev-comment').value = "";
+            loadInteractions();
         }
     }
 
     function initChart(basePrice) {
         const ctx = document.getElementById('marketChart').getContext('2d');
-        
-        // Generar historial de 7 días
-        const dataPoints = [
-            basePrice * 0.94, 
-            basePrice * 0.97, 
-            basePrice * 0.92, 
-            basePrice * 1.05, 
-            basePrice * 0.99, 
-            basePrice * 1.02, 
-            basePrice
-        ];
-
+        const dataPoints = [basePrice * 0.94, basePrice * 0.97, basePrice * 0.92, basePrice * 1.05, basePrice * 0.99, basePrice * 1.02, basePrice];
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -273,25 +360,13 @@
     }
 
     async function openChat() {
-        const { data: { session } } = await _supabase.auth.getSession();
-        if (!session) { window.location.href = 'https://www.irathiens.org/login'; return; }
-
-        const params = new URLSearchParams(window.location.search);
-        const itemId = params.get('id');
-
-        const { data: itemData } = await _supabase.from('marketplace_items').select('seller_id, item_name').eq('id', itemId).single();
-
-        if (itemData && itemData.seller_id) {
-            localStorage.setItem('pending_contact', JSON.stringify({
-                id: itemData.seller_id,
-                name: "Seller: " + itemData.item_name
-            }));
+        if (!currentUser) { window.location.href = 'https://www.irathiens.org/login'; return; }
+        const { data: itemData } = await _supabase.from('marketplace_items').select('seller_id, item_name').eq('id', currentItemId).single();
+        if (itemData?.seller_id) {
+            localStorage.setItem('pending_contact', JSON.stringify({ id: itemData.seller_id, name: "Seller: " + itemData.item_name }));
             window.location.href = 'Chats.html';
-        } else {
-            alert("No seller record found for this asset.");
         }
     }
 </script>
-
 </body>
 </html>
