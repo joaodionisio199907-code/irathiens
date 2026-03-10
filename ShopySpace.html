@@ -72,13 +72,11 @@
         .item-card-info { padding: 12px; }
         .item-card-info h3 { margin: 0; font-size: 0.8rem; color: var(--blue-light); font-family: var(--font-logo); line-height: 1.2; height: 2.4em; overflow: hidden; }
 
-        /* Controles de gestión */
         .mgmt-controls { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; z-index: 10; }
-        .btn-mgmt { border: none; padding: 6px; border-radius: 4px; cursor: pointer; color: white; font-size: 12px; font-weight: bold; }
-        .btn-del { background: var(--danger); }
-        .btn-edit { background: var(--blue-dark); }
+        .btn-mgmt { border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; color: white; font-size: 11px; font-weight: bold; font-family: var(--font-mono); }
+        .btn-del { background: var(--danger); box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+        .btn-edit { background: var(--blue-dark); box-shadow: 0 0 10px rgba(0, 86, 255, 0.3); }
 
-        /* Formulario de Venta Mejorado */
         #publish-container { background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid #1a2635; max-width: 600px; margin: 0 auto; }
         .search-bar { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #1a2635; padding: 14px; color: white; margin-bottom: 12px; border-radius: 8px; box-sizing: border-box; font-family: var(--font-main); font-size: 1rem; }
         .action-btn { background: var(--grad-blue); border: none; padding: 15px; color: #fff; font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; text-transform: uppercase; font-style: italic; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); width: 100%; margin-bottom: 10px; }
@@ -86,13 +84,13 @@
         #img-preview img { width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px; border: 1px dashed var(--blue-light); border-radius: 8px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
-        .modal-content { background: var(--bg-card); border: 1px solid var(--blue-light); width: 100%; max-width: 500px; border-radius: 15px; overflow-y: auto; max-height: 90vh; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--blue-light); width: 100%; max-width: 450px; border-radius: 15px; overflow: hidden; }
 
         @media (max-width: 768px) {
             .marketplace-wrapper { grid-template-columns: 1fr; margin-top: 0; }
             .sidebar { position: sticky; top: 70px; display: flex; overflow-x: auto; border-left: none; border-bottom: 1px solid var(--blue-light); background: var(--bg-deep); border-radius: 0; margin: 0 -15px 15px -15px; z-index: 900; padding: 10px; }
             .cat-item { white-space: nowrap; margin-bottom: 0; padding: 8px 15px; }
-            .market-grid { grid-template-columns: repeat(2, 1fr); }
+            .market-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             #publish-container { margin: 10px; padding: 15px; }
         }
     </style>
@@ -146,7 +144,7 @@
                 <textarea id="item-desc" class="search-bar" placeholder="ITEM DESCRIPTION" style="height: 80px;"></textarea>
                 
                 <div id="img-preview"></div>
-                <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635; font-size: 0.9rem;">CHANGE IMAGE</button>
+                <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635; font-size: 0.9rem;">SELECT IMAGE</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
                 
                 <button class="action-btn" id="btn-publish" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000;">PUBLISH ASSET</button>
@@ -158,13 +156,13 @@
 
 <div class="modal-overlay" id="item-modal" onclick="if(event.target == this) closeModal()">
     <div class="modal-content">
-        <div class="modal-img-side"><img id="m-img" src="" style="width: 100%"></div>
-        <div class="modal-info-side" style="padding: 20px;">
-            <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light);"></h2>
-            <div id="m-price" style="font-size: 1.5rem; color: var(--yellow-bright); margin: 10px 0;"></div>
-            <p style="font-size: 0.8rem; color: #8899af;">LOCATION: <span id="m-loc" style="color:white"></span></p>
+        <img id="m-img" src="" style="width: 100%; height: 220px; object-fit: cover; border-bottom: 2px solid var(--blue-light);">
+        <div style="padding: 20px;">
+            <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light); font-size: 1.1rem;"></h2>
+            <div id="m-price" style="font-size: 1.5rem; color: var(--yellow-bright); font-family: var(--font-mono); margin: 10px 0;"></div>
+            <p style="font-size: 0.85rem; color: #8899af; margin-bottom: 20px;">LOCATION: <span id="m-loc" style="color:white"></span></p>
             <button class="action-btn" id="m-btn">OPEN DETAILS</button>
-            <button class="action-btn" onclick="closeModal()" style="background:transparent; border:1px solid #444; clip-path:none;">CLOSE</button>
+            <button class="action-btn" onclick="closeModal()" style="background:transparent; border:1px solid #444; clip-path:none; font-size: 0.9rem;">CLOSE</button>
         </div>
     </div>
 </div>
@@ -180,13 +178,9 @@
     let uploadedImgBase64 = null;
 
     async function fetchMarket() {
-        const { data, error } = await _supabase.from('marketplace_items').select(`*, item_likes (id), item_reviews (rating)`).order('created_at', {ascending: false});
+        const { data, error } = await _supabase.from('marketplace_items').select(`*`).order('created_at', {ascending: false});
         if (!error) { 
-            allItems = data.map(item => {
-                const totalRating = item.item_reviews?.reduce((acc, r) => acc + r.rating, 0) || 0;
-                const avg = item.item_reviews?.length ? (totalRating / item.item_reviews.length).toFixed(1) : 0;
-                return { ...item, likes_count: item.item_likes?.length || 0, avg_rating: avg };
-            });
+            allItems = data;
             updateView();
         }
     }
@@ -227,7 +221,23 @@
         });
     }
 
-    // GESTIÓN DE IMAGEN
+    function openDetails(item) {
+        document.getElementById('m-title').innerText = item.item_name.toUpperCase();
+        document.getElementById('m-price').innerText = parseInt(item.price_auec).toLocaleString() + " aUEC";
+        document.getElementById('m-img').src = item.image_1 || '';
+        document.getElementById('m-loc').innerText = (item.location || 'UNKNOWN').toUpperCase();
+        
+        // FIX: Enlace dinámico al archivo item.html
+        document.getElementById('m-btn').onclick = () => {
+            window.location.href = `item.html?id=${item.id}`;
+        };
+        
+        document.getElementById('item-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden'; 
+    }
+
+    function closeModal() { document.getElementById('item-modal').style.display = 'none'; document.body.style.overflow = 'auto'; }
+
     function processImg(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -239,26 +249,21 @@
         }
     }
 
-    // EDITAR
     function prepareEdit(id) {
         const item = allItems.find(i => i.id === id);
         if (!item) return;
-
         document.getElementById('edit-item-id').value = item.id;
         document.getElementById('item-name').value = item.item_name;
         document.getElementById('item-cat').value = item.category;
         document.getElementById('item-location').value = item.location;
         document.getElementById('item-price').value = item.price_auec;
         document.getElementById('item-desc').value = item.description || "";
-        
         uploadedImgBase64 = item.image_1;
         document.getElementById('img-preview').innerHTML = `<img src="${item.image_1 || ''}">`;
-
         document.getElementById('form-title').innerText = "UPDATE ASSET";
         document.getElementById('btn-publish').innerText = "SAVE CHANGES";
         document.getElementById('btn-publish').style.background = "var(--blue-light)";
         document.getElementById('btn-cancel-edit').style.display = "block";
-
         showTab('sell');
     }
 
@@ -301,8 +306,6 @@
             resetForm();
             await fetchMarket();
             showTab(editId ? 'my-items' : 'market');
-        } else {
-            alert("ERROR: " + res.error.message);
         }
     }
 
@@ -347,16 +350,6 @@
         el.classList.add('active');
         renderItems(cat === 'all' ? allItems : allItems.filter(i => i.category === cat));
     }
-
-    function openDetails(item) {
-        document.getElementById('m-title').innerText = item.item_name;
-        document.getElementById('m-price').innerText = parseInt(item.price_auec).toLocaleString() + " aUEC";
-        document.getElementById('m-img').src = item.image_1 || '';
-        document.getElementById('m-loc').innerText = item.location;
-        document.getElementById('item-modal').style.display = 'flex';
-    }
-
-    function closeModal() { document.getElementById('item-modal').style.display = 'none'; }
 
     window.onload = () => { fetchMarket(); checkAuth(); };
 </script>
