@@ -179,6 +179,8 @@
         myName = session.user.user_metadata.full_name || session.user.email.split('@')[0];
         document.getElementById('my-name-display').innerText = myName.toUpperCase();
         
+        // Cargar contactos guardados antes de empezar
+        loadSavedContacts();
         loadMessages();
 
         _supabase.channel('main_room')
@@ -200,7 +202,24 @@
         return [id1, id2].sort().join("--");
     }
 
-    function autoCreateContact(name, id) {
+    // --- NUEVA LÓGICA DE PERSISTENCIA ---
+    function loadSavedContacts() {
+        const saved = localStorage.getItem('shopy_contacts_' + myId);
+        if (saved) {
+            const contacts = JSON.parse(saved);
+            contacts.forEach(c => renderContactUI(c.name, c.id));
+        }
+    }
+
+    function saveContact(name, id) {
+        let contacts = JSON.parse(localStorage.getItem('shopy_contacts_' + myId) || '[]');
+        if (!contacts.find(c => c.id === id)) {
+            contacts.push({ name, id });
+            localStorage.setItem('shopy_contacts_' + myId, JSON.stringify(contacts));
+        }
+    }
+
+    function renderContactUI(name, id) {
         const list = document.getElementById('contact-list');
         if (!document.getElementById(`contact-${id}`)) {
             const div = document.createElement('div');
@@ -212,12 +231,18 @@
         }
     }
 
+    function autoCreateContact(name, id) {
+        if (id === myId) return;
+        renderContactUI(name, id);
+        saveContact(name, id);
+    }
+
     function selectContact(name, id, el) {
         currentTarget = id ? getChannelID(myId, id) : 'Global Hub';
         targetUserId = id;
         document.getElementById('current-chat-name').innerText = name.toUpperCase();
         document.querySelectorAll('.contact-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
+        if (el) el.classList.add('active');
         if (window.innerWidth <= 768) document.getElementById('sidebar').classList.add('hidden');
         loadMessages();
     }
@@ -256,10 +281,14 @@
 
     function openModal() { document.getElementById('modal-add').style.display = 'flex'; }
     function closeModal() { document.getElementById('modal-add').style.display = 'none'; }
+    
     function confirmAddFriend() {
         const id = document.getElementById('friend-uuid').value.trim();
         const name = document.getElementById('friend-name').value.trim();
-        if (id && name) { autoCreateContact(name, id); closeModal(); }
+        if (id && name) { 
+            autoCreateContact(name, id); 
+            closeModal(); 
+        }
     }
 
     init();
