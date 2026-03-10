@@ -72,6 +72,7 @@
             border: 1px solid rgba(0, 210, 255, 0.3);
         }
 
+        /* BOTÓN DE CHATS - Solo para logueados */
         #chat-btn {
             display: none; 
             background: rgba(0, 210, 255, 0.1);
@@ -95,6 +96,7 @@
             border-radius: 50%; box-shadow: 0 0 8px var(--yellow-bright);
         }
 
+        /* --- CONTENT --- */
         .wrapper { max-width: 1100px; margin: 30px auto; padding: 0 15px; }
 
         .main-card {
@@ -188,6 +190,7 @@
             margin-top: auto;
         }
 
+        /* Mobile specific fixes */
         @media (max-width: 650px) {
             .main-card { grid-template-columns: 1fr; }
             h1 { font-size: 2.2rem; }
@@ -202,6 +205,7 @@
 
 <nav>
     <img src="img/Shopy.png" alt="SHOPYSPACE" class="logo-img" onclick="window.location.href='https://irathiens.org/ShopySpace'">
+    
     <div class="nav-right">
         <a href="Chats.html" id="chat-btn">
             <svg class="chat-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
@@ -216,11 +220,14 @@
         <div class="image-container">
             <img id="item-img" src="" alt="Loading asset...">
         </div>
+
         <div class="info-panel">
             <span class="category-tag" id="item-cat">LOADING...</span>
             <h1 id="item-name">ASSET NAME</h1>
             <div class="price-box" id="item-price">0 aUEC</div>
+            
             <div class="item-desc" id="item-desc">Establishing secure link to UEE manifest...</div>
+
             <div class="specs-list">
                 <div class="spec-box">
                     <span class="spec-label">Location</span>
@@ -231,12 +238,15 @@
                     <span class="spec-val" id="item-status" style="color: var(--success);">STABLE</span>
                 </div>
             </div>
+
             <button class="buy-btn" onclick="openChat()">CONTACT SELLER</button>
         </div>
     </div>
 </div>
 
-<footer>SHOPYSPACE NETWORK &copy; 2956 | STANTON HUB</footer>
+<footer>
+    SHOPYSPACE NETWORK &copy; 2956 | STANTON HUB
+</footer>
 
 <script>
     const SB_URL = 'https://dfizvgagofsctgwzksgd.supabase.co';
@@ -246,8 +256,11 @@
     async function checkAuth() {
         const { data: { session } } = await _supabase.auth.getSession();
         const chatBtn = document.getElementById('chat-btn');
-        if (session) chatBtn.style.display = 'flex';
-        else chatBtn.style.display = 'none';
+        if (session) {
+            chatBtn.style.display = 'flex';
+        } else {
+            chatBtn.style.display = 'none';
+        }
     }
 
     async function loadItem() {
@@ -268,33 +281,43 @@
 
     async function openChat() {
         const { data: { session } } = await _supabase.auth.getSession();
-        if (!session) { window.location.href = 'login.html'; return; }
+        
+        if (!session) {
+            window.location.href = 'login.html'; 
+            return;
+        }
 
         const params = new URLSearchParams(window.location.search);
         const itemId = params.get('id');
 
-        // USANDO seller_id SEGÚN TU TABLA
+        // Buscamos quién es el vendedor de este ítem usando seller_id
         const { data: itemData, error } = await _supabase
             .from('marketplace_items')
-            .select('seller_id') 
+            .select('seller_id, item_name') 
             .eq('id', itemId)
             .single();
 
         if (error) {
-            console.error(error);
-            alert("Database Link Error.");
+            console.error("Error fetching item data:", error);
+            alert("Connection error with UEE database.");
             return;
         }
 
+        // Validación de existencia de seller_id (UUID)
         if (itemData && itemData.seller_id) {
             const pendingContact = {
                 id: itemData.seller_id,
-                name: 'Seller' // O puedes añadir una columna seller_name a tu tabla
+                name: "Seller of " + itemData.item_name
             };
+            
+            // Guardamos la intención de contactar
             localStorage.setItem('pending_contact', JSON.stringify(pendingContact));
+            
+            // Redirigimos a la página de chats
             window.location.href = 'Chats.html';
         } else {
-            alert("This asset has no Seller ID assigned. Check your database!");
+            // Este aviso te saldrá solo si en Supabase la casilla seller_id está vacía (NULL)
+            alert("DATA CORRUPTION: This asset ('" + (itemData?.item_name || 'unknown') + "') has no Seller UUID linked in the database.");
         }
     }
 
