@@ -33,93 +33,103 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* --- NAVIGATION --- */
         nav {
             background: rgba(0, 0, 0, 0.95); border-bottom: 2px solid var(--blue-light);
             padding: 0 15px; display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); height: 70px;
         }
-
-        .logo-wrapper { height: 100%; display: flex; align-items: center; cursor: pointer; }
-        .logo-img { max-height: 90px; filter: drop-shadow(0 0 8px var(--blue-light)); }
-
-        .nav-controls { display: flex; align-items: center; }
+        .logo-img { max-height: 80px; filter: drop-shadow(0 0 8px var(--blue-light)); cursor: pointer; }
         .nav-links { display: flex; gap: 8px; align-items: center; }
         .nav-links a { 
-            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.9rem; 
+            color: #fff; text-decoration: none; font-family: var(--font-impact); font-size: 0.85rem; 
             cursor: pointer; transition: 0.3s; text-transform: uppercase; font-style: italic;
-            padding: 5px 10px; border-radius: 4px;
+            padding: 6px 10px; border-radius: 4px;
         }
-
-        /* Resalte especial para MY ASSETS */
         #link-my-items.active { 
-            background: rgba(255, 184, 0, 0.15);
-            color: var(--yellow-bright);
-            border: 1px solid var(--yellow-accent);
-            box-shadow: 0 0 15px rgba(255, 184, 0, 0.2);
+            background: rgba(255, 184, 0, 0.15); color: var(--yellow-bright); 
+            border: 1px solid var(--yellow-accent); box-shadow: 0 0 15px rgba(255, 184, 0, 0.2);
         }
         .nav-links a.active:not(#link-my-items) { color: var(--blue-light); border-bottom: 2px solid var(--blue-light); }
 
-        #chat-btn {
-            display: none; background: rgba(0, 210, 255, 0.1); border: 1px solid var(--blue-light);
-            color: var(--blue-light); padding: 6px 10px; border-radius: 4px; align-items: center;
-            gap: 5px; text-decoration: none; font-family: var(--font-impact); font-size: 0.85rem;
-        }
-
-        .marketplace-wrapper { max-width: 1400px; margin: 10px auto; padding: 0 15px; display: grid; grid-template-columns: 200px 1fr; gap: 20px; }
+        /* --- LAYOUT --- */
+        .marketplace-wrapper { max-width: 1200px; margin: 10px auto; padding: 0 15px; display: grid; grid-template-columns: 180px 1fr; gap: 20px; }
 
         .sidebar { background: var(--bg-card); padding: 15px; border-radius: 0 15px 0 15px; border-left: 4px solid var(--blue-light); height: fit-content; position: sticky; top: 90px; }
         .cat-item { display: block; padding: 12px; color: #8899af; text-decoration: none; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-bottom: 5px; border-radius: 4px; }
         .cat-item.active { background: var(--grad-blue); color: white; clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%); }
 
-        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 15px; }
-
+        /* --- GRID & CARDS --- */
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
         .item-card { background: var(--bg-card); border: 1px solid #1a2635; border-radius: 0 12px 0 12px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; position: relative; transition: 0.3s; }
-        .item-card:hover { border-color: var(--blue-light); }
-        .item-card img { width: 100%; height: 150px; object-fit: cover; border-bottom: 1px solid #1a2635; }
-        .item-card-info { padding: 12px; }
-        .item-card-info h3 { margin: 0; font-size: 0.8rem; color: var(--blue-light); font-family: var(--font-logo); line-height: 1.2; height: 2.4em; overflow: hidden; }
+        .item-card img { width: 100%; height: 140px; object-fit: cover; border-bottom: 1px solid #1a2635; }
+        .item-card-info { padding: 10px; }
+        .item-card-info h3 { margin: 0; font-size: 0.75rem; color: var(--blue-light); font-family: var(--font-logo); line-height: 1.2; height: 2.4em; overflow: hidden; }
 
-        /* Botones de gestión flotantes */
-        .mgmt-controls { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 50; }
-        .btn-mgmt { 
-            border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; 
-            color: white; font-size: 10px; font-weight: 900; font-family: var(--font-mono);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        .mgmt-controls { position: absolute; top: 5px; right: 5px; z-index: 50; }
+        .btn-del { 
+            background: var(--danger); color: white; border: none; padding: 6px 10px; 
+            border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 900;
+            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4);
         }
-        .btn-del { background: var(--danger); box-shadow: 0 4px 10px rgba(255, 77, 77, 0.4); }
-        .btn-edit { background: var(--blue-dark); box-shadow: 0 4px 10px rgba(0, 86, 255, 0.4); }
 
-        #publish-container { background: var(--bg-card); padding: 25px; border-radius: 12px; border: 1px solid var(--blue-light); max-width: 550px; margin: 0 auto; box-shadow: 0 0 30px rgba(0, 210, 255, 0.1); }
-        .search-bar { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #1a2635; padding: 14px; color: white; margin-bottom: 15px; border-radius: 8px; box-sizing: border-box; font-family: var(--font-main); font-size: 1rem; }
-        .action-btn { background: var(--grad-blue); border: none; padding: 16px; color: #fff; font-family: var(--font-impact); font-size: 1.1rem; cursor: pointer; text-transform: uppercase; font-style: italic; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); width: 100%; margin-bottom: 10px; }
+        /* --- SELL SECTION REDESIGN --- */
+        #publish-container { 
+            background: var(--bg-card); padding: 20px; border-radius: 15px; 
+            border: 1px solid rgba(0, 210, 255, 0.3); max-width: 500px; margin: 0 auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.7rem; color: var(--blue-light); font-family: var(--font-mono); text-transform: uppercase; margin-bottom: 5px; margin-left: 5px; }
+        .search-bar { 
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #1a2635; 
+            padding: 12px; color: white; border-radius: 8px; box-sizing: border-box; 
+            font-family: var(--font-main); font-size: 0.95rem; transition: 0.3s;
+        }
+        .search-bar:focus { border-color: var(--blue-light); outline: none; background: rgba(0, 210, 255, 0.05); }
         
-        #img-preview img { width: 100%; height: 220px; object-fit: contain; margin-bottom: 15px; border: 2px dashed rgba(0, 210, 255, 0.3); border-radius: 10px; }
+        #img-preview { width: 100%; min-height: 150px; background: rgba(0,0,0,0.2); border: 2px dashed #1a2635; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; overflow: hidden; }
+        #img-preview img { width: 100%; height: 100%; object-fit: contain; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 15px; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--bg-card); border: 1px solid var(--blue-light); width: 100%; max-width: 420px; border-radius: 20px; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        .action-btn { 
+            background: var(--grad-blue); border: none; padding: 15px; color: #fff; 
+            font-family: var(--font-impact); font-size: 1rem; cursor: pointer; 
+            text-transform: uppercase; font-style: italic; width: 100%; 
+            clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%); margin-bottom: 10px;
+        }
+        .btn-secondary { background: #1a2635; font-size: 0.8rem; clip-path: none; border-radius: 6px; }
 
+        /* --- MODAL --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 15px; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--blue-light); width: 100%; max-width: 400px; border-radius: 20px; overflow: hidden; }
+
+        /* --- MOBILE OPTIMIZATION --- */
         @media (max-width: 768px) {
-            .marketplace-wrapper { grid-template-columns: 1fr; }
-            .sidebar { position: sticky; top: 70px; display: flex; overflow-x: auto; border-left: none; border-bottom: 1px solid var(--blue-light); background: var(--bg-deep); border-radius: 0; margin: 0 -15px 15px -15px; z-index: 900; padding: 10px; gap: 5px; }
-            .cat-item { white-space: nowrap; margin-bottom: 0; padding: 8px 12px; font-size: 0.8rem; }
+            .marketplace-wrapper { grid-template-columns: 1fr; margin-top: 0; }
+            .sidebar { 
+                position: sticky; top: 70px; display: flex; overflow-x: auto; 
+                border-left: none; border-bottom: 1px solid var(--blue-light); 
+                background: var(--bg-deep); border-radius: 0; margin: 0 -15px 10px -15px; 
+                padding: 10px; gap: 5px; z-index: 900;
+            }
+            .cat-item { white-space: nowrap; margin-bottom: 0; padding: 8px 15px; font-size: 0.75rem; }
             .market-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            #publish-container { padding: 15px; margin-top: 10px; }
+            .logo-img { max-height: 60px; }
+            #publish-container { padding: 15px; border: none; background: transparent; }
+            .action-btn { padding: 18px; }
         }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo-wrapper" onclick="window.location.reload()">
+    <div class="logo-wrapper" onclick="showTab('market')">
         <img src="img/Shopy.png" class="logo-img">
     </div>
-    <div class="nav-controls">
-        <div class="nav-links">
-            <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
-            <a onclick="showTab('sell')" id="link-sell">SELL</a>
-            <a onclick="showTab('my-items')" id="link-my-items" style="display:none;">MY ASSETS</a>
-            <a href="Chats.html" id="chat-btn">CHATS</a>
-        </div>
+    <div class="nav-links">
+        <a onclick="showTab('market')" id="link-market" class="active">MARKET</a>
+        <a onclick="showTab('sell')" id="link-sell">SELL</a>
+        <a onclick="showTab('my-items')" id="link-my-items" style="display:none;">MY ASSETS</a>
     </div>
 </nav>
 
@@ -134,33 +144,54 @@
 
     <main>
         <section id="market">
-            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH ASSET..." oninput="handleGlobalSearch()">
-            <h2 id="view-title" style="display:none; color: var(--yellow-accent); font-family: var(--font-impact); margin-bottom: 15px; text-align: center; letter-spacing: 2px;">PERSONALLY OWNED ASSETS</h2>
+            <input type="text" id="main-search" class="search-bar" placeholder="SEARCH ASSET..." oninput="handleGlobalSearch()" style="margin-bottom:15px;">
+            <h2 id="view-title" style="display:none; color: var(--yellow-accent); font-family: var(--font-impact); margin-bottom: 15px; text-align: center; letter-spacing: 2px; font-size: 1.2rem;">MANAGE YOUR INVENTORY</h2>
             <div id="market-grid" class="market-grid"></div>
         </section>
 
         <section id="sell" style="display:none;">
             <div id="publish-container">
-                <h2 id="form-title" style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 15px 0;">NEW MANIFEST</h2>
-                <input type="hidden" id="edit-item-id">
+                <h2 style="color: var(--blue-light); font-family: var(--font-impact); margin:0 0 20px 0; text-align: center; letter-spacing: 1px;">ASSET REGISTRATION</h2>
                 
-                <input type="text" id="item-name" class="search-bar" placeholder="ITEM NAME">
-                <select id="item-cat" class="search-bar">
-                    <option value="Armor">ARMOR</option>
-                    <option value="Weapons">WEAPONS</option>
-                    <option value="Ships">SHIPS</option>
-                    <option value="Medical">MEDICAL</option>
-                </select>
-                <input type="text" id="item-location" class="search-bar" placeholder="LOCATION">
-                <input type="number" id="item-price" class="search-bar" placeholder="PRICE aUEC">
-                <textarea id="item-desc" class="search-bar" placeholder="ITEM DESCRIPTION" style="height: 80px;"></textarea>
+                <div class="form-group">
+                    <label class="form-label">Item Name</label>
+                    <input type="text" id="item-name" class="search-bar" placeholder="e.g. Aegis Titan">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Classification</label>
+                    <select id="item-cat" class="search-bar">
+                        <option value="Armor">ARMOR</option>
+                        <option value="Weapons">WEAPONS</option>
+                        <option value="Ships">SHIPS</option>
+                        <option value="Medical">MEDICAL</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label class="form-label">Price (aUEC)</label>
+                        <input type="number" id="item-price" class="search-bar" placeholder="000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <input type="text" id="item-location" class="search-bar" placeholder="New Babbage">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Technical Specs / Info</label>
+                    <textarea id="item-desc" class="search-bar" placeholder="Details about the item..." style="height: 80px; resize: none;"></textarea>
+                </div>
                 
-                <div id="img-preview"></div>
-                <button class="action-btn" onclick="document.getElementById('file-input').click()" style="background:#1a2635; font-size: 0.8rem; clip-path: none;">CHANGE IMAGE</button>
+                <div id="img-preview">
+                    <span style="color:#444; font-size: 0.8rem;">NO IMAGE SELECTED</span>
+                </div>
+                
+                <button class="action-btn btn-secondary" onclick="document.getElementById('file-input').click()">UPLOAD VISUAL DATA</button>
                 <input type="file" id="file-input" hidden onchange="processImg(this)">
                 
-                <button class="action-btn" id="btn-publish" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000;">PUBLISH ASSET</button>
-                <button class="action-btn" id="btn-cancel-edit" onclick="resetForm(); showTab('my-items');" style="display:none; background:transparent; border:1px solid #444; clip-path:none; color: #888;">CANCEL EDIT</button>
+                <button class="action-btn" id="btn-publish" onclick="uploadToNet()" style="background:var(--yellow-accent); color:#000; margin-top: 10px;">CONFIRM & PUBLISH</button>
             </div>
         </section>
     </main>
@@ -168,13 +199,13 @@
 
 <div class="modal-overlay" id="item-modal" onclick="if(event.target == this) closeModal()">
     <div class="modal-content">
-        <img id="m-img" src="" style="width: 100%; height: 200px; object-fit: cover; border-bottom: 2px solid var(--blue-light);">
+        <img id="m-img" src="" style="width: 100%; height: 180px; object-fit: cover; border-bottom: 2px solid var(--blue-light);">
         <div style="padding: 20px;">
-            <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light); font-size: 1rem;"></h2>
-            <div id="m-price" style="font-size: 1.6rem; color: var(--yellow-bright); font-family: var(--font-mono); margin: 10px 0;"></div>
-            <p style="font-size: 0.8rem; color: #8899af; margin-bottom: 20px;">SECTOR: <span id="m-loc" style="color:white"></span></p>
-            <button class="action-btn" id="m-btn">OPEN FULL SPECS</button>
-            <button class="action-btn" onclick="closeModal()" style="background:transparent; border:1px solid #444; clip-path:none; font-size: 0.8rem; margin-bottom:0;">CLOSE</button>
+            <h2 id="m-title" style="margin:0; font-family: var(--font-logo); color: var(--blue-light); font-size: 0.9rem;"></h2>
+            <div id="m-price" style="font-size: 1.4rem; color: var(--yellow-bright); font-family: var(--font-mono); margin: 10px 0;"></div>
+            <p style="font-size: 0.75rem; color: #8899af; margin-bottom: 20px;">SECTOR: <span id="m-loc" style="color:white"></span></p>
+            <button class="action-btn" id="m-btn">VIEW FULL SPECS</button>
+            <button class="action-btn" onclick="closeModal()" style="background:transparent; border:1px solid #444; clip-path:none; font-size: 0.8rem;">BACK TO MARKET</button>
         </div>
     </div>
 </div>
@@ -208,19 +239,11 @@
         list.forEach(item => {
             const card = document.createElement('div');
             card.className = 'item-card';
-            
-            // Si el clic no es en los botones de gestión, abre el modal
-            card.onclick = (e) => {
-                if(!e.target.closest('.mgmt-controls')) openDetails(item);
-            };
+            card.onclick = (e) => { if(!e.target.closest('.mgmt-controls')) openDetails(item); };
             
             let mgmt = "";
             if(currentTab === 'my-items' && currentUser && item.seller_id === currentUser.id) {
-                mgmt = `
-                    <div class="mgmt-controls">
-                        <button class="btn-mgmt btn-edit" onclick="prepareEdit('${item.id}')">EDIT</button>
-                        <button class="btn-mgmt btn-del" onclick="deleteAsset('${item.id}')">DEL</button>
-                    </div>`;
+                mgmt = `<div class="mgmt-controls"><button class="btn-del" onclick="deleteAsset('${item.id}')">DEL</button></div>`;
             }
 
             card.innerHTML = `
@@ -228,44 +251,15 @@
                 <img src="${item.image_1 || 'https://via.placeholder.com/400x200'}" loading="lazy">
                 <div class="item-card-info">
                     <h3>${item.item_name.toUpperCase()}</h3>
-                    <div class="price-tag" style="color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 0.95rem; margin-top:5px;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
+                    <div style="color: var(--yellow-bright); font-family: var(--font-mono); font-weight: bold; font-size: 0.85rem; margin-top:5px;">${parseInt(item.price_auec).toLocaleString()} aUEC</div>
                 </div>`;
             grid.appendChild(card);
         });
     }
 
-    // --- LÓGICA DE EDICIÓN CORREGIDA ---
-    function prepareEdit(id) {
-        // Buscamos el item en la lista local
-        const item = allItems.find(i => i.id === id);
-        if (!item) return;
-
-        // 1. Llenamos los campos del formulario
-        document.getElementById('edit-item-id').value = item.id;
-        document.getElementById('item-name').value = item.item_name;
-        document.getElementById('item-cat').value = item.category || "Armor";
-        document.getElementById('item-location').value = item.location || "";
-        document.getElementById('item-price').value = item.price_auec;
-        document.getElementById('item-desc').value = item.description || "";
-        
-        // 2. Cargamos la imagen actual para que no se pierda al guardar
-        uploadedImgBase64 = item.image_1;
-        document.getElementById('img-preview').innerHTML = `<img src="${item.image_1 || ''}">`;
-
-        // 3. Cambiamos la interfaz del formulario
-        document.getElementById('form-title').innerText = "UPDATE MANIFEST";
-        document.getElementById('btn-publish').innerText = "SAVE CHANGES";
-        document.getElementById('btn-publish').style.background = "var(--blue-light)";
-        document.getElementById('btn-cancel-edit').style.display = "block";
-
-        // 4. Saltamos a la pestaña SELL para editar
-        showTab('sell');
-    }
-
     async function uploadToNet() {
         if(!currentUser) return alert("AUTH ERROR: LOG IN REQUIRED");
         
-        const editId = document.getElementById('edit-item-id').value;
         const payload = {
             item_name: document.getElementById('item-name').value,
             category: document.getElementById('item-cat').value,
@@ -278,35 +272,25 @@
 
         if(!payload.item_name || !payload.price_auec) return alert("NAME AND PRICE REQUIRED");
 
-        let res;
-        if (editId) {
-            res = await _supabase.from('marketplace_items').update(payload).eq('id', editId);
-        } else {
-            res = await _supabase.from('marketplace_items').insert([payload]);
-        }
+        const { error } = await _supabase.from('marketplace_items').insert([payload]);
 
-        if (!res.error) {
-            alert(editId ? "MANIFEST UPDATED" : "ASSET PUBLISHED");
+        if (!error) {
+            alert("ASSET PUBLISHED TO GALAXY MARKET");
             resetForm();
             await fetchMarket();
-            showTab(editId ? 'my-items' : 'market');
+            showTab('market');
         } else {
-            alert("UPLOAD FAILED: " + res.error.message);
+            alert("UPLOAD FAILED: " + error.message);
         }
     }
 
     function resetForm() {
-        document.getElementById('edit-item-id').value = "";
         document.getElementById('item-name').value = "";
         document.getElementById('item-price').value = "";
         document.getElementById('item-location').value = "";
         document.getElementById('item-desc').value = "";
-        document.getElementById('img-preview').innerHTML = "";
+        document.getElementById('img-preview').innerHTML = '<span style="color:#444; font-size: 0.8rem;">NO IMAGE SELECTED</span>';
         uploadedImgBase64 = null;
-        document.getElementById('form-title').innerText = "NEW MANIFEST";
-        document.getElementById('btn-publish').innerText = "PUBLISH ASSET";
-        document.getElementById('btn-publish').style.background = "var(--yellow-accent)";
-        document.getElementById('btn-cancel-edit').style.display = "none";
     }
 
     function processImg(input) {
@@ -321,7 +305,7 @@
     }
 
     async function deleteAsset(id) {
-        if (confirm("TERMINATE THIS LISTING?")) {
+        if (confirm("TERMINATE THIS LISTING PERMANENTLY?")) {
             const { error } = await _supabase.from('marketplace_items').delete().eq('id', id);
             if (!error) { fetchMarket(); }
         }
@@ -334,7 +318,6 @@
         document.getElementById('market').style.display = (t === 'market' || t === 'my-items') ? 'block' : 'none';
         document.getElementById('sell').style.display = (t === 'sell') ? 'block' : 'none';
         document.getElementById('sidebar-filter').style.display = (t === 'market') ? 'block' : 'none';
-        document.getElementById('main-search').style.display = (t === 'market') ? 'block' : 'none';
         document.getElementById('view-title').style.display = (t === 'my-items') ? 'block' : 'none';
 
         if (t === 'market') document.getElementById('link-market').classList.add('active');
@@ -342,6 +325,7 @@
         if (t === 'my-items') document.getElementById('link-my-items').classList.add('active');
         
         updateView();
+        window.scrollTo(0,0);
     }
 
     function openDetails(item) {
@@ -363,13 +347,11 @@
         
         const grid = document.getElementById('market-grid');
         grid.innerHTML = "";
-        // Re-renderizamos solo los filtrados
         filtered.forEach(item => {
-            // (Misma lógica de renderizado que updateView para mantener botones)
             const card = document.createElement('div');
             card.className = 'item-card';
-            card.onclick = (e) => { if(!e.target.closest('.mgmt-controls')) openDetails(item); };
-            card.innerHTML = `<img src="${item.image_1 || ''}"><div class="item-card-info"><h3>${item.item_name}</h3></div>`;
+            card.onclick = () => openDetails(item);
+            card.innerHTML = `<img src="${item.image_1 || ''}"><div class="item-card-info"><h3>${item.item_name.toUpperCase()}</h3></div>`;
             grid.appendChild(card);
         });
     }
@@ -378,7 +360,6 @@
         const { data: { session } } = await _supabase.auth.getSession();
         if (session) {
             currentUser = session.user;
-            document.getElementById('chat-btn').style.display = 'flex';
             document.getElementById('link-my-items').style.display = 'inline-block';
         }
     }
@@ -388,14 +369,13 @@
         el.classList.add('active');
         const list = (currentTab === 'my-items') ? allItems.filter(i => i.seller_id === currentUser?.id) : allItems;
         const filtered = cat === 'all' ? list : list.filter(i => i.category === cat);
-        // Renderizado simple para el filtro
         const grid = document.getElementById('market-grid');
         grid.innerHTML = "";
         filtered.forEach(item => {
              const card = document.createElement('div');
              card.className = 'item-card';
-             card.onclick = (e) => { if(!e.target.closest('.mgmt-controls')) openDetails(item); };
-             card.innerHTML = `<img src="${item.image_1 || ''}"><div class="item-card-info"><h3>${item.item_name}</h3></div>`;
+             card.onclick = () => openDetails(item);
+             card.innerHTML = `<img src="${item.image_1 || ''}"><div class="item-card-info"><h3>${item.item_name.toUpperCase()}</h3></div>`;
              grid.appendChild(card);
         });
     }
